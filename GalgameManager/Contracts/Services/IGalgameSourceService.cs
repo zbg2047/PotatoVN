@@ -1,8 +1,6 @@
 ﻿using GalgameManager.Models;
 using GalgameManager.Models.BgTasks;
 using GalgameManager.Models.Sources;
-using GalgameManager.Views.Dialog;
-using Microsoft.UI.Xaml.Controls;
 
 namespace GalgameManager.Contracts.Services;
 
@@ -35,14 +33,6 @@ public interface IGalgameSourceService
     /// <exception cref="PvnException">当.PotatoVN存在但meta.json不存在时抛出</exception>
     /// <returns></returns>
     public Task<Galgame?> LoadMetaAsync(string path);
-
-    /// <summary>
-    /// 在转换游戏位置时，给ChangeSourceDialog提供附加设置控件，返回null则不附加任何控件
-    /// </summary>
-    /// <param name="source"></param>
-    /// <param name="setting"></param>
-    /// <returns></returns>
-    public Task<Grid?> GetAdditionSettingControlAsync(GalgameSourceBase source, ChangeSourceDialogAttachSetting setting);
     
     /// <summary>
     /// 获取库的（总空间，已用空间）（byte），若无法获取则返回(-1,-1)

@@ -4,9 +4,6 @@ using GalgameManager.Helpers;
 using GalgameManager.Models;
 using GalgameManager.Models.BgTasks;
 using GalgameManager.Models.Sources;
-using GalgameManager.Views.Dialog;
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
 
 namespace GalgameManager.Services;
 
@@ -76,37 +73,6 @@ public class LocalFolderSourceService : IGalgameSourceService
         meta.SavePath = Directory.Exists(meta.SavePath) ? meta.SavePath : null; //检查存档路径是否存在并设置SavePosition字段
         meta.FindSaveInPath();
         return meta;
-    }
-
-    public async Task<Grid?> GetAdditionSettingControlAsync(GalgameSourceBase source,
-        ChangeSourceDialogAttachSetting setting)
-    {
-        if(source is not GalgameFolderSource s) throw new ArgumentException("source is not GalgameFolderSource");
-
-        setting.OkClickable = false;
-        List<string> subFolders = await s.GetPossibleFoldersAsync();
-        if (subFolders.Count <= 1) //只有一个文件夹（源的根），不需要选择
-        {
-            setting.OkClickable = true;
-            return null;
-        }
-
-        Grid result = new();
-        StackPanel panel = new() { Orientation = Orientation.Horizontal, Spacing = 20, };
-        ComboBox box = new() { ItemsSource = subFolders, };
-        box.SelectionChanged += (_, _) =>
-        {
-            setting.TargetPath = box.SelectedItem as string;
-            setting.OkClickable = true;
-        };
-        panel.Children.Add(new TextBlock
-        {
-            Text = "LocalFolderSourceService_SelectFolder".GetLocalized(), 
-            VerticalAlignment = VerticalAlignment.Center
-        });
-        panel.Children.Add(box);
-        result.Children.Add(panel);
-        return result;
     }
 
     public async Task<(long total, long used)> GetSpaceAsync(GalgameSourceBase source)
