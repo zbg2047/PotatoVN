@@ -20,10 +20,6 @@
 
     <Page.Resources>
         <converters:InverseBooleanConverter x:Key="InverseBooleanConverter" />
-        <converters:ImagePathConverter x:Key="ImagePathConverter"/>
-        <converters:PlayTypeToSolidColorBrushConverter x:Key="PlayTypeConverter" />
-        <converters:GameToOpacityConverter x:Key="GameToOpacityConverter"/>
-        <converters:SourcesToStringConverter x:Key="SourcesToStringConverter"/>
         <MenuFlyout x:Name="GalFlyout">
             <MenuFlyoutItem Icon="Edit" Text="{x:Bind ViewModel.UiEdit}" Command="{x:Bind ViewModel.GalFlyOutEditCommand}" CommandParameter="{Binding}"/>
             <MenuFlyoutItem Icon="Download" Text="{x:Bind ViewModel.UiDownLoad}" Command="{x:Bind ViewModel.GalFlyOutGetInfoFromRssCommand}" CommandParameter="{Binding}"/>
