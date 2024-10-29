@@ -1,6 +1,5 @@
 ﻿using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-using System.Diagnostics;
 using Windows.Storage;
 using Windows.Storage.Pickers;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -139,10 +138,9 @@ public partial class HomeViewModel : ObservableObject, INavigationAware
     }
 
     [RelayCommand]
-    private void ItemClick(ItemClickEventArgs e)
+    private void ItemClick(Galgame? clickedItem)
     {
-        Debug.Assert(e.ClickedItem is Galgame);
-        if (e.ClickedItem is Galgame clickedItem)
+        if (clickedItem != null)
         {
             _navigationService.SetListDataItemForNextConnectedAnimation(clickedItem);
             _navigationService.NavigateTo(typeof(GalgameViewModel).FullName!, new GalgamePageParameter {Galgame = clickedItem});

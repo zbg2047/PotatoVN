@@ -1,5 +1,4 @@
 ﻿using System.Collections.ObjectModel;
-using System.Diagnostics;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.WinUI.UI;
@@ -8,11 +7,11 @@ using GalgameManager.Contracts.Services;
 using GalgameManager.Contracts.ViewModels;
 using GalgameManager.Helpers;
 using GalgameManager.Models;
+using GalgameManager.Models.Filters;
 using GalgameManager.Models.Sources;
 using GalgameManager.Services;
 using GalgameManager.Views.Dialog;
 using Microsoft.UI.Xaml.Controls;
-using SourceFilter = GalgameManager.Models.Filters.SourceFilter;
 
 namespace GalgameManager.ViewModels;
 
@@ -130,14 +129,6 @@ public partial class LibraryViewModel : ObservableObject, INavigationAware
         }
         else if (clickedItem is null)
             CurrentSource = null;
-    }
-    
-    [RelayCommand]
-    private void ItemClick(ItemClickEventArgs e)
-    {
-        Debug.Assert(e.ClickedItem is IDisplayableGameObject);
-        if (e.ClickedItem is IDisplayableGameObject clickedItem)
-            NavigateTo(clickedItem);
     }
 
     [RelayCommand]
