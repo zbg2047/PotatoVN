@@ -8,6 +8,7 @@ namespace GalgameManager.Models;
 public partial class Category : ObservableObject
 {
     public string Name { get; set; }= string.Empty;
+    public Guid Id { get; set; }
     [JsonIgnore]
     [JsonProperty("Galgames")]
     [Deprecated("只用于反序列化以更新旧设置，使用下面的GalgamesX", DeprecationType.Deprecate, 172)]

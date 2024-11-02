@@ -1,6 +1,4 @@
-﻿using Microsoft.UI.Content;
-
-namespace GalgameManager.Enums;
+﻿namespace GalgameManager.Enums;
 
 public static class KeyValues
 {
@@ -97,6 +95,7 @@ public static class KeyValues
     public const string SavePathUpgraded = "savePathUpgraded"; //存档路径升级
     public const string GameSyncUpgraded = "gameSyncUpgraded"; //游戏同步升级
     public const string CategoryUpgraded = "categoryUpgraded"; //分类索引升级
+    public const string CategoryIdUpgraded = "categoryIdUpgraded"; //给各分类添加id字段
     public const string SourceUpgrade = "sourceUpgrade"; //Source升级
     public const string SourceNameAndSubUpgrade = "sourceNameAndSubUpgrade"; //Source名称和子库升级
     public const string MixedPhraserOrderVersion = "mixedPhraserOrderVersion"; //int，当前配置中的混合搜刮器顺序的版本

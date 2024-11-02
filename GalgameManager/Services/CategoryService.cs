@@ -50,14 +50,14 @@ public class CategoryService : ICategoryService
     public async Task Init()
     {
         if (_isInit) return;
-
-        await Upgrade();
-
+        
         _categoryGroups = await _localSettings.ReadSettingAsync<ObservableCollection<CategoryGroup>>
                               (KeyValues.CategoryGroups, true, converters: new() { new GalgameAndUidConverter() }) 
                           ?? new ObservableCollection<CategoryGroup>();
         foreach(CategoryGroup group in _categoryGroups)
             group.Categories.ForEach(c => c.GalgamesX.RemoveNull());
+        
+        await Upgrade();
 
         // 有时候程序崩溃的时候没能移除游玩状态就保存了，需要手动把游玩状态移除
         List<CategoryGroup> toRemove = _categoryGroups.Where(group => group.Type == CategoryGroupType.Status).ToList();
@@ -150,6 +150,11 @@ public class CategoryService : ICategoryService
         DeleteCategory(source);
     }
 
+    public Category? GetCategory(Guid id)
+    {
+        return _categoryGroups.SelectMany(group => group.Categories).FirstOrDefault(category => category.Id == id);
+    }
+
     /// <summary>
     /// 删除分类
     /// </summary>
@@ -229,11 +234,12 @@ public class CategoryService : ICategoryService
 
     private async Task SaveAsync()
     {
-        if (_isInit == false) return;
         if(_statusGroup != null)
             _categoryGroups.Remove(_statusGroup); //状态分类组是即时构造的，不需要保存
         await _localSettings.SaveSettingAsync(KeyValues.CategoryGroups, _categoryGroups, true,
             converters: new() { new GalgameAndUidConverter() });
+        if (_statusGroup != null)
+            _categoryGroups.Add(_statusGroup);
     }
 
     /// <summary>
@@ -268,11 +274,16 @@ public class CategoryService : ICategoryService
     {
         _statusGroup = new CategoryGroup(ResourceExtensions.GetLocalized("CategoryService_Status"), CategoryGroupType.Status);
         _categoryGroups.Add(_statusGroup);
-        _statusGroup.Categories.Add(new Category(PlayType.None.GetLocalized()));
-        _statusGroup.Categories.Add(new Category(PlayType.Played.GetLocalized()));
-        _statusGroup.Categories.Add(new Category(PlayType.Playing.GetLocalized()));
-        _statusGroup.Categories.Add(new Category(PlayType.Shelved.GetLocalized()));
-        _statusGroup.Categories.Add(new Category(PlayType.Abandoned.GetLocalized()));
+        _statusGroup.Categories.Add(new Category(PlayType.None.GetLocalized())
+            { Id = new Guid("00000000-0000-0000-0000-000000000001") });
+        _statusGroup.Categories.Add(new Category(PlayType.Played.GetLocalized())
+            { Id = new Guid("00000000-0000-0000-0000-000000000002") });
+        _statusGroup.Categories.Add(new Category(PlayType.Playing.GetLocalized())
+            { Id = new Guid("00000000-0000-0000-0000-000000000003") });
+        _statusGroup.Categories.Add(new Category(PlayType.Shelved.GetLocalized())
+            { Id = new Guid("00000000-0000-0000-0000-000000000004") });
+        _statusGroup.Categories.Add(new Category(PlayType.Abandoned.GetLocalized())
+            { Id = new Guid("00000000-0000-0000-0000-000000000005") });
         _statusCategory[(int)PlayType.None] = _statusGroup.Categories[0];
         _statusCategory[(int)PlayType.Played] = _statusGroup.Categories[1];
         _statusCategory[(int)PlayType.Playing] = _statusGroup.Categories[2];
@@ -285,6 +296,15 @@ public class CategoryService : ICategoryService
     /// </summary>
     private async Task Upgrade()
     {
+        // 给各分类添加id字段, since v1.8.0
+        if (!await _localSettings.ReadSettingAsync<bool>(KeyValues.CategoryIdUpgraded))
+        {
+            foreach (CategoryGroup group in _categoryGroups)
+            foreach (Category category in group.Categories)
+                category.Id = Guid.NewGuid();
+            await _localSettings.SaveSettingAsync(KeyValues.CategoryIdUpgraded, true);
+            await SaveAsync();
+        }
         await Task.CompletedTask; //todo：待完成多Source化后添加
     }
 
