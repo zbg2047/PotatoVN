@@ -14,7 +14,8 @@
         <converter:SourcesToStringConverter x:Key="SourcesToStringConverter" />
     </UserControl.Resources>
 
-    <Grid MinWidth="175" MinHeight="300" 
+    <Grid MinWidth="{x:Bind CalcValue(175), Mode=OneWay}" 
+          MinHeight="{x:Bind CalcValue(300), Mode=OneWay}" 
           ContextFlyout="{x:Bind Flyout}" Padding="{StaticResource XSmallLeftTopRightBottomMargin}">
         <StackPanel HorizontalAlignment="Center">
             <Grid
@@ -22,10 +23,10 @@
                             Converter={StaticResource GameToOpacityConverter}}"
                 x:Name="ConnectedElement">
                 <Rectangle
-                    Height="209"
+                    Height="{x:Bind CalcValue(209), Mode=OneWay}"
+                    Width="{x:Bind CalcValue(150), Mode=OneWay}"
                     HorizontalAlignment="Center"
-                    VerticalAlignment="Center"
-                    Width="150">
+                    VerticalAlignment="Center">
                     <Rectangle.Fill>
                         <ImageBrush
                             ImageSource="{x:Bind Galgame.ImagePath.Value, Mode=OneWay, 
@@ -67,7 +68,8 @@
             <TextBlock
                 HorizontalAlignment="Center"
                 Margin="{StaticResource XXSmallTopMargin}"
-                MaxHeight="85"
+                Height="{x:Bind CalcValue(80), Mode=OneWay}" 
+                MaxWidth="{x:Bind CalcValue(150), Mode=OneWay}"
                 Style="{ThemeResource BodyTextStyle}"
                 Text="{x:Bind Galgame.Name, Mode=OneWay, FallbackValue={x:Null}}" />
         </StackPanel>

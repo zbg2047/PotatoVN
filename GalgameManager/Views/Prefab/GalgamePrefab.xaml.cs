@@ -13,6 +13,7 @@ namespace GalgameManager.Views.Prefab;
 [DependencyProperty<Visibility>("PlayTypeVisibility", DefaultValue = Visibility.Collapsed,
     DefaultBindingMode = DefaultBindingMode.OneWay)]
 [DependencyProperty<FlyoutBase>("Flyout")]
+[DependencyProperty<double>("ItemScale", DefaultValue = 1.0f)]
 public sealed partial class GalgamePrefab
 {
     public GalgamePrefab()
@@ -25,4 +26,12 @@ public sealed partial class GalgamePrefab
     {
         Debug.Assert(Galgame != null, "Galgame property should not be null.");
     }
+
+    partial void OnItemScaleChanged(double newValue)
+    {
+        if (newValue > 0) return;
+        ItemScale = 1.0f;
+    }
+    
+    public double CalcValue(double value) => value * ItemScale;
 }

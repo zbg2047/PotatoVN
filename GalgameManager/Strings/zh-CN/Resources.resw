@@ -1812,4 +1812,7 @@
   <data name="GalgamePage_InvalidLocaleEmulatorPath" xml:space="preserve">
     <value>LocaleEmulator 路径未设置或路径不存在，请在 设置-&gt;游戏 处设置LocaleEmulator路径</value>
   </data>
+  <data name="Shell_MultiStream.Content" xml:space="preserve">
+    <value>主页</value>
+  </data>
 </root>

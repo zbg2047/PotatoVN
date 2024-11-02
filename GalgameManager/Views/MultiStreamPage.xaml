@@ -1,0 +1,32 @@
+﻿<Page
+    x:Class="GalgameManager.Views.MultiStreamPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:control="using:GalgameManager.Views.Control"
+    xmlns:models="using:GalgameManager.Models"
+    xmlns:prefab="using:GalgameManager.Views.Prefab"
+    mc:Ignorable="d">
+
+    <Page.Resources>
+        
+    </Page.Resources>
+
+    <Grid>
+        <control:MultiFlipView ItemSource="{x:Bind ViewModel.Games}"
+                               Title="游戏库 >">
+            <control:MultiFlipView.ItemTemplate>
+                <DataTemplate x:DataType="models:Galgame">
+                    <Button Padding="0" BorderThickness="0"
+                            Style="{StaticResource TransparentButtonWithHover}"
+                            HorizontalAlignment="Left" VerticalAlignment="Top">
+                        <prefab:GalgamePrefab Galgame="{x:Bind}"
+                                              ImageStretch="UniformToFill"
+                                              ItemScale="0.8"/>
+                    </Button>
+                </DataTemplate>
+            </control:MultiFlipView.ItemTemplate>
+        </control:MultiFlipView>
+    </Grid>
+</Page>
