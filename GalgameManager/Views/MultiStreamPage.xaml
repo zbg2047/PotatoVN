@@ -7,26 +7,51 @@
     xmlns:control="using:GalgameManager.Views.Control"
     xmlns:models="using:GalgameManager.Models"
     xmlns:prefab="using:GalgameManager.Views.Prefab"
+    xmlns:viewModels="using:GalgameManager.ViewModels"
+    xmlns:multiStreamPage="using:GalgameManager.MultiStreamPage.Lists"
     mc:Ignorable="d">
 
     <Page.Resources>
-        
+        <viewModels:MultiStreamPageSelector x:Key="Selector">
+            <!-- 游戏列表（最近游玩、分类里的游戏、源中的游戏）模板 -->
+            <viewModels:MultiStreamPageSelector.GameListTemplate>
+                <DataTemplate x:DataType="multiStreamPage:GameList">
+                    <control:MultiFlipView ItemSource="{x:Bind Games}"
+                                           Title="{x:Bind Title}">
+                        <control:MultiFlipView.ItemTemplate>
+                            <DataTemplate x:DataType="models:Galgame">
+                                <Button Padding="0" BorderThickness="0"
+                                        Style="{StaticResource TransparentButtonWithHover}"
+                                        HorizontalAlignment="Left" VerticalAlignment="Top">
+                                    <prefab:GalgamePrefab Galgame="{x:Bind}"
+                                                          ImageStretch="UniformToFill"
+                                                          ItemScale="0.8" />
+                                </Button>
+                            </DataTemplate>
+                        </control:MultiFlipView.ItemTemplate>
+                    </control:MultiFlipView>
+                </DataTemplate>
+            </viewModels:MultiStreamPageSelector.GameListTemplate>
+            <viewModels:MultiStreamPageSelector.CategoryListTemplate>
+                <!-- 占位符，待做 -->
+                <DataTemplate />
+            </viewModels:MultiStreamPageSelector.CategoryListTemplate>
+        </viewModels:MultiStreamPageSelector>
     </Page.Resources>
 
     <Grid>
-        <control:MultiFlipView ItemSource="{x:Bind ViewModel.Games}"
-                               Title="游戏库 >">
-            <control:MultiFlipView.ItemTemplate>
-                <DataTemplate x:DataType="models:Galgame">
-                    <Button Padding="0" BorderThickness="0"
-                            Style="{StaticResource TransparentButtonWithHover}"
-                            HorizontalAlignment="Left" VerticalAlignment="Top">
-                        <prefab:GalgamePrefab Galgame="{x:Bind}"
-                                              ImageStretch="UniformToFill"
-                                              ItemScale="0.8"/>
-                    </Button>
-                </DataTemplate>
-            </control:MultiFlipView.ItemTemplate>
-        </control:MultiFlipView>
+        <ListView ItemsSource="{x:Bind ViewModel.Lists}"
+                  ItemTemplateSelector="{StaticResource Selector}"
+                  SelectionMode="None" IsItemClickEnabled="False"
+                  CanDragItems="True" AllowDrop="True" CanReorderItems="True"
+                  Margin="-62 0 0 0"
+                  Padding="40 0 0 0">
+            <!-- ↑ Padding与偏移的原因：界面滚动条较为复杂，向左扩大一些控件空间方便ListView的滚动检测 -->
+            <ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem">
+                    <Setter Property="Margin" Value="0 0 20 20"/>
+                </Style>
+            </ListView.ItemContainerStyle>
+        </ListView>
     </Grid>
 </Page>

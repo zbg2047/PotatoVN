@@ -5,6 +5,11 @@ namespace GalgameManager.Contracts.Services;
 
 public interface ICategoryService
 {
+    /// <summary>
+    /// 获取游玩状态分类组
+    /// </summary>
+    public CategoryGroup StatusGroup { get; }
+    
     public Task Init();
 
     public Task<ObservableCollection<CategoryGroup>> GetCategoryGroupsAsync();

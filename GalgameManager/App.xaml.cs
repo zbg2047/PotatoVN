@@ -104,7 +104,7 @@ public partial class App : Application
 
             // Views and ViewModels
             services.AddTransient<MultiStreamViewModel>();
-            services.AddTransient<MultiStreamPage>();
+            services.AddTransient<Views.MultiStreamPage>();
             services.AddTransient<InfoViewModel>();
             services.AddTransient<InfoPage>();
             services.AddTransient<AccountViewModel>();

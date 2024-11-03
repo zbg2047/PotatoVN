@@ -7,6 +7,7 @@ namespace GalgameManager.Models;
 
 public partial class Category : ObservableObject
 {
+    public event Action? OnGalgamesChanged;
     public string Name { get; set; }= string.Empty;
     public Guid Id { get; set; }
     [JsonIgnore]
@@ -38,12 +39,14 @@ public partial class Category : ObservableObject
         if (GalgamesX.Contains(galgame)) return;
         GalgamesX.Add(galgame);
         galgame.Categories.Add(this);
+        OnGalgamesChanged?.Invoke();
     }
 
     public void Add(Category category)
     {
         if (category == this) return;
         category.GalgamesX.ForEach(Add);
+        OnGalgamesChanged?.Invoke();
     }
     
     public void Remove(Galgame galgame)
@@ -51,6 +54,7 @@ public partial class Category : ObservableObject
         if (!GalgamesX.Contains(galgame)) return;
         GalgamesX.Remove(galgame);
         galgame.Categories.Remove(this);
+        OnGalgamesChanged?.Invoke();
     }
 
     public void Delete()
