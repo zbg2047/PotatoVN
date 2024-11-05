@@ -23,6 +23,7 @@ public class CategoryService : ICategoryService
     private readonly DispatcherQueue? _dispatcher;
 
     public CategoryGroup StatusGroup => _statusGroup!;
+    public CategoryGroup DeveloperGroup => _developerGroup!;
 
     public CategoryService(ILocalSettingsService localSettings, IGalgameCollectionService galgameService)
     {

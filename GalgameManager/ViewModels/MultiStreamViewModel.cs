@@ -1,11 +1,12 @@
 ﻿using System.Collections.ObjectModel;
 using System.Diagnostics;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.WinUI.UI;
 using GalgameManager.Contracts.Services;
 using GalgameManager.Contracts.ViewModels;
 using GalgameManager.Models;
-using GalgameManager.Models.Sources;
+using GalgameManager.Models.Filters;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using GalgameManager.MultiStreamPage.Lists;
@@ -18,18 +19,25 @@ namespace GalgameManager.ViewModels
 
         private readonly IGalgameCollectionService _gameService;
         private readonly ICategoryService _categoryService;
+        private readonly INavigationService _navigationService;
+        private readonly IFilterService _filterService;
 
-        public MultiStreamViewModel(IGalgameCollectionService gameService, ICategoryService categoryService)
+        public MultiStreamViewModel(IGalgameCollectionService gameService, ICategoryService categoryService,
+            INavigationService navigationService, IFilterService filterService)
         {
             _gameService = gameService;
             _categoryService = categoryService;
+            _navigationService = navigationService;
+            _filterService = filterService;
         }
+
 
         public void OnNavigatedTo(object parameter)
         {
             // test only
             Lists.Add(new GameList(_gameService.Galgames, "最近游玩的游戏",
                 GameList.SortKey.LastPlayed));
+            Lists.Add(new CategoryList(_categoryService.DeveloperGroup));
             foreach (Category c in _categoryService.StatusGroup.Categories)
                 Lists.Add(new GameList(new ObservableCollection<Galgame>(c.GalgamesX), c.Name,
                     GameList.SortKey.LastPlayed));
@@ -37,6 +45,23 @@ namespace GalgameManager.ViewModels
 
         public void OnNavigatedFrom()
         {
+        }
+
+        [RelayCommand]
+        private void ClickGame(Galgame? clickedItem)
+        {
+            if (clickedItem == null) return;
+            _navigationService.SetListDataItemForNextConnectedAnimation(clickedItem);
+            _navigationService.NavigateTo(typeof(GalgameViewModel).FullName!,
+                new GalgamePageParameter { Galgame = clickedItem });
+        }
+        
+        [RelayCommand]
+        private void ClickCategory(Category category)
+        {
+            _filterService.ClearFilters();
+            _filterService.AddFilter(new CategoryFilter(category));
+            _navigationService.NavigateTo(typeof(HomeViewModel).FullName!);
         }
     }
 
@@ -51,7 +76,7 @@ namespace GalgameManager.ViewModels
             return item switch
             {
                 GameList => GameListTemplate,
-                GalgameSourceBase => CategoryListTemplate,
+                CategoryList => CategoryListTemplate,
                 _ => base.SelectTemplateCore(item, container)
             };
         }
@@ -85,6 +110,18 @@ namespace GalgameManager.MultiStreamPage.Lists
                 SortKey.LastPlayed => nameof(Galgame.LastPlayTime),
                 _ => throw new ArgumentOutOfRangeException()
             }, SortDirection.Descending));
+        }
+    }
+
+    public class CategoryList
+    {
+        public AdvancedCollectionView Categories;
+        public string Title;
+
+        public CategoryList(CategoryGroup group)
+        {
+            Categories = new AdvancedCollectionView(group.Categories, true);
+            Title = group.Name;
         }
     }
 }

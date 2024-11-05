@@ -9,7 +9,8 @@
     xmlns:prefab="using:GalgameManager.Views.Prefab"
     xmlns:viewModels="using:GalgameManager.ViewModels"
     xmlns:multiStreamPage="using:GalgameManager.MultiStreamPage.Lists"
-    mc:Ignorable="d">
+    mc:Ignorable="d"
+    x:Name="Page">
 
     <Page.Resources>
         <viewModels:MultiStreamPageSelector x:Key="Selector">
@@ -20,10 +21,11 @@
                                            Title="{x:Bind Title}">
                         <control:MultiFlipView.ItemTemplate>
                             <DataTemplate x:DataType="models:Galgame">
-                                <Button Padding="0" BorderThickness="0"
+                                <Button DataContext="{Binding}" Padding="0" BorderThickness="0"
                                         Style="{StaticResource TransparentButtonWithHover}"
-                                        HorizontalAlignment="Left" VerticalAlignment="Top">
-                                    <prefab:GalgamePrefab Galgame="{x:Bind}"
+                                        HorizontalAlignment="Left" VerticalAlignment="Top"
+                                        Click="ButtonBase_OnClick">
+                                    <prefab:GalgamePrefab Galgame="{Binding}"
                                                           ImageStretch="UniformToFill"
                                                           ItemScale="0.8" />
                                 </Button>
@@ -32,9 +34,20 @@
                     </control:MultiFlipView>
                 </DataTemplate>
             </viewModels:MultiStreamPageSelector.GameListTemplate>
+            <!-- 分类列表模板 -->
             <viewModels:MultiStreamPageSelector.CategoryListTemplate>
-                <!-- 占位符，待做 -->
-                <DataTemplate />
+                <DataTemplate x:DataType="multiStreamPage:CategoryList">
+                    <control:MultiFlipView ItemSource="{x:Bind Categories}"
+                                           Title="{x:Bind Title}"
+                                           ItemClickCommand="{Binding ElementName=Page, Path=ViewModel.ClickCategoryCommand}">
+                        <control:MultiFlipView.ItemTemplate>
+                            <DataTemplate x:DataType="models:Category">
+                                <prefab:CategoryPrefab Category="{x:Bind}"
+                                                       GameCntVisible="False" />
+                            </DataTemplate>
+                        </control:MultiFlipView.ItemTemplate>
+                    </control:MultiFlipView>
+                </DataTemplate>
             </viewModels:MultiStreamPageSelector.CategoryListTemplate>
         </viewModels:MultiStreamPageSelector>
     </Page.Resources>

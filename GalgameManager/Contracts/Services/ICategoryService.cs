@@ -10,6 +10,11 @@ public interface ICategoryService
     /// </summary>
     public CategoryGroup StatusGroup { get; }
     
+    /// <summary>
+    /// 开发商分类组
+    /// </summary>
+    public CategoryGroup DeveloperGroup { get; }
+    
     public Task Init();
 
     public Task<ObservableCollection<CategoryGroup>> GetCategoryGroupsAsync();
