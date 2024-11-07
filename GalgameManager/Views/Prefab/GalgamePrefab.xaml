@@ -21,7 +21,8 @@
             <Grid
                 Opacity="{x:Bind Galgame, Mode=OneWay,
                             Converter={StaticResource GameToOpacityConverter}}"
-                x:Name="ConnectedElement">
+                x:Name="ConnectedElement"
+                CornerRadius="10">
                 <Rectangle
                     Height="{x:Bind CalcValue(209), Mode=OneWay}"
                     Width="{x:Bind CalcValue(150), Mode=OneWay}"
@@ -31,7 +32,7 @@
                         <ImageBrush
                             ImageSource="{x:Bind Galgame.ImagePath.Value, Mode=OneWay, 
                             Converter={StaticResource ImagePathConverter}, FallbackValue={x:Null}}"
-                            Stretch="{x:Bind ImageStretch, Mode=OneWay}" />
+                            Stretch="{x:Bind ImageStretch, Mode=OneWay}"/>
                     </Rectangle.Fill>
                 </Rectangle>
                 <!--  游玩状态标记(右上角)  -->
@@ -68,10 +69,11 @@
             <TextBlock
                 HorizontalAlignment="Center"
                 Margin="{StaticResource XXSmallTopMargin}"
-                Height="{x:Bind CalcValue(80), Mode=OneWay}" 
+                Height="{x:Bind CalcValue(TextHeight), Mode=OneWay}" 
                 MaxWidth="{x:Bind CalcValue(150), Mode=OneWay}"
                 Style="{ThemeResource BodyTextStyle}"
-                Text="{x:Bind Galgame.Name, Mode=OneWay, FallbackValue={x:Null}}" />
+                Text="{x:Bind Galgame.Name, Mode=OneWay, FallbackValue={x:Null}}" 
+                FontSize="{x:Bind MediumFontSize, Mode=OneWay}"/>
         </StackPanel>
         
         <!-- 透明控件，确保右键时射线检测能够打到Item上 -->

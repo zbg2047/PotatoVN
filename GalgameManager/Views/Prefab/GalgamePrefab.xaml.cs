@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using CommunityToolkit.Mvvm.ComponentModel;
 using DependencyPropertyGenerator;
 using GalgameManager.Models;
 using Microsoft.UI.Xaml;
@@ -14,10 +15,15 @@ namespace GalgameManager.Views.Prefab;
     DefaultBindingMode = DefaultBindingMode.OneWay)]
 [DependencyProperty<FlyoutBase>("Flyout")]
 [DependencyProperty<double>("ItemScale", DefaultValue = 1.0f)]
+[DependencyProperty<double>("TextHeight", DefaultValue = 80f)]
 public sealed partial class GalgamePrefab
 {
+    public double MediumFontSize = 10f;
+    
     public GalgamePrefab()
     {
+        if (Application.Current.Resources["MediumFontSize"] is double mediumFontSize)
+            MediumFontSize = mediumFontSize;
         InitializeComponent();
         Loaded += GalgamePrefab_Loaded;
     }

@@ -20,15 +20,14 @@
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
-            <Rectangle Grid.Row="0" Height="{x:Bind CalcValue(55)}" Width="{x:Bind CalcValue(220)}"
-                       HorizontalAlignment="Center" VerticalAlignment="Center">
-                <Rectangle.Fill>
-                    <ImageBrush
-                        ImageSource="{x:Bind Category.ImagePath , Mode=OneWay, FallbackValue={x:Null},
-                            Converter={StaticResource ImagePathConverter}}"
-                        Stretch="Uniform" />
-                </Rectangle.Fill>
-            </Rectangle>
+            <Border Grid.Row="0" CornerRadius="10" Background="Transparent"
+                    VerticalAlignment="Center" HorizontalAlignment="Center">
+                <Image Height="{x:Bind CalcValue(55)}"
+                       HorizontalAlignment="Center" VerticalAlignment="Center"
+                       Source="{x:Bind Category.ImagePath , Mode=OneWay, FallbackValue={x:Null},
+                        Converter={StaticResource ImagePathConverter}}" />
+            </Border>
+
             <TextBlock
                 Grid.Row="1" MaxHeight="20"
                 HorizontalAlignment="Center"
