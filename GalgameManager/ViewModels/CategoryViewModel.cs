@@ -64,7 +64,7 @@ public partial class CategoryViewModel : ObservableObject, INavigationAware, ISe
             return false;
         };
         _categoryGroups = await _categoryService.GetCategoryGroupsAsync();
-        await SelectCategoryGroup(await GetCategoryGroup());
+        await SelectCategoryGroup(parameter as CategoryGroup ?? await GetCategoryGroup());
     }
 
     // 并不符合MVVM要求，但暂时没有更好的办法

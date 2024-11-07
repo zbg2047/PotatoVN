@@ -9,7 +9,6 @@ namespace GalgameManager.Views.Control;
 [DependencyProperty<ICommand>("TitleClickCommand")]
 [DependencyProperty<object>("ItemSource")]
 [DependencyProperty<DataTemplate>("ItemTemplate")]
-[DependencyProperty<ICommand>("ItemClickCommand")]
 [DependencyProperty<double>("Spacing", DefaultValue = 8.0f, DefaultBindingMode = DefaultBindingMode.OneWay)]
 public partial class MultiFlipView
 {
@@ -56,15 +55,6 @@ public partial class MultiFlipView
         else
         {
             ScrollForwardBtn.Visibility = Visibility.Collapsed;
-        }
-    }
-
-    private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
-    {
-        if (ItemClickCommand == null || !ItemClickCommand.CanExecute(null)) return;
-        if (sender is FrameworkElement container && container.DataContext != null)
-        {
-            ItemClickCommand.Execute(container.DataContext);
         }
     }
 }

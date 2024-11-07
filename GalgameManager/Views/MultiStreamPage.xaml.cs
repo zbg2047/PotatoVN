@@ -19,9 +19,16 @@ public sealed partial class MultiStreamPage : Page
         InitializeComponent();
     }
 
-    private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
+    // 使用Bind ElementName的方式无法绑定到viewmodel的command，临时workaround
+    private void ClickGame(object sender, RoutedEventArgs e)
     {
         if (sender is FrameworkElement container && container.DataContext != null)
             ViewModel.ClickGameCommand.Execute(container.DataContext as Galgame);
+    }
+
+    private void ClickCategory(object sender, RoutedEventArgs e)
+    {
+        if (sender is FrameworkElement container && container.DataContext != null)
+            ViewModel.ClickCategoryCommand.Execute(container.DataContext as Category);
     }
 }
