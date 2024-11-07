@@ -22,17 +22,21 @@ jobs:
       uses: microsoft/setup-msbuild@v2
 
     - name: Create the app package
-      run: msbuild GalgameManager\GalgameManager.csproj /restore "/p:Platform=${{ matrix.platform }};Configuration=Release;UapAppxPackageBuildMode=SideloadOnly;AppxPackageDir=..\publish\;GenerateAppxPackageOnBuild=true"
+      run: msbuild GalgameManager\GalgameManager.csproj /restore "/p:Platform=${{ matrix.platform }};Configuration=Release;UapAppxPackageBuildMode=SideloadOnly;AppxPackageDir=..\publish\;GenerateAppxPackageOnBuild=true;AppxPackageSigningEnabled=true;PackageCertificateKeyFile=GalgameManager_TemporaryKey.pfx"
 
     - name: Move package
       shell: pwsh
       run: |
-        # 将 msix 移动到 publish 根目录
-        $msixFile = Get-ChildItem -Path (Get-ChildItem -Path publish -Directory | Select-Object -First 1).FullName -Filter "*.msix" -File | Select-Object -First 1
-        if ($msixFile) { Move-Item $msixFile.FullName -Destination publish -Force }
+        # 将 msix 和 cer 移动到 publish 根目录
+        $subFolder = Get-ChildItem -Path publish -Directory | Select-Object -First 1
+        $msixFile = Get-ChildItem -Path $subFolder.FullName -Filter "*.msix" -File | Select-Object -First 1
+        $cerFile = Get-ChildItem -Path $subFolder.FullName -Filter "*.cer" -File | Select-Object -First 1
+        if ($msixFile -and $cerFile) { Move-Item $msixFile.FullName, $cerFile.FullName -Destination publish -Force }
     
     - name: Upload build artifacts
       uses: actions/upload-artifact@v4
       with:
         name: PotatoVN-${{ matrix.platform }}-sideload
-        path: publish/*.msix
+        path: |
+          publish/*.msix
+          publish/*.cer
