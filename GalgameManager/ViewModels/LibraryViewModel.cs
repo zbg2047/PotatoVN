@@ -70,7 +70,7 @@ public partial class LibraryViewModel : ObservableObject, INavigationAware
                 return SearchKey.IsNullOrEmpty() || game.ApplySearchKey(SearchKey);
             return false;
         };
-        NavigateTo(null); //显示根库
+        NavigateTo(parameter as GalgameSourceBase); //显示根库 / 指定库
         _galSourceCollectionService.OnSourceChanged += HandleSourceCollectionChanged;
     }
 

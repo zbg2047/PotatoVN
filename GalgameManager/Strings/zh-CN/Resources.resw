@@ -1815,4 +1815,7 @@
   <data name="Shell_MultiStream.Content" xml:space="preserve">
     <value>主页</value>
   </data>
+  <data name="MultiStreamPage_AllSources" xml:space="preserve">
+    <value>游戏库</value>
+  </data>
 </root>

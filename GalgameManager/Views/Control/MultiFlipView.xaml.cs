@@ -50,10 +50,12 @@ public partial class MultiFlipView
     {
         if (Scroller.ScrollableWidth > 0)
         {
+            ScrollBackBtn.Visibility = Visibility.Visible;
             ScrollForwardBtn.Visibility = Visibility.Visible;
         }
         else
         {
+            ScrollBackBtn.Visibility = Visibility.Collapsed;
             ScrollForwardBtn.Visibility = Visibility.Collapsed;
         }
     }

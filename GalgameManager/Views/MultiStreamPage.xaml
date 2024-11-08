@@ -9,6 +9,7 @@
     xmlns:prefab="using:GalgameManager.Views.Prefab"
     xmlns:viewModels="using:GalgameManager.ViewModels"
     xmlns:multiStreamPage="using:GalgameManager.MultiStreamPage.Lists"
+    xmlns:sources="using:GalgameManager.Models.Sources"
     mc:Ignorable="d"
     x:Name="Page">
 
@@ -40,7 +41,8 @@
                 <DataTemplate x:DataType="multiStreamPage:CategoryList">
                     <control:MultiFlipView ItemSource="{x:Bind Categories}"
                                            Title="{x:Bind Title}"
-                                           TitleClickCommand="{x:Bind ClickTitleCommand}">
+                                           TitleClickCommand="{x:Bind ClickTitleCommand}"
+                                           Margin="0 0 0 25">
                         <control:MultiFlipView.ItemTemplate>
                             <DataTemplate x:DataType="models:Category">
                                 <Button DataContext="{Binding}"
@@ -55,6 +57,26 @@
                     </control:MultiFlipView>
                 </DataTemplate>
             </viewModels:MultiStreamPageSelector.CategoryListTemplate>
+            <!-- 游戏库列表模板 -->
+            <viewModels:MultiStreamPageSelector.SourceListTemplate>
+                <DataTemplate x:DataType="multiStreamPage:SourceList">
+                    <control:MultiFlipView ItemSource="{x:Bind Sources}"
+                                           Title="{x:Bind Title}"
+                                           TitleClickCommand="{x:Bind ClickTitleCommand}"
+                                           Margin="0 0 0 25">
+                        <control:MultiFlipView.ItemTemplate>
+                            <DataTemplate x:DataType="sources:GalgameSourceBase">
+                                <Button DataContext="{Binding}"
+                                        Style="{StaticResource TransparentButtonWithHover}"
+                                        HorizontalAlignment="Left" VerticalAlignment="Top"
+                                        Click="ClickSource">
+                                    <prefab:SourcePrefab Source="{Binding}"/>
+                                </Button>
+                            </DataTemplate>
+                        </control:MultiFlipView.ItemTemplate>
+                    </control:MultiFlipView>
+                </DataTemplate>
+            </viewModels:MultiStreamPageSelector.SourceListTemplate>
         </viewModels:MultiStreamPageSelector>
     </Page.Resources>
 

@@ -1,4 +1,5 @@
 ﻿using GalgameManager.Models;
+using GalgameManager.Models.Sources;
 using GalgameManager.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -30,5 +31,11 @@ public sealed partial class MultiStreamPage : Page
     {
         if (sender is FrameworkElement container && container.DataContext != null)
             ViewModel.ClickCategoryCommand.Execute(container.DataContext as Category);
+    }
+
+    private void ClickSource(object sender, RoutedEventArgs e)
+    {
+        if (sender is FrameworkElement container && container.DataContext != null)
+            ViewModel.ClickSourceCommand.Execute(container.DataContext as GalgameSourceBase);
     }
 }
