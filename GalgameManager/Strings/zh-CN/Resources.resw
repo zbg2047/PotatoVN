@@ -1106,9 +1106,6 @@
   <data name="UnpackGameTask_Done_Msg" xml:space="preserve">
     <value>{0}已解压到{1}并已添加到库中</value>
   </data>
-  <data name="GalgameFolderPage_AutoScan.Label" xml:space="preserve">
-    <value>启动时自动扫描</value>
-  </data>
   <data name="GalgameFolderPage_AddManually.Label" xml:space="preserve">
     <value>手动添加游戏</value>
   </data>
@@ -1817,5 +1814,38 @@
   </data>
   <data name="MultiStreamPage_AllSources" xml:space="preserve">
     <value>游戏库</value>
+  </data>
+  <data name="GalgameSourcePage_GamesTable.SettingTitle" xml:space="preserve">
+    <value>游戏列表</value>
+  </data>
+  <data name="GalgameSourcePage_GamesTable.SettingDescription" xml:space="preserve">
+    <value>查看与编辑这个库里的所有游戏信息</value>
+  </data>
+  <data name="GalgameSourcePage_Setting.SettingTitle" xml:space="preserve">
+    <value>游戏库设置</value>
+  </data>
+  <data name="GalgameSourcePage_Setting.SettingDescription" xml:space="preserve">
+    <value>查看与设置这个库的信息与配置</value>
+  </data>
+  <data name="GalgameSourcePage_Setting_Name.Title" xml:space="preserve">
+    <value>游戏库名</value>
+  </data>
+  <data name="GalgameSourcePage_Setting_Name.Description" xml:space="preserve">
+    <value>修改该名不会反应到物理实体上（不会重命名该库对应的文件夹）</value>
+  </data>
+  <data name="GalgameSourcePage_Setting_AutoScan.Title" xml:space="preserve">
+    <value>启动时自动扫描</value>
+  </data>
+  <data name="GalgameSourcePage_Setting_AutoScan.Description" xml:space="preserve">
+    <value>是否在PotatoVN启动时自动扫描该库内的游戏</value>
+  </data>
+  <data name="ResetToDefault.Content" xml:space="preserve">
+    <value>恢复到默认值</value>
+  </data>
+  <data name="GalgameSourcePage_Setting_Image.Title" xml:space="preserve">
+    <value>封面图</value>
+  </data>
+  <data name="GalgameSourcePage_Setting_NoImage" xml:space="preserve">
+    <value>无封面图，将显示改游戏库对应的icon</value>
   </data>
 </root>

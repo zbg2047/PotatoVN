@@ -8,24 +8,25 @@
     xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
     xmlns:core="using:Microsoft.Xaml.Interactions.Core"
     xmlns:converter="using:GalgameManager.Helpers.Converter"
+    xmlns:control="using:GalgameManager.Views.Control"
+    xmlns:views="using:GalgameManager.Views"
     mc:Ignorable="d">
 
     <Page.Resources>
         <converter:EnumToStringConverter x:Key="EnumStringConverter" />
     </Page.Resources>
     
-    <Grid>
+    <Grid Margin="0 0 0 10">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
-                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
             <RelativePanel Grid.Row="0">
-                <TextBlock Text="{x:Bind ViewModel.Item.Name, FallbackValue={}}"
-                           Style="{ThemeResource TitleTextBlockStyle}" 
+                <TextBlock Text="{x:Bind ViewModel.Item.Name, FallbackValue={}, Mode=OneWay}"
+                           Style="{ThemeResource TitleTextBlockStyle}"
                            MaxWidth="{x:Bind ViewModel.TitleMaxWidth, Mode=OneWay}" />
                 <CommandBar RelativePanel.AlignRightWithPanel="True" Background="Transparent" IsOpen="False"
                             DefaultLabelPosition="Right">
@@ -57,10 +58,6 @@
                     <AppBarButton Icon="Download" Label="{x:Bind ViewModel.UiDownloadInfo, Mode=OneWay}" 
                                   Command="{x:Bind ViewModel.GetInfoFromRssCommand}" />
                     <CommandBar.SecondaryCommands>
-                        <!-- 启动时自动扫描 -->
-                        <AppBarToggleButton x:Uid="GalgameFolderPage_AutoScan" Icon="Refresh"
-                                            IsChecked="{x:Bind ViewModel.Item.ScanOnStart, Mode=TwoWay, 
-                                            FallbackValue=False}"/>
                         <!-- 打开Log文件 -->
                         <AppBarButton x:Uid="GalgameFolderPage_Log" 
                                       IsEnabled="{x:Bind ViewModel.LogExists, Mode=OneWay}"
@@ -82,50 +79,103 @@
                     </core:EventTriggerBehavior>
                 </interactivity:Interaction.Behaviors>
             </RelativePanel>
-            
+
             <!-- 库路径 -->
             <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="15">
-                <TextBlock Text="{x:Bind ViewModel.Item.Path, FallbackValue={}}" 
-                           VerticalAlignment="Center"/>
+                <TextBlock Text="{x:Bind ViewModel.Item.Path, FallbackValue={}}"
+                           VerticalAlignment="Center" />
                 <Border Background="{ThemeResource  ControlAltFillColorSecondaryBrush}"
                         BorderThickness="0"
                         CornerRadius="6"
                         VerticalAlignment="Center">
-                    <TextBlock Text="{x:Bind ViewModel.Item.SourceType, FallbackValue={}, Converter={StaticResource EnumStringConverter}}"
-                               Style="{ThemeResource SmallTextStyle}" 
-                               MaxWidth="{x:Bind ViewModel.TitleMaxWidth, Mode=OneWay}"
-                               Padding="10, 2"/>
+                    <TextBlock
+                        Text="{x:Bind ViewModel.Item.SourceType, FallbackValue={}, Converter={StaticResource EnumStringConverter}}"
+                        Style="{ThemeResource SmallTextStyle}"
+                        MaxWidth="{x:Bind ViewModel.TitleMaxWidth, Mode=OneWay}"
+                        Padding="10, 2" />
                 </Border>
             </StackPanel>
 
-            <controls:DataGrid
-                Grid.Row="2"
-                Margin="0 20 0 0"
-                AutoGenerateColumns="False"
-                GridLinesVisibility="Horizontal"
-                ItemsSource="{x:Bind ViewModel.Galgames, Mode=OneWay}">
-                <controls:DataGrid.Columns>
-                    <controls:DataGridTextColumn Binding="{Binding Galgame.Name.Value}" Header="游戏名" Width="250"/>
-                    <controls:DataGridComboBoxColumn Binding="{Binding Galgame.RssType}" Header="数据源" 
-                                                     ItemsSource="{x:Bind ViewModel.RssTypes}"/>
-                    <controls:DataGridTextColumn Binding="{Binding Galgame.Id}" Header="id" />
-                    <controls:DataGridTextColumn Binding="{Binding Path}" Header="游戏目录" IsReadOnly="True"/>
-                </controls:DataGrid.Columns>
-                <interactivity:Interaction.Behaviors>
-                    <core:EventTriggerBehavior EventName="SelectionChanged">
-                        <core:InvokeCommandAction Command="{x:Bind ViewModel.SelectionChangedCommand}"/>
-                    </core:EventTriggerBehavior>
-                </interactivity:Interaction.Behaviors>
-            </controls:DataGrid>
+            <ScrollViewer Grid.Row="2" Margin="0 20 0 0"
+                          HorizontalScrollMode="Disabled" VerticalScrollBarVisibility="Auto">
+                <StackPanel Margin="0 0 20 0">
+                    <!-- 游戏库设置 -->
+                    <control:SettingExpander x:Uid="GalgameSourcePage_Setting"
+                                             SettingIcon="&#xE713;" IsExpanded="True">
+                        <control:SettingExpander.SettingContent>
+                            <StackPanel Spacing="13">
+                                <!-- 库名 -->
+                                <control:Panel>
+                                    <control:Setting x:Uid="GalgameSourcePage_Setting_Name">
+                                        <TextBox
+                                            Text="{x:Bind ViewModel.Item.Name, Mode=TwoWay, FallbackValue={x:Null}}"
+                                            MinWidth="150" />
+                                    </control:Setting>
+                                </control:Panel>
+                                <!-- 封面图 -->
+                                <control:Panel>
+                                    <control:Setting x:Uid="GalgameSourcePage_Setting_Image"
+                                                     Description="{x:Bind ViewModel.ImagePathDes, Mode=OneWay}">
+                                        <StackPanel Orientation="Horizontal" Spacing="10">
+                                            <Button x:Uid="ResetToDefault" Command="{x:Bind ViewModel.SetImagePathCommand}">
+                                                <Button.CommandParameter>
+                                                    <x:Boolean>True</x:Boolean>
+                                                </Button.CommandParameter>
+                                            </Button>
+                                            <Button x:Uid="Select" Command="{x:Bind ViewModel.SetImagePathCommand}">
+                                                <Button.CommandParameter>
+                                                    <x:Boolean>False</x:Boolean>
+                                                </Button.CommandParameter>
+                                            </Button>
+                                        </StackPanel>
+                                    </control:Setting>
+                                </control:Panel>
+                                <!-- 启动时自动扫描 -->
+                                <control:Panel>
+                                    <views:SettingToggleSwitch
+                                        x:Uid="GalgameSourcePage_Setting_AutoScan"
+                                        IsOn="{x:Bind ViewModel.Item.ScanOnStart, Mode=TwoWay, FallbackValue=False}" />
+                                </control:Panel>
+                            </StackPanel>
+                        </control:SettingExpander.SettingContent>
+                    </control:SettingExpander>
+                    <!-- 游戏列表 -->
+                    <control:SettingExpander x:Uid="GalgameSourcePage_GamesTable"
+                                             SettingIcon="&#xE71D;" IsExpanded="False">
+                        <control:SettingExpander.SettingContent>
+                            <controls:DataGrid
+                                Grid.Row="2"
+                                AutoGenerateColumns="False"
+                                GridLinesVisibility="Horizontal"
+                                ItemsSource="{x:Bind ViewModel.Galgames, Mode=OneWay}">
+                                <controls:DataGrid.Columns>
+                                    <controls:DataGridTextColumn Binding="{Binding Galgame.Name.Value}" Header="游戏名"
+                                                                 Width="250" />
+                                    <controls:DataGridComboBoxColumn Binding="{Binding Galgame.RssType}" Header="数据源"
+                                                                     ItemsSource="{x:Bind ViewModel.RssTypes}" />
+                                    <controls:DataGridTextColumn Binding="{Binding Galgame.Id}" Header="id" />
+                                    <controls:DataGridTextColumn Binding="{Binding Path}" Header="游戏目录"
+                                                                 IsReadOnly="True" />
+                                </controls:DataGrid.Columns>
+                                <interactivity:Interaction.Behaviors>
+                                    <core:EventTriggerBehavior EventName="SelectionChanged">
+                                        <core:InvokeCommandAction Command="{x:Bind ViewModel.SelectionChangedCommand}" />
+                                    </core:EventTriggerBehavior>
+                                </interactivity:Interaction.Behaviors>
+                            </controls:DataGrid>
+                        </control:SettingExpander.SettingContent>
+                    </control:SettingExpander>
+                </StackPanel>
+            </ScrollViewer>
         </Grid>
-        
+
         <Grid
-            Margin ="25 10 25 100 "
+            Margin="25 10 25 100 "
             Background="{ThemeResource LayerOnMicaBaseAltFillColorDefaultBrush}"
             Visibility="{x:Bind ViewModel.IsUnpacking, Mode=OneWay}">
             <Grid.RowDefinitions>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
             <ProgressRing
                 Value="{x:Bind ViewModel.ProgressValue, Mode=OneWay}"
@@ -136,7 +186,7 @@
                 Height="100"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center" />
-            <TextBlock Grid.Row="1" 
+            <TextBlock Grid.Row="1"
                        Text="{x:Bind ViewModel.ProgressMsg, Mode=OneWay}"
                        Margin="0 -80 0 50"
                        HorizontalAlignment="Center"

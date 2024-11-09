@@ -1063,9 +1063,6 @@ If play time can record correctly, just cancel this popup.
   <data name="UnpackGameTask_Done_Msg" xml:space="preserve">
     <value>{0} has been unpacked to {1} and added to library</value>
   </data>
-  <data name="GalgameFolderPage_AutoScan.Label" xml:space="preserve">
-    <value>Auto scan on startup</value>
-  </data>
   <data name="GalgameFolderPage_AddManually.Label" xml:space="preserve">
     <value>Add game manually</value>
   </data>

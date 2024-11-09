@@ -23,6 +23,7 @@ public partial class GalgameSourceBase : ObservableObject, IDisplayableGameObjec
     public virtual GalgameSourceType SourceType => throw new NotImplementedException();
     public bool ScanOnStart { get; set; }
     [ObservableProperty] private string _name = string.Empty;
+    [ObservableProperty] private string? _imagePath;
     
     public static string CalcUrl(GalgameSourceType type, string path) => $"{type.SourceTypeToString()}://{path}";
 

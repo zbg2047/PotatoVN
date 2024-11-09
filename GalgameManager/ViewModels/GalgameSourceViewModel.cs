@@ -50,6 +50,7 @@ public partial class GalgameSourceViewModel : ObservableObject, INavigationAware
     #region UI_STRING
 
     [ObservableProperty] private string _uiDownloadInfo = "GalgameFolderPage_DownloadInfo".GetLocalized();
+    public string ImagePathDes => Item?.ImagePath ?? "GalgameSourcePage_Setting_NoImage".GetLocalized();
 
     #endregion
 
@@ -248,7 +249,30 @@ public partial class GalgameSourceViewModel : ObservableObject, INavigationAware
         _unpackGameTask.OnProgress += HandelUnpackError;
         _ = _bgTaskService.AddBgTask(_unpackGameTask);
     }
-
+    
+    [RelayCommand]
+    private async Task SetImagePath(bool reset = false)
+    {
+        if (Item is null) return;
+        if (reset)
+            Item.ImagePath = null;
+        else
+        {
+            FileOpenPicker openPicker = new();
+            WinRT.Interop.InitializeWithWindow.Initialize(openPicker, App.MainWindow!.GetWindowHandle());
+            openPicker.ViewMode = PickerViewMode.Thumbnail;
+            openPicker.FileTypeFilter.Add(".jpg");
+            openPicker.FileTypeFilter.Add(".png");
+            openPicker.FileTypeFilter.Add(".jpeg");
+            openPicker.FileTypeFilter.Add(".bmp");
+            openPicker.FileTypeFilter.Add(".webp");
+            StorageFile? file = await openPicker.PickSingleFileAsync();
+            if (file != null)
+                Item.ImagePath = file.Path;
+        }
+        OnPropertyChanged(nameof(ImagePathDes));
+    }
+    
     private bool IsLocalFolder()
     {
         return Item?.SourceType == GalgameSourceType.LocalFolder;
@@ -276,7 +300,7 @@ public partial class GalgameSourceViewModel : ObservableObject, INavigationAware
     private void UpdateTitleMaxWidth()
     {
         if (_pageWidth == 0 || _commandBarWidth == 0) return;
-        TitleMaxWidth = Math.Max(_pageWidth - _commandBarWidth - 20, 0) / 2;
+        TitleMaxWidth = Math.Max(_pageWidth - _commandBarWidth - 20, 0);
     }
     
     [RelayCommand]
