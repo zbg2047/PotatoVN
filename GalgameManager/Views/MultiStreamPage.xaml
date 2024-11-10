@@ -70,7 +70,7 @@
                                         Style="{StaticResource TransparentButtonWithHover}"
                                         HorizontalAlignment="Left" VerticalAlignment="Top"
                                         Click="ClickSource">
-                                    <prefab:SourcePrefab Source="{Binding}"/>
+                                    <prefab:SourcePrefab Source="{Binding}" Height="200"/>
                                 </Button>
                             </DataTemplate>
                         </control:MultiFlipView.ItemTemplate>
