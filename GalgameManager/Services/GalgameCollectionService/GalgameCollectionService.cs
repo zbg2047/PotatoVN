@@ -332,24 +332,29 @@ public partial class GalgameCollectionService : IGalgameCollectionService
     /// 获取搜索建议
     /// </summary>
     /// <param name="current">当前文本串</param>
+    /// <param name="searchName">是否包括游戏名的搜索建议</param>
+    /// <param name="searchDeveloper">是否包括开发商搜索建议</param>
+    /// <param name="searchTag">是否包括Tag搜索建议</param>
     /// <returns>搜索建议，若没有则返回空List</returns>
-    public async Task<List<string>> GetSearchSuggestions(string current)
+    public async Task<List<string>> GetSearchSuggestions(string current, bool searchName = true,
+        bool searchDeveloper = true, bool searchTag = true)
     {
         List<string> tmp = new();
         await Task.Run(() =>
         {
-            //Name
-            tmp.AddRange(from galgame in _galgames
-                where galgame.Name.Value is not null && galgame.Name.Value.ContainX(current) select galgame.Name.Value);
-            //Developer
-            tmp.AddRange(from galgame in _galgames
-                where galgame.Developer.Value is not null && galgame.Developer.Value.ContainX(current)
-                select galgame.Developer.Value);
-            //Tag
-            tmp.AddRange(from galgame in _galgames
-                from tag in galgame.Tags.Value ?? new ObservableCollection<string>()
-                where tag.ContainX(current)
-                select tag);
+            if (searchName) //Name
+                tmp.AddRange(from galgame in _galgames
+                    where galgame.Name.Value is not null && galgame.Name.Value.ContainX(current)
+                    select galgame.Name.Value);
+            if (searchDeveloper) //Developer
+                tmp.AddRange(from galgame in _galgames
+                    where galgame.Developer.Value is not null && galgame.Developer.Value.ContainX(current)
+                    select galgame.Developer.Value);
+            if (searchTag) //Tag
+                tmp.AddRange(from galgame in _galgames
+                    from tag in galgame.Tags.Value ?? new ObservableCollection<string>()
+                    where tag.ContainX(current)
+                    select tag);
         });
         //去重
         tmp.Sort((a,b)=> a.CompareX(b));

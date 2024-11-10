@@ -26,9 +26,10 @@ namespace GalgameManager.ViewModels
         private readonly ICategoryService _categoryService;
         private readonly INavigationService _navigationService;
         private readonly IFilterService _filterService;
+        private readonly IInfoService _infoService;
 
         public MultiStreamViewModel(IGalgameCollectionService gameService, ICategoryService categoryService,
-            INavigationService navigationService, IFilterService filterService,
+            INavigationService navigationService, IFilterService filterService, IInfoService infoService,
             IGalgameSourceCollectionService sourceService)
         {
             _gameService = gameService;
@@ -36,6 +37,7 @@ namespace GalgameManager.ViewModels
             _navigationService = navigationService;
             _filterService = filterService;
             _sourceService = sourceService;
+            _infoService = infoService;
         }
 
 
@@ -65,26 +67,48 @@ namespace GalgameManager.ViewModels
         private void ClickGame(Galgame? clickedItem)
         {
             if (clickedItem == null) return;
-            _navigationService.SetListDataItemForNextConnectedAnimation(clickedItem);
-            _navigationService.NavigateTo(typeof(GalgameViewModel).FullName!,
+            NavigationHelper.NavigateToGalgamePage(_navigationService,
                 new GalgamePageParameter { Galgame = clickedItem });
         }
 
         [RelayCommand]
         private void ClickCategory(Category category)
         {
-            _filterService.ClearFilters();
-            _filterService.AddFilter(new CategoryFilter(category));
-            _navigationService.NavigateTo(typeof(HomeViewModel).FullName!);
+            NavigationHelper.NavigateToHomePage(_navigationService, _filterService,
+                new[] { new CategoryFilter(category) });
         }
 
         [RelayCommand]
         private void ClickSource(GalgameSourceBase source)
         {
-            _filterService.ClearFilters();
-            _filterService.AddFilter(new SourceFilter(source));
-            _navigationService.NavigateTo(typeof(HomeViewModel).FullName!);
+            NavigationHelper.NavigateToHomePage(_navigationService, _filterService, new[] { new SourceFilter(source) });
         }
+
+        #region SEARCH
+
+        [ObservableProperty]
+        private GalgameSearchSuggestionsProvider _galgameSearchSuggestionsProvider = new(true, true, false);
+        [ObservableProperty] private string _searchKey = string.Empty;
+
+        [RelayCommand]
+        private void Search()
+        {
+            Galgame? game = _gameService.GetGalgameFromName(_searchKey);
+            if (game is not null)
+            {
+                NavigationHelper.NavigateToGalgamePage(_navigationService, new GalgamePageParameter { Galgame = game });
+                return;
+            }
+            Category? category = _categoryService.GetCategory(_searchKey);
+            if (category is not null)
+            {
+                NavigationHelper.NavigateToHomePage(_navigationService, _filterService, new[] { new CategoryFilter(category) });
+                return;
+            }
+            _infoService.Info(InfoBarSeverity.Error, msg:"MultiStreamPage_SearchFailed".GetLocalized());
+        }
+
+        #endregion
     }
 
     public class MultiStreamPageSelector : DataTemplateSelector

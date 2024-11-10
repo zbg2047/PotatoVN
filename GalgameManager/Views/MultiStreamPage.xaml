@@ -80,8 +80,24 @@
         </viewModels:MultiStreamPageSelector>
     </Page.Resources>
 
-    <Grid>
-        <ListView ItemsSource="{x:Bind ViewModel.Lists}"
+    <Grid RowDefinitions="Auto, *">
+        <CommandBar Grid.Row="0" Background="Transparent" IsOpen="False" DefaultLabelPosition="Right"
+                    Margin="0 -67 0 0">
+            <AppBarButton x:Uid="MultiStreamPage_Cmd_Search" Icon="Find" AllowFocusOnInteraction="True">
+                <AppBarButton.Flyout>
+                    <Flyout Placement="Bottom">
+                        <control:SearchAutoSuggestBox SearchSubmitCommand="{x:Bind ViewModel.SearchCommand}" 
+                                                      SearchKey="{x:Bind ViewModel.SearchKey, Mode=TwoWay}"
+                                                      SearchSuggestionsProvider="{x:Bind ViewModel.GalgameSearchSuggestionsProvider}"/>
+                    </Flyout>
+                </AppBarButton.Flyout>
+                <AppBarButton.KeyboardAccelerators>
+                    <KeyboardAccelerator Modifiers="Control" Key="F" />
+                </AppBarButton.KeyboardAccelerators>
+            </AppBarButton>
+        </CommandBar>
+        
+        <ListView Grid.Row="1" ItemsSource="{x:Bind ViewModel.Lists}"
                   ItemTemplateSelector="{StaticResource Selector}"
                   SelectionMode="None" IsItemClickEnabled="False"
                   CanDragItems="True" AllowDrop="True" CanReorderItems="True"

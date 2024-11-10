@@ -156,6 +156,11 @@ public class CategoryService : ICategoryService
         return _categoryGroups.SelectMany(group => group.Categories).FirstOrDefault(category => category.Id == id);
     }
 
+    public Category? GetCategory(string name)
+    {
+        return _categoryGroups.SelectMany(group => group.Categories).FirstOrDefault(category => category.Name == name);
+    }
+
     /// <summary>
     /// 删除分类
     /// </summary>

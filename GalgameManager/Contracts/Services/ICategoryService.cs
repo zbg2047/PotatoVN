@@ -50,6 +50,13 @@ public interface ICategoryService
     /// <param name="id"></param>
     /// <returns></returns>
     Category? GetCategory(Guid id);
+    
+    /// <summary>
+    /// 获取某个分类，若没有则返回null
+    /// </summary>
+    /// <param name="name"></param>
+    /// <returns></returns>
+    Category? GetCategory(string name);
 
     /// <summary>
     /// 获取某个游戏的开发商分类，若没有则返回null

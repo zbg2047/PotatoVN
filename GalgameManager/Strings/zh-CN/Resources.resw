@@ -1848,4 +1848,10 @@
   <data name="GalgameSourcePage_Setting_NoImage" xml:space="preserve">
     <value>无封面图，将显示改游戏库对应的icon</value>
   </data>
+  <data name="MultiStreamPage_Cmd_Search.Label" xml:space="preserve">
+    <value>搜索</value>
+  </data>
+  <data name="MultiStreamPage_SearchFailed" xml:space="preserve">
+    <value>没有找到与该关键字匹配的游戏/开发商</value>
+  </data>
 </root>

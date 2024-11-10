@@ -140,11 +140,8 @@ public partial class HomeViewModel : ObservableObject, INavigationAware
     [RelayCommand]
     private void ItemClick(Galgame? clickedItem)
     {
-        if (clickedItem != null)
-        {
-            _navigationService.SetListDataItemForNextConnectedAnimation(clickedItem);
-            _navigationService.NavigateTo(typeof(GalgameViewModel).FullName!, new GalgamePageParameter {Galgame = clickedItem});
-        }
+        if (clickedItem == null) return;
+        NavigationHelper.NavigateToGalgamePage(_navigationService, new GalgamePageParameter { Galgame = clickedItem });
     }
 
     #region DRAG_AND_DROP
@@ -534,13 +531,18 @@ public partial class HomeViewModel : ObservableObject, INavigationAware
 
 public class GalgameSearchSuggestionsProvider : ISearchSuggestionsProvider
 {
-    private GalgameCollectionService _galgameCollectionService;
-    public GalgameSearchSuggestionsProvider()
+    private readonly GalgameCollectionService _galgameCollectionService;
+    private readonly bool _searchName, _searchDeveloper, _searchTags;
+    
+    public GalgameSearchSuggestionsProvider(bool searchName = true, bool searchDeveloper = true, bool searchTags = true)
     {
+        _searchName = searchName;
+        _searchDeveloper = searchDeveloper;
+        _searchTags = searchTags;
         _galgameCollectionService = (App.GetService<IGalgameCollectionService>() as GalgameCollectionService)!;
     }
     public async Task<IEnumerable<string>?> GetSearchSuggestionsAsync(string key)
     {
-        return await _galgameCollectionService.GetSearchSuggestions(key);
+        return await _galgameCollectionService.GetSearchSuggestions(key, _searchName, _searchDeveloper, _searchTags);
     }
 }
