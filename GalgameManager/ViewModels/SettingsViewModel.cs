@@ -392,10 +392,10 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
 
     #endregion
 
-    #region QUIT_START
+    #region QUIT_START 
 
     [ObservableProperty] private bool _quitStart;
-    public readonly PageEnum[] StartPages = { PageEnum.Home , PageEnum.Category};
+    public readonly PageEnum[] StartPages = { PageEnum.Home , PageEnum.Category, PageEnum.MultiStream};
     [ObservableProperty] private PageEnum _startPage;
     public readonly AuthenticationType[] AuthenticationTypes;
     [ObservableProperty] private AuthenticationType _authenticationType;

@@ -12,9 +12,9 @@
     <Page.Resources>
         <converter:RssTypeToVisibilityConverter x:Key="RssTypeToVisibilityConverter"/>
         <converter:ElementThemeToStringConverter x:Key="ElementThemeToStringConverter"/>
-        <converter:PageToStringConverter x:Key="PageToStringConverter"/>
         <converter:AuthenticationTypeToStringConverter x:Key="AuthenticationTypeToStringConverter"/>
         <converter:WindowModeToStringConverter x:Key="WindowModeToStringConverter"/>
+        <converter:EnumToStringConverter x:Key="EnumToStringConverter"/>
         <Style x:Key="SettingStackPanelStyle" TargetType="StackPanel">
             <Setter Property="Spacing" Value="13" />
             <Setter Property="Orientation" Value="Vertical" />
@@ -412,7 +412,7 @@
                                               SelectedItem="{x:Bind ViewModel.StartPage, Mode=TwoWay}">
                                         <ComboBox.ItemTemplate>
                                             <DataTemplate x:DataType="enums:PageEnum">
-                                                <TextBlock Text="{x:Bind Converter={StaticResource PageToStringConverter}}" />
+                                                <TextBlock Text="{x:Bind Converter={StaticResource EnumToStringConverter}}" />
                                             </DataTemplate>
                                         </ComboBox.ItemTemplate>
                                     </ComboBox>

@@ -6,12 +6,71 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:multiStreamPageSettingDialog="using:MultiStreamPageSettingDialog"
+    xmlns:lists="using:GalgameManager.MultiStreamPage.Lists"
+    xmlns:control="using:GalgameManager.Views.Control"
     DefaultButton="Primary"
     Style="{ThemeResource DefaultContentDialogStyle}"
     mc:Ignorable="d"
-    MinWidth="800" Height="400">
+    x:Name="Dialog">
+    
+    <ContentDialog.Resources>
+        <x:Double x:Key="TitleMinWidth">150</x:Double>
+    </ContentDialog.Resources>
 
-    <StackPanel>
+    <Grid Width="450" Height="300"
+          RowDefinitions="Auto, *">
         
-    </StackPanel>
+        <CommandBar Grid.Row="0"  DefaultLabelPosition="Right">
+            <AppBarButton Label="添加列表" Icon="Add" />
+            <AppBarButton Label="恢复到默认设置" Icon="Undo" />
+        </CommandBar>
+
+        <ListView Grid.Row="1" ItemsSource="{x:Bind Result}" SelectionMode="None">
+            <ListView.ItemTemplateSelector>
+                <multiStreamPageSettingDialog:TemplateSelector>
+                    <!-- 游戏列表（全） -->
+                    <multiStreamPageSettingDialog:TemplateSelector.GameListFullTemplate>
+                        <DataTemplate x:DataType="lists:GameList">
+                            <Grid ColumnDefinitions="Auto, Auto, *, Auto">
+                                <TextBox Grid.Column="0"
+                                         VerticalAlignment="Center" MinWidth="{ThemeResource TitleMinWidth}"
+                                         Text="{x:Bind Title, Mode=TwoWay}"/>
+                                <ComboBox Grid.Column="1" Margin="{ThemeResource SmallLeftMargin}"
+                                          ItemsSource="{Binding ElementName=Dialog, Path=GameListFullKeys}"
+                                          SelectedItem="{x:Bind Sort, Mode=TwoWay}"/>
+                                <Grid Grid.Column="2"/>
+                                <Button Grid.Column="3"
+                                        Style="{ThemeResource TransparentButtonWithHover}"
+                                        Margin="0 0 20 0">
+                                    <control:ConditionalFontIcon FluentGlyph="&#xE711;" Symbol="Cancel"
+                                                                 IconFontSize="20" />
+                                </Button>
+                            </Grid>
+                        </DataTemplate>
+                    </multiStreamPageSettingDialog:TemplateSelector.GameListFullTemplate>
+                    <!-- 游戏列表（分类） -->
+                    <multiStreamPageSettingDialog:TemplateSelector.GameListCategoryTemplate>
+        
+                    </multiStreamPageSettingDialog:TemplateSelector.GameListCategoryTemplate>
+                    <!-- 游戏列表（游戏库） -->
+                    <multiStreamPageSettingDialog:TemplateSelector.GameListSourceTemplate>
+        
+                    </multiStreamPageSettingDialog:TemplateSelector.GameListSourceTemplate>
+                    <!-- 分类列表 -->
+                    <multiStreamPageSettingDialog:TemplateSelector.CategoryListTemplate>
+        
+                    </multiStreamPageSettingDialog:TemplateSelector.CategoryListTemplate>
+                    <!-- 游戏库列表（全） -->
+                    <multiStreamPageSettingDialog:TemplateSelector.SourceListFullTemplate>
+        
+                    </multiStreamPageSettingDialog:TemplateSelector.SourceListFullTemplate>
+                    <!-- 游戏库列表（子库） -->
+                    <multiStreamPageSettingDialog:TemplateSelector.SourceListSubTemplate>
+        
+                    </multiStreamPageSettingDialog:TemplateSelector.SourceListSubTemplate>
+                </multiStreamPageSettingDialog:TemplateSelector>
+            </ListView.ItemTemplateSelector>
+        </ListView>
+    </Grid>
 </ContentDialog>

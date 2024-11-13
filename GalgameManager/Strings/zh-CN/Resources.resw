@@ -1854,4 +1854,16 @@
   <data name="MultiStreamPage_SearchFailed" xml:space="preserve">
     <value>没有找到与该关键字匹配的游戏/开发商</value>
   </data>
+  <data name="MultiStreamPage_Cmd_Setting.Label" xml:space="preserve">
+    <value>设置显示列表</value>
+  </data>
+  <data name="PageEnum_Home" xml:space="preserve">
+    <value>游戏</value>
+  </data>
+  <data name="PageEnum_Category" xml:space="preserve">
+    <value>分类</value>
+  </data>
+  <data name="PageEnum_MultiStream" xml:space="preserve">
+    <value>主页</value>
+  </data>
 </root>

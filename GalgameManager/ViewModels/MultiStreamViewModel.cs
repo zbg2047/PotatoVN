@@ -45,11 +45,11 @@ namespace GalgameManager.ViewModels
         {
             // test only
             Lists.Add(new GameList(_gameService.Galgames, "最近游玩的游戏",
-                GameList.SortKey.LastPlayed));
+                MultiStreamPageSortKeys.LastPlayed));
             Lists.Add(new CategoryList(_categoryService.DeveloperGroup));
             foreach (Category c in _categoryService.StatusGroup.Categories)
                 Lists.Add(new GameList(new ObservableCollection<Galgame>(c.GalgamesX), c.Name,
-                    GameList.SortKey.LastPlayed) { Category = c });
+                    MultiStreamPageSortKeys.LastPlayed) { Category = c });
             Lists.Add(new SourceList(null));
             foreach(GalgameSourceBase source in _sourceService.GetGalgameSources())
                 if (source.SubSources.Count > 0)
@@ -82,6 +82,15 @@ namespace GalgameManager.ViewModels
         private void ClickSource(GalgameSourceBase source)
         {
             NavigationHelper.NavigateToHomePage(_navigationService, _filterService, new[] { new SourceFilter(source) });
+        }
+
+        [RelayCommand]
+        private async Task Setting()
+        {
+            Views.Dialog.MultiStreamPageSettingDialog dialog = new(Lists);
+            ContentDialogResult status = await dialog.ShowAsync();
+            if (status != ContentDialogResult.Primary) return;
+            Lists.SyncCollection(dialog.Result);
         }
 
         #region SEARCH
@@ -138,19 +147,21 @@ namespace GalgameManager.ViewModels
 
 namespace GalgameManager.MultiStreamPage.Lists
 {
+    public enum MultiStreamPageSortKeys
+    {
+        LastPlayed,
+        LastClicked,
+    }
+    
     public partial class GameList : ObservableRecipient
     {
         public AdvancedCollectionView Games;
         public string Title;
-        public SortKey Sort;
-        public Category? Category { private get; init; } // 如果设置了则为某分类下的游戏列表
+        public MultiStreamPageSortKeys Sort;
+        public Category? Category { get; init; } // 如果设置了则为某分类下的游戏列表
+        public GalgameSourceBase? Source { get; init; } // 如果设置了则为某源下的游戏列表
 
-        public enum SortKey
-        {
-            LastPlayed,
-        }
-
-        public GameList(ObservableCollection<Galgame> games, string title, SortKey sort)
+        public GameList(ObservableCollection<Galgame> games, string title, MultiStreamPageSortKeys sort)
         {
             Games = new AdvancedCollectionView(games, true);
             Title = title;
@@ -158,7 +169,7 @@ namespace GalgameManager.MultiStreamPage.Lists
 
             Games.SortDescriptions.Add(new SortDescription(Sort switch
             {
-                SortKey.LastPlayed => nameof(Galgame.LastPlayTime),
+                MultiStreamPageSortKeys.LastPlayed => nameof(Galgame.LastPlayTime),
                 _ => throw new ArgumentOutOfRangeException()
             }, SortDirection.Descending));
         }
@@ -168,15 +179,13 @@ namespace GalgameManager.MultiStreamPage.Lists
         {
             INavigationService service = App.GetService<INavigationService>();
             if (Category is not null)
-            {
-                IFilterService filterService = App.GetService<IFilterService>();
-                filterService.ClearFilters();
-                filterService.AddFilter(new CategoryFilter(Category));
-                service.NavigateTo(typeof(HomeViewModel).FullName!);
-                return;
-            }
-
-            service.NavigateTo(typeof(HomeViewModel).FullName!);
+                NavigationHelper.NavigateToHomePage(service, App.GetService<IFilterService>(),
+                    new[] { new CategoryFilter(Category) });
+            else if (Source is not null)
+                NavigationHelper.NavigateToHomePage(service, App.GetService<IFilterService>(),
+                    new[] { new SourceFilter(Source) });
+            else
+                NavigationHelper.NavigateToHomePage(service);
         }
     }
 
@@ -184,6 +193,7 @@ namespace GalgameManager.MultiStreamPage.Lists
     {
         public AdvancedCollectionView Categories;
         public string Title;
+        public MultiStreamPageSortKeys Sort;
         private readonly CategoryGroup _group;
 
         public CategoryList(CategoryGroup group)
@@ -205,6 +215,7 @@ namespace GalgameManager.MultiStreamPage.Lists
     {
         public AdvancedCollectionView Sources = new();
         public string Title;
+        public MultiStreamPageSortKeys Sort;
         public GalgameSourceBase? Root;
 
         private readonly IGalgameSourceCollectionService _sourceService =

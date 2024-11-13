@@ -25,14 +25,8 @@ public sealed partial class GalgamePrefab
         if (Application.Current.Resources["MediumFontSize"] is double mediumFontSize)
             MediumFontSize = mediumFontSize;
         InitializeComponent();
-        Loaded += GalgamePrefab_Loaded;
     }
-
-    private void GalgamePrefab_Loaded(object sender, RoutedEventArgs e)
-    {
-        Debug.Assert(Galgame != null, "Galgame property should not be null.");
-    }
-
+    
     partial void OnItemScaleChanged(double newValue)
     {
         if (newValue > 0) return;

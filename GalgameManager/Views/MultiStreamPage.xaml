@@ -95,6 +95,10 @@
                     <KeyboardAccelerator Modifiers="Control" Key="F" />
                 </AppBarButton.KeyboardAccelerators>
             </AppBarButton>
+            <CommandBar.SecondaryCommands>
+                <AppBarButton x:Uid="MultiStreamPage_Cmd_Setting" Icon="Setting"
+                              Command="{x:Bind ViewModel.SettingCommand}"/>
+            </CommandBar.SecondaryCommands>
         </CommandBar>
         
         <ListView Grid.Row="1" ItemsSource="{x:Bind ViewModel.Lists}"
