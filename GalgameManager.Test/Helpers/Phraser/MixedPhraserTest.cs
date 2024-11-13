@@ -88,8 +88,8 @@ public class MixedPhraserTest
         switch (name)
         {
             case "千恋万花":
-                // VNDB搜不到游戏，fallback到Bangumi
-                Assert.That(game.Description.Value?.StartsWith("電車も通っていない山の中に"), Is.True); // 从BGM中获取
+                // VNDB搜不到游戏，fallback到Bangumi  update：VNDB已经有了（2024-11-13）
+                // Assert.That(game.Description.Value?.StartsWith("電車も通っていない山の中に"), Is.True); // 从BGM中获取
                 break;
             case "近月少女的礼仪":
                 Assert.That(game.Name.Value, Is.EqualTo("Tsuki ni Yorisou Otome no Sahou")); // 从VNDB中获取
