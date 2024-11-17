@@ -14,8 +14,8 @@
         <converter:SourcesToStringConverter x:Key="SourcesToStringConverter" />
     </UserControl.Resources>
 
-    <Grid MinWidth="{x:Bind CalcValue(175), Mode=OneWay}" 
-          MinHeight="{x:Bind CalcValue(300), Mode=OneWay}" 
+    <Grid MinWidth="{x:Bind CalcValue(175)}" 
+          MinHeight="{x:Bind CalcValue(300)}" 
           ContextFlyout="{x:Bind Flyout}" Padding="{StaticResource XSmallLeftTopRightBottomMargin}">
         <StackPanel HorizontalAlignment="Center">
             <Grid
@@ -24,8 +24,8 @@
                 x:Name="ConnectedElement"
                 CornerRadius="10">
                 <Rectangle
-                    Height="{x:Bind CalcValue(209), Mode=OneWay}"
-                    Width="{x:Bind CalcValue(150), Mode=OneWay}"
+                    Height="{x:Bind CalcValue(209)}"
+                    Width="{x:Bind CalcValue(150)}"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center">
                     <Rectangle.Fill>
@@ -70,7 +70,7 @@
                 HorizontalAlignment="Center"
                 Margin="{StaticResource XXSmallTopMargin}"
                 Height="{x:Bind CalcValue(TextHeight), Mode=OneWay}" 
-                MaxWidth="{x:Bind CalcValue(150), Mode=OneWay}"
+                MaxWidth="{x:Bind CalcValue(150)}"
                 Style="{ThemeResource BodyTextStyle}"
                 Text="{x:Bind Galgame.Name, Mode=OneWay, FallbackValue={x:Null}}" 
                 FontSize="{x:Bind MediumFontSize, Mode=OneWay}"/>

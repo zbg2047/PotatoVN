@@ -229,6 +229,7 @@ namespace GalgameManager.MultiStreamPage.Lists
             _group = group;
             Categories = new AdvancedCollectionView(new ObservableCollection<Category>(), true);
             Title = group.Name;
+            Refresh();
         }
 
         [RelayCommand]
