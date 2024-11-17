@@ -19,7 +19,7 @@ namespace GalgameManager.ViewModels
 {
     public partial class MultiStreamViewModel : ObservableRecipient, INavigationAware
     {
-        public ObservableCollection<object> Lists { get; } = new();
+        public ObservableCollection<IList> Lists { get; } = new();
 
         private readonly IGalgameCollectionService _gameService;
         private readonly IGalgameSourceCollectionService _sourceService;
@@ -44,12 +44,10 @@ namespace GalgameManager.ViewModels
         public void OnNavigatedTo(object parameter)
         {
             // test only
-            Lists.Add(new GameList(_gameService.Galgames, "最近游玩的游戏",
-                MultiStreamPageSortKeys.LastPlayed));
+            Lists.Add(new GameList( "最近游玩的游戏", MultiStreamPageSortKeys.LastPlayed));
             Lists.Add(new CategoryList(_categoryService.DeveloperGroup));
             foreach (Category c in _categoryService.StatusGroup.Categories)
-                Lists.Add(new GameList(new ObservableCollection<Galgame>(c.GalgamesX), c.Name,
-                    MultiStreamPageSortKeys.LastPlayed) { Category = c });
+                Lists.Add(new GameList(c.Name, MultiStreamPageSortKeys.LastPlayed, c));
             Lists.Add(new SourceList(null));
             foreach(GalgameSourceBase source in _sourceService.GetGalgameSources())
                 if (source.SubSources.Count > 0)
@@ -91,6 +89,8 @@ namespace GalgameManager.ViewModels
             ContentDialogResult status = await dialog.ShowAsync();
             if (status != ContentDialogResult.Primary) return;
             Lists.SyncCollection(dialog.Result);
+            foreach (IList list in Lists)
+                list.Refresh();
         }
 
         #region SEARCH
@@ -150,28 +150,36 @@ namespace GalgameManager.MultiStreamPage.Lists
     public enum MultiStreamPageSortKeys
     {
         LastPlayed,
+        ReleaseDate,
         LastClicked,
     }
+
+    public interface IList
+    {
+        public void Refresh();
+    }
     
-    public partial class GameList : ObservableRecipient
+    public partial class GameList : ObservableRecipient, IList
     {
         public AdvancedCollectionView Games;
-        public string Title;
-        public MultiStreamPageSortKeys Sort;
-        public Category? Category { get; init; } // 如果设置了则为某分类下的游戏列表
-        public GalgameSourceBase? Source { get; init; } // 如果设置了则为某源下的游戏列表
+        [ObservableProperty] private string _title = string.Empty;
+        [ObservableProperty] private MultiStreamPageSortKeys _sort;
 
-        public GameList(ObservableCollection<Galgame> games, string title, MultiStreamPageSortKeys sort)
+        [ObservableProperty] private Category? _category;
+        // public Category? Category { get; set; } // 如果设置了则为某分类下的游戏列表
+        public GalgameSourceBase? Source { get; set; } // 如果设置了则为某源下的游戏列表
+
+        public GameList(string title, MultiStreamPageSortKeys sort, Category? category = null,
+            GalgameSourceBase? source = null)
         {
-            Games = new AdvancedCollectionView(games, true);
+            Games = new AdvancedCollectionView(new ObservableCollection<Galgame>(), true);
+            if (category is null && source is null)
+                Games.Source = App.GetService<IGalgameCollectionService>().Galgames;
             Title = title;
             Sort = sort;
-
-            Games.SortDescriptions.Add(new SortDescription(Sort switch
-            {
-                MultiStreamPageSortKeys.LastPlayed => nameof(Galgame.LastPlayTime),
-                _ => throw new ArgumentOutOfRangeException()
-            }, SortDirection.Descending));
+            Category = category;
+            Source = source;
+            Refresh();
         }
 
         [RelayCommand]
@@ -187,19 +195,39 @@ namespace GalgameManager.MultiStreamPage.Lists
             else
                 NavigationHelper.NavigateToHomePage(service);
         }
+
+        public void Refresh()
+        {
+            // 更新游戏列表
+            if (Category is not null)
+                (Games.Source as ObservableCollection<Galgame>)?.SyncCollection(Category.GalgamesX);
+            else if (Source is not null)
+                (Games.Source as ObservableCollection<Galgame>)?.SyncCollection(
+                    new List<Galgame>(Source.Galgames.Select(g => g.Galgame)));
+            //else: 全部游戏，不需要更新（因为直接用的galgameCollectionService的可观测游戏列表）
+            
+            // 更新排序关键字
+            Games.SortDescriptions.Clear();
+            Games.SortDescriptions.Add(new SortDescription(Sort switch
+            {
+                MultiStreamPageSortKeys.LastPlayed => nameof(Galgame.LastPlayTime),
+                MultiStreamPageSortKeys.ReleaseDate => nameof(Galgame.ReleaseDate),
+                _ => throw new ArgumentOutOfRangeException()
+            }, SortDirection.Descending));
+        }
     }
 
-    public partial class CategoryList : ObservableRecipient
+    public partial class CategoryList : ObservableRecipient, IList
     {
         public AdvancedCollectionView Categories;
-        public string Title;
-        public MultiStreamPageSortKeys Sort;
-        private readonly CategoryGroup _group;
+        [ObservableProperty] private string _title = string.Empty;
+        [ObservableProperty] private MultiStreamPageSortKeys _sort;
+        [ObservableProperty] private CategoryGroup _group;
 
         public CategoryList(CategoryGroup group)
         {
             _group = group;
-            Categories = new AdvancedCollectionView(group.Categories, true);
+            Categories = new AdvancedCollectionView(new ObservableCollection<Category>(), true);
             Title = group.Name;
         }
 
@@ -209,9 +237,22 @@ namespace GalgameManager.MultiStreamPage.Lists
             INavigationService service = App.GetService<INavigationService>();
             service.NavigateTo(typeof(CategoryViewModel).FullName!, _group);
         }
+
+        public void Refresh()
+        {
+            (Categories.Source as ObservableCollection<Category>)?.SyncCollection(_group.Categories);
+            // 更新排序关键字
+            Categories.SortDescriptions.Clear();
+            // Categories.SortDescriptions.Add(new SortDescription(Sort switch
+            // {
+            //     // MultiStreamPageSortKeys.LastPlayed => nameof(Category.LastPlayed),
+            //     // MultiStreamPageSortKeys.LastClicked => nameof(Category.LastClickTime),
+            //     _ => throw new ArgumentOutOfRangeException()
+            // }, SortDirection.Descending));
+        }
     }
 
-    public partial class SourceList : ObservableRecipient
+    public partial class SourceList : ObservableRecipient, IList
     {
         public AdvancedCollectionView Sources = new();
         public string Title;
@@ -245,6 +286,8 @@ namespace GalgameManager.MultiStreamPage.Lists
             INavigationService service = App.GetService<INavigationService>();
             service.NavigateTo(typeof(LibraryViewModel).FullName!, Root);
         }
+
+        public void Refresh() => Sources.Refresh();
     }
 }
 

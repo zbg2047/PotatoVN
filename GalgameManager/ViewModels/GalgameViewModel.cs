@@ -299,7 +299,7 @@ public partial class GalgameViewModel : ObservableObject, INavigationAware
     [RelayCommand(CanExecute = nameof(IsLocalGame))]
     private async Task ChangeSavePosition()
     {
-        if (Item is not {SourceType:GalgameSourceType.LocalFolder}) return;
+        if (Item?.IsLocalGame != true) return;
         await _galgameService.ChangeGalgameSavePosition(Item);
     }
     
@@ -489,7 +489,7 @@ public partial class GalgameViewModel : ObservableObject, INavigationAware
     [RelayCommand(CanExecute = nameof(IsLocalGame))]
     private async Task SelectText()
     {
-        if (Item is not {SourceType:GalgameSourceType.LocalFolder}) return;
+        if (Item is null || !Item.IsLocalGame) return;
         var path = Item.TextPath;
         if (path is null || File.Exists(path) == false)
         {

@@ -19,7 +19,7 @@
             <viewModels:MultiStreamPageSelector.GameListTemplate>
                 <DataTemplate x:DataType="multiStreamPage:GameList">
                     <control:MultiFlipView ItemSource="{x:Bind Games}"
-                                           Title="{x:Bind Title}"
+                                           Title="{x:Bind Title, Mode=OneWay}"
                                            TitleClickCommand="{x:Bind ClickTitleCommand}">
                         <control:MultiFlipView.ItemTemplate>
                             <DataTemplate x:DataType="models:Galgame">
@@ -40,7 +40,7 @@
             <viewModels:MultiStreamPageSelector.CategoryListTemplate>
                 <DataTemplate x:DataType="multiStreamPage:CategoryList">
                     <control:MultiFlipView ItemSource="{x:Bind Categories}"
-                                           Title="{x:Bind Title}"
+                                           Title="{x:Bind Title, Mode=OneWay}"
                                            TitleClickCommand="{x:Bind ClickTitleCommand}"
                                            Margin="0 0 0 25">
                         <control:MultiFlipView.ItemTemplate>
@@ -61,7 +61,7 @@
             <viewModels:MultiStreamPageSelector.SourceListTemplate>
                 <DataTemplate x:DataType="multiStreamPage:SourceList">
                     <control:MultiFlipView ItemSource="{x:Bind Sources}"
-                                           Title="{x:Bind Title}"
+                                           Title="{x:Bind Title, Mode=OneWay}"
                                            TitleClickCommand="{x:Bind ClickTitleCommand}"
                                            Margin="0 0 0 25">
                         <control:MultiFlipView.ItemTemplate>

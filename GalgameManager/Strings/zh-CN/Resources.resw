@@ -1866,4 +1866,25 @@
   <data name="PageEnum_MultiStream" xml:space="preserve">
     <value>主页</value>
   </data>
+  <data name="MultiStreamPageSortKeys_LastPlayed" xml:space="preserve">
+    <value>上次游玩时间</value>
+  </data>
+  <data name="MultiStreamPageSortKeys_ReleaseDate" xml:space="preserve">
+    <value>发行时间</value>
+  </data>
+  <data name="MultiStreamPageSettingDialog_ListTitle.Text" xml:space="preserve">
+    <value>列表标题</value>
+  </data>
+  <data name="MultiStreamPageSettingDialog_Sort.Text" xml:space="preserve">
+    <value>排序方式</value>
+  </data>
+  <data name="MultiStreamPageSettingDialog_GameList_Category.Text" xml:space="preserve">
+    <value>分类</value>
+  </data>
+  <data name="MultiStreamPageSettingDialog_CategoryList_Group.Text" xml:space="preserve">
+    <value>分类组</value>
+  </data>
+  <data name="MultiStreamPageSortKeys_LastClicked" xml:space="preserve">
+    <value>上次点击时间</value>
+  </data>
 </root>

@@ -13,7 +13,7 @@ public class GalgameUid
     public string? BangumiId { get; init; }
     public string? VndbId { get; init; }
     public string? PvnId { get; init; }
-    public required string Name { get; init; }
+    public string Name { get; init; } = string.Empty;
     public string? CnName { get; init; }
     
     /// <summary>

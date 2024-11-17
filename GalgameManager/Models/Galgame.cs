@@ -222,7 +222,8 @@ public partial class Galgame : ObservableObject, IDisplayableGameObject
     /// <returns>子文件夹地址</returns>
     public List<string> GetSubFolders()
     {
-        List<string> result = Directory.GetDirectories(Path).ToList();
+        if (LocalPath is null) return [];
+        List<string> result = Directory.GetDirectories(LocalPath).ToList();
         return result;
     }
 

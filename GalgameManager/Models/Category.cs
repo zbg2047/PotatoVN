@@ -9,7 +9,7 @@ public partial class Category : ObservableObject
 {
     public event Action? OnGalgamesChanged;
     public string Name { get; set; }= string.Empty;
-    public Guid Id { get; set; }
+    public Guid Id { get; set; } = Guid.NewGuid();
     [JsonIgnore]
     [JsonProperty("Galgames")]
     [Deprecated("只用于反序列化以更新旧设置，使用下面的GalgamesX", DeprecationType.Deprecate, 172)]
@@ -71,4 +71,6 @@ public partial class Category : ObservableObject
     {
         return Name.ContainX(searchKey);
     }
+    
+    public DateTime LastPlayed() => GalgamesX.Max(g => g.LastPlayTime);
 }
