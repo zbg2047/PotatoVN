@@ -69,9 +69,9 @@ jobs:
           github-artifact-id: '${{ steps.upload-artifact.outputs.artifact-id }}'
           wait-for-completion: true
           output-artifact-directory: 'signed_package'
-          parameters: |
-            Version: ${{ toJSON(env.BRANCH_NAME) }}
-            Platform: ${{ toJSON(matrix.platform) }}
+#          parameters: |
+#            Version: ${{ toJSON(env.BRANCH_NAME) }}
+#            Platform: ${{ toJSON(matrix.platform) }}
 
       - name: Upload signed package
         uses: actions/upload-artifact@v4
