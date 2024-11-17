@@ -52,8 +52,29 @@ jobs:
           }
 
       - name: Upload build artifacts
+        id: upload-artifact
         uses: actions/upload-artifact@v4
         with:
           name: PotatoVN-${{ matrix.platform }}-${{ env.BRANCH_NAME }}
           path: |
             publish/PotatoVN-${{ matrix.platform }}-${{ env.BRANCH_NAME }}.msix
+
+      - name: Sign the package with SignPath
+        uses: signpath/github-action-submit-signing-request@v1
+        with:
+          api-token: '${{ secrets.SIGNPATH_API_TOKEN }}'
+          organization-id: '87787551-8846-4890-a0a9-b34f834c4c0f'
+          project-slug: 'PotatoVN'
+          signing-policy-slug: 'test-signing'
+          github-artifact-id: '${{ steps.upload-artifact.outputs.artifact-id }}'
+          wait-for-completion: true
+          output-artifact-directory: 'signed_package'
+          parameters: |
+            Version: ${{ toJSON(env.BRANCH_NAME) }}
+            Platform: ${{ toJSON(matrix.platform) }}
+
+      - name: Upload signed package
+        uses: actions/upload-artifact@v4
+        with:
+          name: PotatoVN-${{ matrix.platform }}-${{ env.BRANCH_NAME }}-signed
+          path: signed_package
