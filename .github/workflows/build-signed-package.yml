@@ -1,0 +1,59 @@
+﻿name: Build And Sign Package
+
+on:
+  push:
+    branches:
+      - flight-released
+      - released
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    strategy:
+      matrix:
+        platform: [ "x86", "x64", "ARM64" ]
+
+    env:
+      BRANCH_NAME: ${{ github.ref_name }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install .NET Core
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Setup MSBuild.exe
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Create the app package
+        run: msbuild GalgameManager\GalgameManager.csproj /restore "/p:Platform=${{ matrix.platform }};Configuration=Release;UapAppxPackageBuildMode=SideloadOnly;AppxPackageDir=..\publish\;GenerateAppxPackageOnBuild=true"
+
+      - name: Move package
+        shell: pwsh
+        run: |
+          # 将 msix 移动到 publish 根目录
+          $subFolder = Get-ChildItem -Path publish -Directory | Select-Object -First 1
+          $msixFile = Get-ChildItem -Path $subFolder.FullName -Filter "*.msix" -File | Select-Object -First 1
+          if ($msixFile) { Move-Item $msixFile.FullName -Destination publish -Force }
+
+      - name: Rename MSIX file to include branch name
+        shell: pwsh
+        run: |
+          $branch = "${{ env.BRANCH_NAME }}"
+          $platform = "${{ matrix.platform }}"
+          $msixFiles = Get-ChildItem -Path publish -Filter "*.msix" -File
+          foreach ($file in $msixFiles) {
+            $newName = "PotatoVN-$platform-$branch.msix"
+            Rename-Item $file.FullName -NewName $newName
+          }
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: PotatoVN-${{ matrix.platform }}-${{ env.BRANCH_NAME }}
+          path: |
+            publish/PotatoVN-${{ matrix.platform }}-${{ env.BRANCH_NAME }}.msix
