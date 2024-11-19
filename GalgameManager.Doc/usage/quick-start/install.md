@@ -24,7 +24,7 @@ PotatoVN 目前仅支持以`msix`包格式安装，免安装版还在路上（co
 ### 安装依赖
 
 首先，您需要在[这里](https://1drv.ms/f/s!AqG5O7IPWb26g7JyVfOg1JnDV0PkGw?e=I305d2)下载应用的依赖并安装。
-![alt text](/usage/install1.png)
+![alt text](./images/install/install1.png)
 
 下载下来的是`msix`格式的安装包，双击安装即可。
 
@@ -38,7 +38,7 @@ PotatoVN 目前仅支持以`msix`包格式安装，免安装版还在路上（co
 
 打开[这个链接](https://www.crxsoso.com/store/detail/9P9CBKD5HR3W)以获取软件安装包。
 
-![alt text](/usage/install2.png)
+![alt text](./images/install/install2.png)
 
 在下载列表中选择最新版本且适配您系统平台的安装包即可（arm系统下载arm64版本，其余情况下载x64版）。
 

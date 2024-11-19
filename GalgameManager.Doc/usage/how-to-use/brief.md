@@ -13,12 +13,12 @@ PotatoVN 可以帮助你：
 - 从压缩包中自动解压游戏
 
 ## 软件截图
-![img.png](/usage/brief1.jpg)
+![img.png](./images/brief/brief1.jpg)
 
-![img.png](/usage/brief2.jpg)
+![img.png](./images/brief/brief2.jpg)
 
-![img.png](/usage/brief3.jpg)
+![img.png](./images/brief/brief3.jpg)
 
-![img.png](/usage/brief4.jpg)
+![img.png](./images/brief/brief4.jpg)
 
-![img.png](/usage/brief5.png)
+![img.png](./images/brief/brief5.png)

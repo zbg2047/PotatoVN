@@ -21,7 +21,7 @@ order: 4
 :::
 
 在如图所示位置点击`登录`按钮，并选择登录方式
-![alt text](/usage/bgm1.png)
+![alt text](./images/bgm/bgm1.png)
 
 ::: tip
 登录有`OAuth快捷登录`和`AccessToken登录`两种方式，

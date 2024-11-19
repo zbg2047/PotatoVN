@@ -9,7 +9,7 @@ PotatoVN 支持导入单个游戏和游戏库
 
 点击`游戏`界面的`添加游戏`来添加单独的游戏，然后选择游戏的运行文件（支持`.exe` 、`.bat`文件）
 
-![alt text](/usage/import-game1.png)
+![alt text](./images/import-game/import-game1.png)
 
 ## 导入多个游戏（游戏库）
 
@@ -46,10 +46,10 @@ PotatoVN 支持导入单个游戏和游戏库
 
 点击`游戏库`界面的`新增库`来添加游戏库，然后选择对应文件夹即可
 
-![alt text](/usage/import-game2.png)
+![alt text](./images/import-game/import-game2.png)
 
 添加完游戏后，游戏会显示在`游戏`界面，如图所示
 
-![alt text](/usage/import-game3.png)
+![alt text](./images/import-game/import-game3.png)
 
 可以点击进入对应游戏页面

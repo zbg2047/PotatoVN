@@ -2,7 +2,7 @@
 # 消息、事件、报错
 PotatoVN 采用统一的通知机制，通知分为两种类型：消息与事件。
 
-![img.png](/development/client/info-event-error-1.png)
+![img.png](./images/info-event-error/info-event-error-1.png)
 
 所有通知均需调用`InfoService`发送，你可以任何地方使用`App.GetService<IInfoService>`获取`InfoService`实例，
 或是使用依赖注入的方式注入`IInfoService`。
@@ -30,7 +30,7 @@ private void ChangeInfoBar()
 ## 事件
 事件一般用于通知用户某个操作的结果或是报错，其会被记录到状态中心中，如下图所示。
 
-![img.png](/development/client/info-event-error-2.png)
+![img.png](./images/info-event-error/info-event-error-2.png)
 
 调用```infoService.Event```来发送事件。
 
