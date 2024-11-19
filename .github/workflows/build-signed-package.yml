@@ -44,6 +44,7 @@ jobs:
         run: |
           # 将 msix 移动到 publish 根目录
           $subFolder = Get-ChildItem -Path publish -Directory | Select-Object -First 1
+          Get-ChildItem -Path $subFolder.FullName | ForEach-Object {Write-Output $_.Name}
           $msixFile = Get-ChildItem -Path $subFolder.FullName -Filter "*.msix" -File | Select-Object -First 1
           if ($msixFile) { Move-Item $msixFile.FullName -Destination publish -Force }
 
