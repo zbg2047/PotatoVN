@@ -51,12 +51,14 @@ jobs:
       - name: Rename MSIX file to include branch name
         shell: pwsh
         run: |
+          ls publish
           $platform = "${{ matrix.platform }}"
           $msixFiles = Get-ChildItem -Path publish -Filter "*.msix" -File
           foreach ($file in $msixFiles) {
             $newName = "PotatoVN-$platform-$branch.msix"
             Rename-Item $file.FullName -NewName $newName
           }
+          ls publish
 
       - name: Upload build artifacts
         id: upload-artifact
