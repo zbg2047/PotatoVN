@@ -31,13 +31,13 @@ jobs:
 
       - name: Create the app package
         run: |
-          msbuild GalgameManager\GalgameManager.csproj /restore ^
-          /p:Platform=${{ matrix.platform }} ^
-          /p:Configuration=Release ^
-          /p:UapAppxPackageBuildMode=SideloadOnly ^
-          /p:AppxPackageDir=..\publish\ ^
-          /p:GenerateAppxPackageOnBuild=true ^
-          /p:Publisher=${{ vars.PUBLISHER }}
+          msbuild GalgameManager\GalgameManager.csproj /restore `
+            /p:Platform=${{ matrix.platform }} `
+            /p:Configuration=Release `
+            /p:UapAppxPackageBuildMode=SideloadOnly `
+            /p:AppxPackageDir=..\publish\ `
+            /p:GenerateAppxPackageOnBuild=true `
+            /p:Publisher=${{ vars.PUBLISHER }}
           
       - name: Move package
         shell: pwsh
