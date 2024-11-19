@@ -28,6 +28,17 @@ jobs:
 
       - name: Setup MSBuild.exe
         uses: microsoft/setup-msbuild@v2
+        
+      - name: Set PUBLISHER
+        run: |
+          $manifestPath = "GalgameManager\Package.appxmanifest"
+          if (!(Test-Path $manifestPath)) {
+            Write-Error "无法找到 AppxManifest.xml 文件，路径为 $manifestPath"
+            exit 1
+          }
+          [xml]$xml = Get-Content $manifestPath
+          $xml.Package.Identity.Publisher = "${{ vars.PUBLISHER }}"
+          $xml.Save($manifestPath)
 
       - name: Create the app package
         run: |
@@ -37,7 +48,6 @@ jobs:
             /p:UapAppxPackageBuildMode=SideloadOnly `
             /p:AppxPackageDir=..\publish\ `
             /p:GenerateAppxPackageOnBuild=true `
-            /p:Publisher="${{ vars.PUBLISHER }}" `
           
       - name: Move package
         shell: pwsh
