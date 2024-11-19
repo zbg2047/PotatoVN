@@ -37,7 +37,7 @@ jobs:
             /p:UapAppxPackageBuildMode=SideloadOnly `
             /p:AppxPackageDir=..\publish\ `
             /p:GenerateAppxPackageOnBuild=true `
-            /p:Publisher=${{ vars.PUBLISHER }}
+            /p:Publisher='${{ vars.PUBLISHER }}'
           
       - name: Move package
         shell: pwsh
