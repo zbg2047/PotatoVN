@@ -30,8 +30,15 @@ jobs:
         uses: microsoft/setup-msbuild@v2
 
       - name: Create the app package
-        run: msbuild GalgameManager\GalgameManager.csproj /restore "/p:Platform=${{ matrix.platform }};Configuration=Release;UapAppxPackageBuildMode=SideloadOnly;AppxPackageDir=..\publish\;GenerateAppxPackageOnBuild=true"
-
+        run: |
+          msbuild GalgameManager\GalgameManager.csproj /restore ^
+          /p:Platform=${{ matrix.platform }} ^
+          /p:Configuration=Release ^
+          /p:UapAppxPackageBuildMode=SideloadOnly ^
+          /p:AppxPackageDir=..\publish\ ^
+          /p:GenerateAppxPackageOnBuild=true ^
+          /p:Publisher=${{ vars.PUBLISHER }}
+          
       - name: Move package
         shell: pwsh
         run: |
@@ -43,7 +50,6 @@ jobs:
       - name: Rename MSIX file to include branch name
         shell: pwsh
         run: |
-          $branch = "${{ env.BRANCH_NAME }}"
           $platform = "${{ matrix.platform }}"
           $msixFiles = Get-ChildItem -Path publish -Filter "*.msix" -File
           foreach ($file in $msixFiles) {
@@ -69,9 +75,6 @@ jobs:
           github-artifact-id: '${{ steps.upload-artifact.outputs.artifact-id }}'
           wait-for-completion: true
           output-artifact-directory: 'signed_package'
-#          parameters: |
-#            Version: ${{ toJSON(env.BRANCH_NAME) }}
-#            Platform: ${{ toJSON(matrix.platform) }}
 
       - name: Upload signed package
         uses: actions/upload-artifact@v4
