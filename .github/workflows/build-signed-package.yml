@@ -53,6 +53,7 @@ jobs:
         run: |
           ls publish
           $platform = "${{ matrix.platform }}"
+          $branch = "${{ env.BRANCH_NAME }}"
           $msixFiles = Get-ChildItem -Path publish -Filter "*.msix" -File
           foreach ($file in $msixFiles) {
             $newName = "PotatoVN-$platform-$branch.msix"
