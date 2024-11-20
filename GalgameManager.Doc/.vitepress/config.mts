@@ -1,8 +1,23 @@
 import { defineConfig } from 'vitepress'
+import {
+  GitChangelog,
+  GitChangelogMarkdownSection,
+} from '@nolebase/vitepress-plugin-git-changelog/vite'
 import SideBar from "./SideBar";
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
+  // Git Changelog
+  // https://nolebase-integrations.ayaka.io/pages/zh-CN/integrations/vitepress-plugin-git-changelog/
+  vite: {
+    plugins: [
+      GitChangelog({
+        repoURL: () => 'https://github.com/GoldenPotato137/PotatoVN',
+      }),
+      GitChangelogMarkdownSection(),
+    ],
+  },
+  
   title: "PotatoVN",
   description: "PotatoVN Official Website",
   head: [
