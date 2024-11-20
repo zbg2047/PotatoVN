@@ -3,6 +3,8 @@
 on:
   push:
     branches: [ dev ]
+    paths:
+      - 'GalgameManager/Strings/**'
 
 jobs:
   crowdin-push:

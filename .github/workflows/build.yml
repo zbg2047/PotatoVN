@@ -1,6 +1,18 @@
 name: build
 
-on: ["push", "pull_request"]
+on:
+  push:
+    paths:
+      - 'GalgameManager/**'
+      - 'GalgameManager.Core/**'
+      - 'GalgameManager.Server/**'
+      - 'GalgameManager.Test/**'
+  pull_request:
+    paths:
+      - 'GalgameManager/**'
+      - 'GalgameManager.Core/**'
+      - 'GalgameManager.Server/**'
+      - 'GalgameManager.Test/**'
 
 jobs:
   build:
