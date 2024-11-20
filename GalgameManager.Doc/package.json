@@ -5,6 +5,7 @@
     "docs:preview": "vitepress preview"
   },
   "dependencies": {
+    "@giscus/vue": "^3.0.0",
     "vitepress": "^1.2.3"
   },
   "devDependencies": {
