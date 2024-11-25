@@ -22,12 +22,14 @@
 ## 安装
 > **对于windows10用户:** windows10用户需要额外安装[Segoe Fluent 图标字体](https://aka.ms/SegoeFluentIcons)
 
-<a href="https://apps.microsoft.com/detail/9p9cbkd5hr3w?cid=github&mode=full">
-	<img src="https://get.microsoft.com/images/zh-cn%20dark.svg" height="60" alt="https://apps.microsoft.com/detail/9p9cbkd5hr3w?cid=github&mode=full"/>
-</a>
-<a href="https://github.com/GoldenPotato137/PotatoVN/releases" style="position: relative; top: -2px;">
-	<img src="docs/DownloadBadge.svg" height="57" alt="https://github.com/GoldenPotato137/PotatoVN/releases"/>
-</a>
+<p align="center">
+    <a href="https://apps.microsoft.com/detail/9p9cbkd5hr3w?cid=github&mode=full">
+        <img src="https://get.microsoft.com/images/zh-cn%20dark.svg" height="90" alt="https://apps.microsoft.com/detail/9p9cbkd5hr3w?cid=github&mode=full"/>
+    </a>
+    <a href="https://github.com/GoldenPotato137/PotatoVN/releases">
+        <img src="docs/DownloadBadge.svg" height="87.5" alt="https://github.com/GoldenPotato137/PotatoVN/releases"/>
+    </a>
+</p>
 
 ## 翻译
 ![en translation](https://img.shields.io/badge/dynamic/json?color=blue&label=en&style=flat&logo=crowdin&query=%24.progress[?(@.data.languageId==%27en%27)].data.translationProgress&url=https%3A%2F%2Fbadges.awesome-crowdin.com%2Fstats-15790227-581621.json)
