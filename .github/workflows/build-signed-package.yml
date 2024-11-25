@@ -85,7 +85,7 @@ jobs:
           api-token: '${{ secrets.SIGNPATH_API_TOKEN }}'
           organization-id: '87787551-8846-4890-a0a9-b34f834c4c0f'
           project-slug: 'PotatoVN'
-          signing-policy-slug: 'test-signing'
+          signing-policy-slug: 'release-signing'
           github-artifact-id: '${{ steps.upload-artifact.outputs.artifact-id }}'
           wait-for-completion: true
           output-artifact-directory: 'signed_package'
