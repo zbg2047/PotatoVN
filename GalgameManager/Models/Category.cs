@@ -40,7 +40,7 @@ public partial class Category : ObservableObject
     {
         if (GalgamesX.Contains(galgame)) return;
         GalgamesX.Add(galgame);
-        galgame.Categories.Add(this);
+        if (!galgame.Categories.Contains(this)) galgame.Categories.Add(this);
         OnGalgamesChanged?.Invoke();
     }
 

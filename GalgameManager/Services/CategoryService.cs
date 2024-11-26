@@ -59,53 +59,54 @@ public class CategoryService : ICategoryService
             group.Categories.ForEach(c => c.GalgamesX.RemoveNull());
         
         await Upgrade();
-
-        // 有时候程序崩溃的时候没能移除游玩状态就保存了，需要手动把游玩状态移除
-        List<CategoryGroup> toRemove = _categoryGroups.Where(group => group.Type == CategoryGroupType.Status).ToList();
-        foreach (CategoryGroup group in toRemove)
-            _categoryGroups.Remove(group);
-
-        try
-        {
-            _developerGroup = _categoryGroups.First(cg => cg.Type == CategoryGroupType.Developer);
-            _developerGroup.Name = ResourceExtensions.GetLocalized("CategoryService_Developer");
-        }
-        catch
-        {
-            _developerGroup = new CategoryGroup(ResourceExtensions.GetLocalized("CategoryService_Developer"), CategoryGroupType.Developer);
-            _categoryGroups.Add(_developerGroup);
-        }
+        
         InitStatusGroup();
+        InitDeveloperGroup();
         
         foreach (Galgame g in _galgameService.Galgames) 
+            g.GalPropertyChanged += HandleGalPropertyChanged;
+        _galgameService.GalgameAddedEvent += galgame =>
         {
-            if (GetStatusCategory(g) == null)
-                _statusCategory[(int)g.PlayType].Add(g);
-            g.GalPropertyChanged += (gal, name, _) =>
-            {
-                switch (name)
-                {
-                    case nameof(Galgame.Developer):
-                        UpdateCategory(gal);
-                        break;
-                    case nameof(Galgame.PlayType):
-                        GetStatusCategory(gal)?.Remove(gal);
-                        _statusCategory[(int)gal.PlayType].Add(gal);
-                        break;
-                    case nameof(Galgame.LastPlayTime):
-                        foreach (Category category in gal.Categories)
-                            category.UpdateLastPlayed();
-                        break;
-                }
-            };
-        }
+            if (_isInit == false) return;
+            HandleGalPropertyChanged(galgame, nameof(Galgame.Developer), galgame.Developer.Value);
+            HandleGalPropertyChanged(galgame, nameof(Galgame.PlayType), galgame.PlayType);
+            HandleGalPropertyChanged(galgame, nameof(Galgame.LastPlayTime), galgame.LastPlayTime);
+        };
+        _galgameService.GalgameDeletedEvent += galgame =>
+        {
+            galgame.GalPropertyChanged -= HandleGalPropertyChanged;
+            foreach (Category category in galgame.Categories)
+                category.Remove(galgame);
+        }; // 避免内存泄漏
 
         // 给Galgame注入Category
-        foreach (Category category in _categoryGroups.Where(g => g.Type != CategoryGroupType.Status)
-                     .SelectMany(group => group.Categories))
-            category.GalgamesX.ForEach(g => g.Categories.Add(category));
+        foreach (Category category in _categoryGroups.SelectMany(group => group.Categories))
+            category.GalgamesX.ForEach(g =>
+            {
+                if (g.Categories.Contains(category)) return;
+                g.Categories.Add(category);
+            });
 
         _isInit = true;
+        return;
+        
+        void HandleGalPropertyChanged(Galgame gal, string name, object? _)
+        {
+            switch (name)
+            {
+                case nameof(Galgame.Developer):
+                    UpdateCategory(gal);
+                    break;
+                case nameof(Galgame.PlayType):
+                    GetStatusCategory(gal)?.Remove(gal);
+                    _statusCategory[(int)gal.PlayType].Add(gal);
+                    break;
+                case nameof(Galgame.LastPlayTime):
+                    foreach (Category category in gal.Categories)
+                        category.UpdateLastPlayed();
+                    break;
+            }
+        }
     }
 
     public async Task<ObservableCollection<CategoryGroup>> GetCategoryGroupsAsync()
@@ -243,8 +244,6 @@ public class CategoryService : ICategoryService
 
     private async Task SaveAsync()
     {
-        if(_statusGroup != null)
-            _categoryGroups.Remove(_statusGroup); //状态分类组是即时构造的，不需要保存
         await _localSettings.SaveSettingAsync(KeyValues.CategoryGroups, _categoryGroups, true,
             converters: new() { new GalgameAndUidConverter() });
         if (_statusGroup != null)
@@ -278,26 +277,55 @@ public class CategoryService : ICategoryService
         return GetStatusCategory(galgame.Categories);
     }
 
-    /// 状态分类组是即时构造的
     private void InitStatusGroup()
     {
-        _statusGroup = new CategoryGroup(ResourceExtensions.GetLocalized("CategoryService_Status"), CategoryGroupType.Status);
-        _categoryGroups.Add(_statusGroup);
-        _statusGroup.Categories.Add(new Category(PlayType.None.GetLocalized())
-            { Id = new Guid("00000000-0000-0000-0000-000000000001") });
-        _statusGroup.Categories.Add(new Category(PlayType.Played.GetLocalized())
-            { Id = new Guid("00000000-0000-0000-0000-000000000002") });
-        _statusGroup.Categories.Add(new Category(PlayType.Playing.GetLocalized())
-            { Id = new Guid("00000000-0000-0000-0000-000000000003") });
-        _statusGroup.Categories.Add(new Category(PlayType.Shelved.GetLocalized())
-            { Id = new Guid("00000000-0000-0000-0000-000000000004") });
-        _statusGroup.Categories.Add(new Category(PlayType.Abandoned.GetLocalized())
-            { Id = new Guid("00000000-0000-0000-0000-000000000005") });
-        _statusCategory[(int)PlayType.None] = _statusGroup.Categories[0];
-        _statusCategory[(int)PlayType.Played] = _statusGroup.Categories[1];
-        _statusCategory[(int)PlayType.Playing] = _statusGroup.Categories[2];
-        _statusCategory[(int)PlayType.Shelved] = _statusGroup.Categories[3];
-        _statusCategory[(int)PlayType.Abandoned] = _statusGroup.Categories[4];
+        _statusGroup = _categoryGroups.FirstOrDefault(group => group.Type == CategoryGroupType.Status);
+        if (_statusGroup is null)
+        {
+            _statusGroup = new CategoryGroup(ResourceExtensions.GetLocalized("CategoryService_Status"),
+                CategoryGroupType.Status);
+            _categoryGroups.Add(_statusGroup);
+            _statusGroup.Categories.Add(new Category(PlayType.None.GetLocalized())
+                { Id = new Guid("00000000-0000-0000-0000-000000000001") });
+            _statusGroup.Categories.Add(new Category(PlayType.Played.GetLocalized())
+                { Id = new Guid("00000000-0000-0000-0000-000000000002") });
+            _statusGroup.Categories.Add(new Category(PlayType.Playing.GetLocalized())
+                { Id = new Guid("00000000-0000-0000-0000-000000000003") });
+            _statusGroup.Categories.Add(new Category(PlayType.Shelved.GetLocalized())
+                { Id = new Guid("00000000-0000-0000-0000-000000000004") });
+            _statusGroup.Categories.Add(new Category(PlayType.Abandoned.GetLocalized())
+                { Id = new Guid("00000000-0000-0000-0000-000000000005") });
+            SetStatusCategory();
+            foreach(Galgame game in _galgameService.Galgames.Where(g => GetStatusCategory(g) is null)) 
+                _statusCategory[(int)game.PlayType].Add(game);
+        }
+        else
+            SetStatusCategory();
+        return;
+
+        void SetStatusCategory()
+        {
+            _statusCategory[(int)PlayType.None] = _statusGroup.Categories[0];
+            _statusCategory[(int)PlayType.Played] = _statusGroup.Categories[1];
+            _statusCategory[(int)PlayType.Playing] = _statusGroup.Categories[2];
+            _statusCategory[(int)PlayType.Shelved] = _statusGroup.Categories[3];
+            _statusCategory[(int)PlayType.Abandoned] = _statusGroup.Categories[4];
+        }
+    }
+
+    private void InitDeveloperGroup()
+    {
+        try
+        {
+            _developerGroup = _categoryGroups.First(cg => cg.Type == CategoryGroupType.Developer);
+            _developerGroup.Name = ResourceExtensions.GetLocalized("CategoryService_Developer");
+        }
+        catch
+        {
+            _developerGroup = new CategoryGroup(ResourceExtensions.GetLocalized("CategoryService_Developer"),
+                CategoryGroupType.Developer);
+            _categoryGroups.Add(_developerGroup);
+        }
     }
 
     /// <summary>
