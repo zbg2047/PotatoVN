@@ -35,7 +35,6 @@ public class LocalSettingsService : ILocalSettingsService
         LocalSettingsOptions op = options.Value;
 
         _serializerSettings = new JsonSerializerSettings();
-        _serializerSettings.Converters.Add(new GalgameSourceCustomConverter());
 
         _applicationDataFolder = ApplicationData.Current.LocalFolder.Path;
         _localsettingsFile = op.LocalSettingsFile ?? ErrorFileName;
@@ -131,12 +130,15 @@ public class LocalSettingsService : ILocalSettingsService
     /// <param name="key">key</param>
     /// <param name="isLarge">是否从统一的大文件json中读取</param>
     /// <param name="converters">额外的Converter列表，会添加在默认列表之后</param>
+    /// <param name="typeNameHandling">json配置中是否包含TypeName信息</param>
     /// <returns>若无相关配置，且无默认配置，返回default</returns>
-    public async Task<T?> ReadSettingAsync<T>(string key, bool isLarge = false, List<JsonConverter>? converters = null)
+    public async Task<T?> ReadSettingAsync<T>(string key, bool isLarge = false, List<JsonConverter>? converters = null,
+        bool typeNameHandling = false)
     {
         try
         {
             converters?.ForEach(c => _serializerSettings.Converters.Add(c));
+            if (typeNameHandling) _serializerSettings.TypeNameHandling = TypeNameHandling.All;
             if (RuntimeHelper.IsMSIX && !isLarge)
             {
                 if (ApplicationData.Current.LocalSettings.Values.TryGetValue(key, out var obj))
@@ -158,6 +160,7 @@ public class LocalSettingsService : ILocalSettingsService
         }
         finally
         {
+            _serializerSettings.TypeNameHandling = TypeNameHandling.None; // 恢复默认值
             // 无论如何都要移除新增的converter，防止崩溃保存的时候用到不应该用的converter
             converters?.ForEach(c => _serializerSettings.Converters.Remove(c));
         }
@@ -222,11 +225,13 @@ public class LocalSettingsService : ILocalSettingsService
     /// <param name="isLarge">是否从统一的保存到大文件json中</param>
     /// <param name="triggerEventWhenNull">当value为null时是否要触发OnSettingChanged事件</param>
     /// <param name="converters">额外的Converter列表</param>
+    /// <param name="typeNameHandling">json配置中是否包含TypeName信息</param>
     public async Task SaveSettingAsync<T>(string key, T value, bool isLarge = false, bool triggerEventWhenNull = false,
-        List<JsonConverter>? converters = null)
+        List<JsonConverter>? converters = null, bool typeNameHandling = false)
     {
         try
         {
+            if (typeNameHandling) _serializerSettings.TypeNameHandling = TypeNameHandling.All;
             converters?.ForEach(c => _serializerSettings.Converters.Add(c));
             if (RuntimeHelper.IsMSIX && !isLarge)
             {
@@ -241,6 +246,7 @@ public class LocalSettingsService : ILocalSettingsService
         }
         finally
         {
+            _serializerSettings.TypeNameHandling = TypeNameHandling.None; // 恢复默认值
             // 无论如何都要移除新增的converter，防止崩溃保存的时候用到不应该用的converter
             converters?.ForEach(c => _serializerSettings.Converters.Remove(c));
         }

@@ -1890,4 +1890,13 @@
   <data name="MultiStreamPageSettingDialog_SourceList_Base.Text" xml:space="preserve">
     <value>根库</value>
   </data>
+  <data name="MultiStreamPageSettingDialog_GameList_Name.Text" xml:space="preserve">
+    <value>游戏列表</value>
+  </data>
+  <data name="MultiStreamPageSettingDialog_CategoryList_Name.Text" xml:space="preserve">
+    <value>分类列表</value>
+  </data>
+  <data name="MultiStreamPageSettingDialog_SourceList_Name.Text" xml:space="preserve">
+    <value>库列表</value>
+  </data>
 </root>

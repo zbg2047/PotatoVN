@@ -4,10 +4,11 @@ namespace GalgameManager.Contracts.Services;
 
 public interface ILocalSettingsService
 {
-    Task<T?> ReadSettingAsync<T>(string key, bool isLarge = false, List<JsonConverter>? converters = null);
+    Task<T?> ReadSettingAsync<T>(string key, bool isLarge = false, List<JsonConverter>? converters = null,
+        bool typeNameHandling = false);
 
     Task SaveSettingAsync<T>(string key, T value, bool isLarge = false, bool triggerEventWhenNull = false,
-        List<JsonConverter>? converters = null);
+        List<JsonConverter>? converters = null, bool typeNameHandling = false);
 
     Task RemoveSettingAsync(string key);
     

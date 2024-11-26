@@ -44,7 +44,7 @@
         </Style>
     </ContentDialog.Resources>
 
-    <Grid MinWidth="450" Height="300"
+    <Grid MinWidth="500" Height="300"
           RowDefinitions="Auto, *">
 
         <CommandBar Grid.Row="0" DefaultLabelPosition="Right">
@@ -58,8 +58,13 @@
                     <!-- 游戏列表 -->
                     <multiStreamPageSettingDialog:TemplateSelector.GameListTemplate>
                         <DataTemplate x:DataType="lists:GameList">
-                            <Grid Style="{StaticResource Border}" ColumnDefinitions="*,Auto">
-                                <cmtk:WrapPanel Grid.Column="0" Style="{StaticResource WarpPanel}">
+                            <Grid Style="{StaticResource Border}" ColumnDefinitions="Auto,*,Auto">
+                                <StackPanel Grid.Column="0" Margin="10 5 12 0" VerticalAlignment="Center">
+                                    <control:ConditionalFontIcon Symbol="XboxOneConsole" FluentGlyph="&#xE7FC;" IconFontSize="25"/>
+                                    <TextBlock x:Uid="MultiStreamPageSettingDialog_GameList_Name" 
+                                               Style="{StaticResource DescriptionTextStyle}"/>
+                                </StackPanel>
+                                <cmtk:WrapPanel Grid.Column="1" Style="{StaticResource WarpPanel}">
                                     <StackPanel>
                                         <TextBlock x:Uid="MultiStreamPageSettingDialog_ListTitle"
                                                    Style="{StaticResource ComboBoxDescription}" />
@@ -80,7 +85,7 @@
                                             SelectedItem="{x:Bind Category, Mode=TwoWay}"/>
                                     </StackPanel>
                                 </cmtk:WrapPanel>
-                                <Button Grid.Column="1" Style="{StaticResource TransparentButtonWithHover}"
+                                <Button Grid.Column="2" Style="{StaticResource TransparentButtonWithHover}"
                                         Click="Delete">
                                     <control:ConditionalFontIcon Style="{StaticResource DeleteButton}" />
                                 </Button>
@@ -90,8 +95,13 @@
                     <!-- 分类列表 -->
                     <multiStreamPageSettingDialog:TemplateSelector.CategoryListTemplate>
                         <DataTemplate x:DataType="lists:CategoryList">
-                            <Grid Style="{StaticResource Border}" ColumnDefinitions="*,Auto">
-                                <cmtk:WrapPanel Grid.Column="0" Style="{StaticResource WarpPanel}">
+                            <Grid Style="{StaticResource Border}" ColumnDefinitions="Auto,*,Auto">
+                                <StackPanel Grid.Column="0" Margin="10 5 12 0" VerticalAlignment="Center">
+                                    <control:ConditionalFontIcon Symbol="Flag" FluentGlyph="&#xE7C1;" IconFontSize="25"/>
+                                    <TextBlock x:Uid="MultiStreamPageSettingDialog_CategoryList_Name" 
+                                               Style="{StaticResource DescriptionTextStyle}"/>
+                                </StackPanel>
+                                <cmtk:WrapPanel Grid.Column="1" Style="{StaticResource WarpPanel}">
                                     <StackPanel>
                                         <TextBlock x:Uid="MultiStreamPageSettingDialog_ListTitle"
                                                    Style="{StaticResource ComboBoxDescription}" />
@@ -112,7 +122,7 @@
                                             SelectedItem="{x:Bind Group, Mode=TwoWay}"/>
                                     </StackPanel>
                                 </cmtk:WrapPanel>
-                                <Button Grid.Column="1" Style="{StaticResource TransparentButtonWithHover}"
+                                <Button Grid.Column="2" Style="{StaticResource TransparentButtonWithHover}"
                                         Click="Delete">
                                     <control:ConditionalFontIcon Style="{StaticResource DeleteButton}" />
                                 </Button>
@@ -122,8 +132,13 @@
                     <!-- 游戏库列表 -->
                     <multiStreamPageSettingDialog:TemplateSelector.SourceListTemplate>
                         <DataTemplate x:DataType="lists:SourceList">
-                            <Grid Style="{StaticResource Border}" ColumnDefinitions="*,Auto">
-                                <cmtk:WrapPanel Grid.Column="0" Style="{StaticResource WarpPanel}">
+                            <Grid Style="{StaticResource Border}" ColumnDefinitions="Auto,*,Auto">
+                                <StackPanel Grid.Column="0" Margin="15.5 5 17.5 0" VerticalAlignment="Center">
+                                    <control:ConditionalFontIcon Symbol="Folder" FluentGlyph="&#xE8B7;" IconFontSize="25"/>
+                                    <TextBlock x:Uid="MultiStreamPageSettingDialog_SourceList_Name" 
+                                               Style="{StaticResource DescriptionTextStyle}"/>
+                                </StackPanel>
+                                <cmtk:WrapPanel Grid.Column="1" Style="{StaticResource WarpPanel}">
                                     <StackPanel>
                                         <TextBlock x:Uid="MultiStreamPageSettingDialog_ListTitle"
                                                    Style="{StaticResource ComboBoxDescription}" />
@@ -145,7 +160,7 @@
                                             SelectedItem="{x:Bind Root, Mode=TwoWay}" />
                                     </StackPanel>
                                 </cmtk:WrapPanel>
-                                <Button Grid.Column="1" Style="{StaticResource TransparentButtonWithHover}"
+                                <Button Grid.Column="2" Style="{StaticResource TransparentButtonWithHover}"
                                         Click="Delete">
                                     <control:ConditionalFontIcon Style="{StaticResource DeleteButton}" />
                                 </Button>

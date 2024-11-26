@@ -61,6 +61,7 @@ public static class KeyValues
     public const string CategoryGroups = "categoryGroups"; // List<CategoryGroup>,分类组
     public const string PvnSyncTimestamp = "pvnSyncTimestamp"; //long, 上一次同步时间戳
     public const string ToDeleteGames = "toDeleteGames"; //List<int>, 待删除的游戏id
+    public const string MultiStreamPageList = "multiStreamPageList"; //List<IGalgameManager.MultiStreamPage.Lists.IList>, 主页列表
     
     //搜刮设置
     public const string MixedPhraserOrder = "mixedPhraserOrder"; //MixedPhraserOrder,混合搜刮器的顺序

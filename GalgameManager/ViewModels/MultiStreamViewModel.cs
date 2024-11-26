@@ -5,6 +5,7 @@ using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.WinUI.UI;
 using GalgameManager.Contracts.Services;
 using GalgameManager.Contracts.ViewModels;
+using GalgameManager.Enums;
 using GalgameManager.Helpers;
 using GalgameManager.Models;
 using GalgameManager.Models.Filters;
@@ -13,6 +14,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using GalgameManager.MultiStreamPage.Lists;
 using GalgameManager.ViewModels;
+using Newtonsoft.Json;
 using SourceFilter = GalgameManager.Models.Filters.SourceFilter;
 
 namespace GalgameManager.ViewModels
@@ -22,15 +24,17 @@ namespace GalgameManager.ViewModels
         public ObservableCollection<IList> Lists { get; } = new();
 
         private readonly IGalgameCollectionService _gameService;
-        private readonly IGalgameSourceCollectionService _sourceService;
-        private readonly ICategoryService _categoryService;
+        private static IGalgameSourceCollectionService _sourceService = null!;
+        private static ICategoryService _categoryService = null!;
         private readonly INavigationService _navigationService;
         private readonly IFilterService _filterService;
         private readonly IInfoService _infoService;
+        private readonly ILocalSettingsService _settingsService;
+        private readonly List<JsonConverter> _converters = new();
 
         public MultiStreamViewModel(IGalgameCollectionService gameService, ICategoryService categoryService,
             INavigationService navigationService, IFilterService filterService, IInfoService infoService,
-            IGalgameSourceCollectionService sourceService)
+            IGalgameSourceCollectionService sourceService, ILocalSettingsService localSettingsService)
         {
             _gameService = gameService;
             _categoryService = categoryService;
@@ -38,27 +42,59 @@ namespace GalgameManager.ViewModels
             _filterService = filterService;
             _sourceService = sourceService;
             _infoService = infoService;
+            _settingsService = localSettingsService;
+            
+            _converters.Add(new CategoryAndUuidConverter(categoryService));
+            _converters.Add(new CategoryGroupAndUuidConverter(categoryService));
+            _converters.Add(new GalgameSourceAndUrlConverter(sourceService));
         }
 
 
-        public void OnNavigatedTo(object parameter)
+        public async void OnNavigatedTo(object parameter)
         {
+            try
+            {
+                List<IList> tmp = await _settingsService.ReadSettingAsync<List<IList>>(KeyValues.MultiStreamPageList,
+                    true, _converters, true) ?? GetInitList();
+                tmp = tmp.Count == 0 ? GetInitList() : tmp; // 崩溃时会保存空表，重新初始化
+                foreach(IList list in tmp)
+                    list.Refresh();
+                Lists.SyncCollection(tmp);
+            }
+            catch (Exception e) // 不应该发生
+            {
+                _infoService.Event(EventType.PageError, InfoBarSeverity.Error, title: "Something went wrong", e);
+            }
+        }
+
+        public async void OnNavigatedFrom()
+        {
+            try
+            {
+                await SaveList();
+            }
+            catch (Exception e) // 不应该发生
+            {
+                _infoService.Event(EventType.PageError, InfoBarSeverity.Error, title: "Something went wrong", e);
+            }
+        }
+
+        public static List<IList> GetInitList()
+        {
+            List<IList> result = new();
             // test only
-            Lists.Add(new GameList( "最近游玩的游戏", MultiStreamPageSortKeys.LastPlayed));
-            Lists.Add(new CategoryList(_categoryService.DeveloperGroup));
+            result.Add(new GameList( "最近游玩的游戏", MultiStreamPageSortKeys.LastPlayed));
+            result.Add(new CategoryList(_categoryService.DeveloperGroup));
             foreach (Category c in _categoryService.StatusGroup.Categories)
-                Lists.Add(new GameList(c.Name, MultiStreamPageSortKeys.LastPlayed, c));
-            Lists.Add(new SourceList(null));
+                result.Add(new GameList(c.Name, MultiStreamPageSortKeys.LastPlayed, c));
+            result.Add(new SourceList(null));
             foreach(GalgameSourceBase source in _sourceService.GetGalgameSources())
                 if (source.SubSources.Count > 0)
                 {
-                    Lists.Add(new SourceList(source));
+                    result.Add(new SourceList(source));
                     break;
                 }
-        }
-
-        public void OnNavigatedFrom()
-        {
+            return result;
         }
 
         [RelayCommand]
@@ -91,6 +127,13 @@ namespace GalgameManager.ViewModels
             Lists.SyncCollection(dialog.Result);
             foreach (IList list in Lists)
                 list.Refresh();
+            await SaveList();
+        }
+        
+        private async Task SaveList()
+        {
+            await _settingsService.SaveSettingAsync(KeyValues.MultiStreamPageList, Lists.ToList(), true,
+                converters: _converters, typeNameHandling: true);
         }
 
         #region SEARCH
@@ -161,7 +204,8 @@ namespace GalgameManager.MultiStreamPage.Lists
     
     public partial class GameList : ObservableRecipient, IList
     {
-        public AdvancedCollectionView Games;
+        [JsonIgnore] public IRelayCommand ClickTitleCommand; //为什么不直接用[RelayCommand]:因为没法JsonIgnore
+        [JsonIgnore] public AdvancedCollectionView Games;
         [ObservableProperty] private string _title = string.Empty;
         [ObservableProperty] private MultiStreamPageSortKeys _sort;
 
@@ -169,10 +213,16 @@ namespace GalgameManager.MultiStreamPage.Lists
         // public Category? Category { get; set; } // 如果设置了则为某分类下的游戏列表
         public GalgameSourceBase? Source { get; set; } // 如果设置了则为某源下的游戏列表
 
-        public GameList(string title, MultiStreamPageSortKeys sort, Category? category = null,
-            GalgameSourceBase? source = null)
+        public GameList()
         {
             Games = new AdvancedCollectionView(new ObservableCollection<Galgame>(), true);
+            ClickTitleCommand = new RelayCommand(ClickTitle);
+        }
+
+        public GameList(string title, MultiStreamPageSortKeys sort, Category? category = null,
+            GalgameSourceBase? source = null) : this()
+        {
+            
             if (category is null && source is null)
                 Games.Source = App.GetService<IGalgameCollectionService>().Galgames;
             Title = title;
@@ -182,7 +232,6 @@ namespace GalgameManager.MultiStreamPage.Lists
             Refresh();
         }
 
-        [RelayCommand]
         private void ClickTitle()
         {
             INavigationService service = App.GetService<INavigationService>();
@@ -204,7 +253,12 @@ namespace GalgameManager.MultiStreamPage.Lists
             else if (Source is not null)
                 (Games.Source as ObservableCollection<Galgame>)?.SyncCollection(
                     new List<Galgame>(Source.Galgames.Select(g => g.Galgame)));
-            //else: 全部游戏，不需要更新（因为直接用的galgameCollectionService的可观测游戏列表）
+            else // 全部游戏
+            {
+                if (Games.Source.Count == 0) //初始化进来的
+                    Games.Source = App.GetService<IGalgameCollectionService>().Galgames;
+                // else 不需要更新（因为直接用的galgameCollectionService的可观测游戏列表）
+            }
             
             // 更新排序关键字
             Games.SortDescriptions.Clear();
@@ -219,20 +273,25 @@ namespace GalgameManager.MultiStreamPage.Lists
 
     public partial class CategoryList : ObservableRecipient, IList
     {
-        public AdvancedCollectionView Categories;
+        [JsonIgnore] public IRelayCommand ClickTitleCommand; //为什么不直接用[RelayCommand]:因为没法JsonIgnore
+        [JsonIgnore] public AdvancedCollectionView Categories;
         [ObservableProperty] private string _title = string.Empty;
         [ObservableProperty] private MultiStreamPageSortKeys _sort;
-        [ObservableProperty] private CategoryGroup _group;
+        [ObservableProperty] private CategoryGroup _group = null!;
 
-        public CategoryList(CategoryGroup group)
+        public CategoryList()
+        {
+            ClickTitleCommand = new RelayCommand(ClickTitle);
+            Categories = new AdvancedCollectionView(new ObservableCollection<Category>(), true);
+        }
+
+        public CategoryList(CategoryGroup group) : this()
         {
             _group = group;
-            Categories = new AdvancedCollectionView(new ObservableCollection<Category>(), true);
             Title = group.Name;
             Refresh();
         }
 
-        [RelayCommand]
         private void ClickTitle()
         {
             INavigationService service = App.GetService<INavigationService>();
@@ -255,24 +314,29 @@ namespace GalgameManager.MultiStreamPage.Lists
 
     public partial class SourceList : ObservableRecipient, IList
     {
-        public AdvancedCollectionView Sources = new();
-        public string Title;
-        public MultiStreamPageSortKeys Sort;
+        [JsonIgnore] public IRelayCommand ClickTitleCommand; //为什么不直接用[RelayCommand]:因为没法JsonIgnore
+        [JsonIgnore] public AdvancedCollectionView Sources;
+        [ObservableProperty] private string _title = string.Empty;
+        [ObservableProperty] private MultiStreamPageSortKeys _sort;
         [ObservableProperty] private GalgameSourceBase? _root;
 
         private readonly IGalgameSourceCollectionService _sourceService =
             App.GetService<IGalgameSourceCollectionService>();
+        
+        public SourceList()
+        {
+            ClickTitleCommand = new RelayCommand(ClickTitle);
+            Sources = new AdvancedCollectionView(new ObservableCollection<GalgameSourceBase>(), true);
+        }
 
         /// <param name="root">显示root内的游戏库，若设置为null则显示整个所有库</param>
-        public SourceList(GalgameSourceBase? root)
+        public SourceList(GalgameSourceBase? root) : this()
         {
             Root = root;
             Title = Root?.Name ?? "MultiStreamPage_AllSources".GetLocalized();
-            Sources.Source = new ObservableCollection<GalgameSourceBase>();
             Refresh();
         }
 
-        [RelayCommand]
         private void ClickTitle()
         {
             INavigationService service = App.GetService<INavigationService>();
@@ -281,6 +345,7 @@ namespace GalgameManager.MultiStreamPage.Lists
 
         public void Refresh()
         {
+            Sources.Clear();
             if (Root is null)
             {
                 foreach (GalgameSourceBase source in _sourceService.GetGalgameSources())

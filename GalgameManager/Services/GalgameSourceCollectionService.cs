@@ -7,6 +7,7 @@ using GalgameManager.Models;
 using GalgameManager.Models.BgTasks;
 using GalgameManager.Models.Sources;
 using Microsoft.UI.Xaml.Controls;
+using Newtonsoft.Json;
 
 namespace GalgameManager.Services;
 
@@ -19,6 +20,7 @@ public class GalgameSourceCollectionService : IGalgameSourceCollectionService
     private readonly ILocalSettingsService _localSettingsService;
     private readonly IBgTaskService _bgTaskService;
     private readonly IInfoService _infoService;
+    private readonly List<JsonConverter> _converters;
 
     public GalgameSourceCollectionService(ILocalSettingsService localSettingsService, IBgTaskService bgTaskService,
         IInfoService infoService)
@@ -27,13 +29,18 @@ public class GalgameSourceCollectionService : IGalgameSourceCollectionService
         _bgTaskService = bgTaskService;
         _infoService = infoService;
         App.OnAppClosing += async () => await Save();
+        _converters =
+        [
+            new GalgameAndUidConverter(),
+            new GalgameSourceCustomConverter(),
+        ];
     }
     
     public async Task InitAsync()
     {
         _galgameSources = await _localSettingsService.ReadSettingAsync<ObservableCollection<GalgameSourceBase>>(
                               KeyValues.GalgameSources, true,
-                              converters: new() { new GalgameAndUidConverter() })
+                              converters: _converters)
                           ?? new ObservableCollection<GalgameSourceBase>();
         await SourceUpgradeAsync();
         await NameAndSubSourceUpgradeAsync();
@@ -249,7 +256,7 @@ public class GalgameSourceCollectionService : IGalgameSourceCollectionService
     private async Task Save()
     {
         await _localSettingsService.SaveSettingAsync(KeyValues.GalgameSources, _galgameSources, true,
-            converters: new() { new GalgameAndUidConverter() });
+            converters: _converters);
     }
 
     /// <summary>
