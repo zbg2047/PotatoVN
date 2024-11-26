@@ -244,12 +244,12 @@ namespace GalgameManager.MultiStreamPage.Lists
             (Categories.Source as ObservableCollection<Category>)?.SyncCollection(_group.Categories);
             // 更新排序关键字
             Categories.SortDescriptions.Clear();
-            // Categories.SortDescriptions.Add(new SortDescription(Sort switch
-            // {
-            //     // MultiStreamPageSortKeys.LastPlayed => nameof(Category.LastPlayed),
-            //     // MultiStreamPageSortKeys.LastClicked => nameof(Category.LastClickTime),
-            //     _ => throw new ArgumentOutOfRangeException()
-            // }, SortDirection.Descending));
+            Categories.SortDescriptions.Add(new SortDescription(Sort switch
+            {
+                MultiStreamPageSortKeys.LastPlayed => nameof(Category.LastPlayed),
+                MultiStreamPageSortKeys.LastClicked => nameof(Category.LastClicked),
+                _ => throw new ArgumentOutOfRangeException(),
+            }, SortDirection.Descending));
         }
     }
 
@@ -258,7 +258,7 @@ namespace GalgameManager.MultiStreamPage.Lists
         public AdvancedCollectionView Sources = new();
         public string Title;
         public MultiStreamPageSortKeys Sort;
-        public GalgameSourceBase? Root;
+        [ObservableProperty] private GalgameSourceBase? _root;
 
         private readonly IGalgameSourceCollectionService _sourceService =
             App.GetService<IGalgameSourceCollectionService>();
@@ -269,16 +269,7 @@ namespace GalgameManager.MultiStreamPage.Lists
             Root = root;
             Title = Root?.Name ?? "MultiStreamPage_AllSources".GetLocalized();
             Sources.Source = new ObservableCollection<GalgameSourceBase>();
-            if (root is null)
-            {
-                foreach (GalgameSourceBase source in _sourceService.GetGalgameSources())
-                    Sources.Add(source);
-            }
-            else
-            {
-                foreach (GalgameSourceBase source in root.SubSources)
-                    Sources.Add(source);
-            }
+            Refresh();
         }
 
         [RelayCommand]
@@ -288,7 +279,27 @@ namespace GalgameManager.MultiStreamPage.Lists
             service.NavigateTo(typeof(LibraryViewModel).FullName!, Root);
         }
 
-        public void Refresh() => Sources.Refresh();
+        public void Refresh()
+        {
+            if (Root is null)
+            {
+                foreach (GalgameSourceBase source in _sourceService.GetGalgameSources())
+                    Sources.Add(source);
+            }
+            else
+            {
+                foreach (GalgameSourceBase source in Root.SubSources)
+                    Sources.Add(source);
+            }
+            // 更新排序关键字
+            Sources.SortDescriptions.Clear();
+            Sources.SortDescriptions.Add(new SortDescription(Sort switch
+            {
+                MultiStreamPageSortKeys.LastPlayed => nameof(GalgameSourceBase.LastPlayed),
+                MultiStreamPageSortKeys.LastClicked => nameof(GalgameSourceBase.LastClicked),
+                _ => throw new ArgumentOutOfRangeException(),
+            }, SortDirection.Descending));
+        }
     }
 }
 

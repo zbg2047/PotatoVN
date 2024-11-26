@@ -1887,4 +1887,7 @@
   <data name="MultiStreamPageSortKeys_LastClicked" xml:space="preserve">
     <value>上次点击时间</value>
   </data>
+  <data name="MultiStreamPageSettingDialog_SourceList_Base.Text" xml:space="preserve">
+    <value>根库</value>
+  </data>
 </root>

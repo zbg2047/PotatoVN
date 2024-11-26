@@ -81,17 +81,20 @@ public class CategoryService : ICategoryService
         {
             if (GetStatusCategory(g) == null)
                 _statusCategory[(int)g.PlayType].Add(g);
-            g.GalPropertyChanged += tuple =>
+            g.GalPropertyChanged += (gal, name, _) =>
             {
-                Galgame gal = tuple.Item1;
-                switch (tuple.Item2)
+                switch (name)
                 {
-                    case "developer":
+                    case nameof(Galgame.Developer):
                         UpdateCategory(gal);
                         break;
-                    case "playType":
+                    case nameof(Galgame.PlayType):
                         GetStatusCategory(gal)?.Remove(gal);
                         _statusCategory[(int)gal.PlayType].Add(gal);
+                        break;
+                    case nameof(Galgame.LastPlayTime):
+                        foreach (Category category in gal.Categories)
+                            category.UpdateLastPlayed();
                         break;
                 }
             };
@@ -309,6 +312,15 @@ public class CategoryService : ICategoryService
             foreach (Category category in group.Categories)
                 category.Id = Guid.NewGuid();
             await _localSettings.SaveSettingAsync(KeyValues.CategoryIdUpgraded, true);
+            await SaveAsync();
+        }
+        // 给各分类添加LastPlayed字段, since v1.8.0
+        if (!await _localSettings.ReadSettingAsync<bool>(KeyValues.CategoryLastPlayedUpgraded))
+        {
+            foreach (CategoryGroup group in _categoryGroups)
+            foreach (Category category in group.Categories)
+                category.UpdateLastPlayed();
+            await _localSettings.SaveSettingAsync(KeyValues.CategoryLastPlayedUpgraded, true);
             await SaveAsync();
         }
         await Task.CompletedTask; //todo：待完成多Source化后添加

@@ -24,6 +24,8 @@ public partial class GalgameSourceBase : ObservableObject, IDisplayableGameObjec
     public bool ScanOnStart { get; set; }
     [ObservableProperty] private string _name = string.Empty;
     [ObservableProperty] private string? _imagePath;
+    [ObservableProperty] private DateTime _lastPlayed = DateTime.MinValue;
+    [ObservableProperty] private DateTime _lastClicked = DateTime.MinValue;
     
     public static string CalcUrl(GalgameSourceType type, string path) => $"{type.SourceTypeToString()}://{path}";
 
@@ -134,7 +136,8 @@ public partial class GalgameSourceBase : ObservableObject, IDisplayableGameObjec
             //ignore
         }
     }
-
+    
+    public void UpdateLastPlayed() => LastPlayed = Galgames.Select(g => g.Galgame.LastPlayTime).Max();
 }
 
 public enum GalgameSourceType

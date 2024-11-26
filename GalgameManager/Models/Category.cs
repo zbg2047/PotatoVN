@@ -16,6 +16,8 @@ public partial class Category : ObservableObject
     public List<string> Galgames { get; } = new(); 
     public List<Galgame> GalgamesX { get; }= new();
     [ObservableProperty] private string _imagePath = string.Empty;
+    [ObservableProperty] private DateTime _lastPlayed = DateTime.MinValue; // 所有游戏中最后一次玩的时间
+    [ObservableProperty] private DateTime _lastClicked = DateTime.MinValue; // 上次点击该分类的时间
 
     public bool Belong(Galgame galgame) => GalgamesX.Contains(galgame);
 
@@ -72,5 +74,5 @@ public partial class Category : ObservableObject
         return Name.ContainX(searchKey);
     }
     
-    public DateTime LastPlayed() => GalgamesX.Max(g => g.LastPlayTime);
+    public void UpdateLastPlayed() => LastPlayed = GalgamesX.Max(g => g.LastPlayTime);
 }

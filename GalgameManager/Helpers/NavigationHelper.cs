@@ -4,6 +4,7 @@ using GalgameManager.Models.Filters;
 using GalgameManager.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using SourceFilter = GalgameManager.Models.Filters.SourceFilter;
 
 namespace GalgameManager.Helpers;
 
@@ -37,7 +38,14 @@ public class NavigationHelper
         {
             filterService.ClearFilters();
             foreach (FilterBase filter in filters)
+            {
                 filterService.AddFilter(filter);
+                if (filter is CategoryFilter c)
+                    c.Category.LastClicked = DateTime.Now;
+                if (filter is SourceFilter s)
+                    s.Source.LastClicked = DateTime.Now;
+                    
+            }
         }
         navigationService.NavigateTo(typeof(HomeViewModel).FullName!);
     }

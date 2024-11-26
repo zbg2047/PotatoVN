@@ -119,14 +119,39 @@
                             </Grid>
                         </DataTemplate>
                     </multiStreamPageSettingDialog:TemplateSelector.CategoryListTemplate>
-                    <!-- 游戏库列表（全） -->
-                    <multiStreamPageSettingDialog:TemplateSelector.SourceListFullTemplate>
-
-                    </multiStreamPageSettingDialog:TemplateSelector.SourceListFullTemplate>
-                    <!-- 游戏库列表（子库） -->
-                    <multiStreamPageSettingDialog:TemplateSelector.SourceListSubTemplate>
-
-                    </multiStreamPageSettingDialog:TemplateSelector.SourceListSubTemplate>
+                    <!-- 游戏库列表 -->
+                    <multiStreamPageSettingDialog:TemplateSelector.SourceListTemplate>
+                        <DataTemplate x:DataType="lists:SourceList">
+                            <Grid Style="{StaticResource Border}" ColumnDefinitions="*,Auto">
+                                <cmtk:WrapPanel Grid.Column="0" Style="{StaticResource WarpPanel}">
+                                    <StackPanel>
+                                        <TextBlock x:Uid="MultiStreamPageSettingDialog_ListTitle"
+                                                   Style="{StaticResource ComboBoxDescription}" />
+                                        <TextBox Style="{StaticResource TextBox}" Text="{x:Bind Title, Mode=TwoWay}" />
+                                    </StackPanel>
+                                    <StackPanel>
+                                        <TextBlock x:Uid="MultiStreamPageSettingDialog_Sort"
+                                                   Style="{StaticResource ComboBoxDescription}" />
+                                        <control:ComboBoxWithI18N
+                                            ItemsSource="{Binding ElementName=Dialog, Path=SourceListKeys}"
+                                            SelectedItem="{x:Bind Sort, Mode=TwoWay}" />
+                                    </StackPanel>
+                                    <StackPanel
+                                        Visibility="{x:Bind Root, Converter={StaticResource VisibilityConverter}, Mode=OneWay}">
+                                        <TextBlock x:Uid="MultiStreamPageSettingDialog_SourceList_Base"
+                                                   Style="{StaticResource ComboBoxDescription}" />
+                                        <control:ComboBoxWithoutNull
+                                            ItemsSource="{Binding ElementName=Dialog, Path=Sources}"
+                                            SelectedItem="{x:Bind Root, Mode=TwoWay}" />
+                                    </StackPanel>
+                                </cmtk:WrapPanel>
+                                <Button Grid.Column="1" Style="{StaticResource TransparentButtonWithHover}"
+                                        Click="Delete">
+                                    <control:ConditionalFontIcon Style="{StaticResource DeleteButton}" />
+                                </Button>
+                            </Grid>
+                        </DataTemplate>
+                    </multiStreamPageSettingDialog:TemplateSelector.SourceListTemplate>
                 </multiStreamPageSettingDialog:TemplateSelector>
             </ListView.ItemTemplateSelector>
         </ListView>

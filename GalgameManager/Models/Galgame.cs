@@ -20,7 +20,7 @@ public partial class Galgame : ObservableObject, IDisplayableGameObject
     public const string MetaPath = ".PotatoVN";
     public static readonly int PhraserNumber = 6;
     
-    public event GenericDelegate<(Galgame, string)>? GalPropertyChanged;
+    public event Action<Galgame, string, object>? GalPropertyChanged;
     public event GenericDelegate<Exception>? ErrorOccurred; //非致命异常产生时触发
     
     public string Path
@@ -29,9 +29,9 @@ public partial class Galgame : ObservableObject, IDisplayableGameObject
         set;
     } = "";
     
-    public GalgameSourceType SourceType { get; set; }=GalgameSourceType.UnKnown;
+    public GalgameSourceType SourceType { get; set; }=GalgameSourceType.UnKnown; //todo: dev中废弃值，应删除
     
-    public string Url => $"{SourceType.SourceTypeToString()}://{Path}";
+    public string Url => $"{SourceType.SourceTypeToString()}://{Path}"; //todo: dev中废弃值，应删除
 
     [JsonIgnore] public GalgameUid Uid => new()
     {
@@ -135,23 +135,18 @@ public partial class Galgame : ObservableObject, IDisplayableGameObject
     public Galgame()
     {
         _tags = new ObservableCollection<string>();
-        _developer.OnValueChanged += _ => GalPropertyChanged?.Invoke((this, "developer"));
+        _developer.OnValueChanged += _ => GalPropertyChanged?.Invoke(this, nameof(Developer), Developer);
     }
 
-    public Galgame(GalgameSourceType sourceType, string name, string path)
+    public Galgame(GalgameSourceType sourceType, string name, string path) : this(name) //todo: dev中废弃，应删除
     {
         SourceType = sourceType;
-        Name = name;
         Path = path;
-        _tags = new ObservableCollection<string>();
-        _developer.OnValueChanged += _ => GalPropertyChanged?.Invoke((this, "developer"));
     }
 
-    public Galgame(string name)
+    public Galgame(string name) : this()
     {
         Name = name;
-        _tags = new ObservableCollection<string>();
-        _developer.OnValueChanged += _ => GalPropertyChanged?.Invoke((this, "developer"));
     }
 
     public override string ToString() => Name.Value ?? string.Empty;
@@ -353,12 +348,6 @@ public partial class Galgame : ObservableObject, IDisplayableGameObject
         return meta;
     }
 
-    // ReSharper disable once UnusedParameterInPartialMethod
-    partial void OnPlayTypeChanged(PlayType value)
-    {
-        GalPropertyChanged?.Invoke((this, "playType"));
-    }
-
     /// <summary>
     /// 从混合数据源的id更新其他数据源的id
     /// </summary>
@@ -415,6 +404,9 @@ public partial class Galgame : ObservableObject, IDisplayableGameObject
                Developer.Value!.ContainX(searchKey) || 
                Tags.Value!.Any(str => str.ContainX(searchKey));
     }
+
+    partial void OnLastPlayTimeChanged(DateTime value) => GalPropertyChanged?.Invoke(this, nameof(LastPlayTime), value);
+    partial void OnPlayTypeChanged(PlayType value) => GalPropertyChanged?.Invoke(this, nameof(PlayType), value);
 }
 
 

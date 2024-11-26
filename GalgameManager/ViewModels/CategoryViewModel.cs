@@ -40,9 +40,7 @@ public partial class CategoryViewModel : ObservableObject, INavigationAware, ISe
     [RelayCommand]
     private void OnItemClick(Category category)
     {
-        _filterService.ClearFilters();
-        _filterService.AddFilter(new CategoryFilter(category));
-        _navigationService.NavigateTo(typeof(HomeViewModel).FullName!);
+        NavigationHelper.NavigateToHomePage(_navigationService, _filterService, [new CategoryFilter(category)]);
     }
     
     [RelayCommand]

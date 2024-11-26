@@ -2,6 +2,7 @@
 using GalgameManager.Contracts.Services;
 using GalgameManager.Helpers;
 using GalgameManager.Models;
+using GalgameManager.Models.Sources;
 using GalgameManager.MultiStreamPage.Lists;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -21,10 +22,19 @@ namespace GalgameManager.Views.Dialog
             MultiStreamPageSortKeys.LastPlayed, 
             MultiStreamPageSortKeys.LastClicked,
         };
+        public List<MultiStreamPageSortKeys> SourceListKeys { get; } = new()
+        {
+            MultiStreamPageSortKeys.LastPlayed, 
+            MultiStreamPageSortKeys.LastClicked,
+        };
+        
         public List<Category> Categories { get; } = new();
         public List<CategoryGroup> CategoryGroups { get; } = new();
-
+        public List<GalgameSourceBase> Sources { get; } = new();
+            
         private readonly ICategoryService _categoryService = App.GetService<ICategoryService>();
+        private readonly IGalgameSourceCollectionService _sourceCollectionService =
+            App.GetService<IGalgameSourceCollectionService>();
 
         public MultiStreamPageSettingDialog(ObservableCollection<IList> lists)
         {
@@ -38,6 +48,7 @@ namespace GalgameManager.Views.Dialog
                 foreach (CategoryGroup group in await _categoryService.GetCategoryGroupsAsync())
                     Categories.AddRange(group.Categories);
                 CategoryGroups.AddRange(await _categoryService.GetCategoryGroupsAsync());
+                Sources.AddRange(_sourceCollectionService.GetGalgameSources());
             };
             
             foreach (var list in lists)
@@ -58,8 +69,7 @@ namespace MultiStreamPageSettingDialog
     {
         public DataTemplate GameListTemplate { get; set; } = null!;
         public DataTemplate CategoryListTemplate { get; set; } = null!;
-        public DataTemplate SourceListFullTemplate { get; set; } = null!;
-        public DataTemplate SourceListSubTemplate { get; set; } = null!;
+        public DataTemplate SourceListTemplate { get; set; } = null!;
         
         protected override DataTemplate SelectTemplateCore(object item, DependencyObject container)
         {
@@ -67,8 +77,8 @@ namespace MultiStreamPageSettingDialog
                 return GameListTemplate;
             if (item is CategoryList)
                 return CategoryListTemplate;
-            if (item is SourceList sourceList)
-                return sourceList.Root is null ? SourceListFullTemplate : SourceListSubTemplate;
+            if (item is SourceList)
+                return SourceListTemplate;
             return base.SelectTemplateCore(item, container);
         }
     }
