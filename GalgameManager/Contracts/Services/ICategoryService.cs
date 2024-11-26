@@ -6,6 +6,11 @@ namespace GalgameManager.Contracts.Services;
 public interface ICategoryService
 {
     /// <summary>
+    /// 获取某个分类组，若没有则返回null
+    /// </summary>
+    public CategoryGroup? GetGroup(Guid id);
+    
+    /// <summary>
     /// 获取游玩状态分类组
     /// </summary>
     public CategoryGroup StatusGroup { get; }

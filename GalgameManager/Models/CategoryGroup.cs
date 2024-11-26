@@ -4,6 +4,7 @@ namespace GalgameManager.Models;
 
 public class CategoryGroup
 {
+    public Guid Id = Guid.NewGuid();
     public string Name = string.Empty;
     public List<Category> Categories = new();
     public CategoryGroupType Type;

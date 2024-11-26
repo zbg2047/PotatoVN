@@ -22,6 +22,8 @@ public class CategoryService : ICategoryService
     private readonly BgmPhraser _bgmPhraser;
     private readonly DispatcherQueue? _dispatcher;
 
+    public CategoryGroup? GetGroup(Guid id) => _categoryGroups.FirstOrDefault(group => group.Id == id);
+
     public CategoryGroup StatusGroup => _statusGroup!;
     public CategoryGroup DeveloperGroup => _developerGroup!;
 
