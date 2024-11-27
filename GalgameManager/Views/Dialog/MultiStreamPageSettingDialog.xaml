@@ -48,8 +48,54 @@
           RowDefinitions="Auto, *">
 
         <CommandBar Grid.Row="0" DefaultLabelPosition="Right">
-            <AppBarButton Label="添加列表" Icon="Add" />
-            <AppBarButton Label="恢复到默认设置" Icon="Undo" />
+            <AppBarButton x:Uid="MultiStreamPageSettingDialog_CommandBar_Add" Icon="Add">
+                <AppBarButton.Flyout>
+                    <MenuFlyout Placement="Bottom">
+                        <!-- 游戏列表 -->
+                        <MenuFlyoutItem x:Uid="MultiStreamPageSettingDialog_CommandBar_Add_GameListFull"
+                                        Command="{x:Bind AddGameListFullCommand}">
+                            <MenuFlyoutItem.Icon>
+                                <control:ConditionalFontIcon Symbol="XboxOneConsole" FluentGlyph="&#xE7FC;"/>
+                            </MenuFlyoutItem.Icon>
+                        </MenuFlyoutItem>
+                        <MenuFlyoutItem x:Uid="MultiStreamPageSettingDialog_CommandBar_Add_GameListCategory"
+                                        Command="{x:Bind AddGameListCategoryCommand}">
+                            <MenuFlyoutItem.Icon>
+                                <control:ConditionalFontIcon Symbol="XboxOneConsole" FluentGlyph="&#xE7FC;"/>
+                            </MenuFlyoutItem.Icon>
+                        </MenuFlyoutItem>
+                        <MenuFlyoutItem x:Uid="MultiStreamPageSettingDialog_CommandBar_Add_GameListSource"
+                                        Command="{x:Bind AddGameListSourceCommand}"
+                                        IsEnabled="{x:Bind AddGameListSourceAble, Mode=OneWay}">
+                            <MenuFlyoutItem.Icon>
+                                <control:ConditionalFontIcon Symbol="XboxOneConsole" FluentGlyph="&#xE7FC;"/>
+                            </MenuFlyoutItem.Icon>
+                        </MenuFlyoutItem>
+                        <!-- 分类列表 -->
+                        <MenuFlyoutItem x:Uid="MultiStreamPageSettingDialog_CommandBar_Add_CategoryList"
+                                        Command="{x:Bind AddCategoryListCommand}">
+                            <MenuFlyoutItem.Icon>
+                                <control:ConditionalFontIcon Symbol="Flag" FluentGlyph="&#xE7C1;"/>
+                            </MenuFlyoutItem.Icon>
+                        </MenuFlyoutItem>
+                        <!-- 游戏库列表 -->
+                        <MenuFlyoutItem x:Uid="MultiStreamPageSettingDialog_CommandBar_Add_SourceListFull"
+                                        Command="{x:Bind AddSourceListFullCommand}">
+                            <MenuFlyoutItem.Icon>
+                                <control:ConditionalFontIcon Symbol="Folder" FluentGlyph="&#xE8B7;"/>
+                            </MenuFlyoutItem.Icon>
+                        </MenuFlyoutItem>
+                        <MenuFlyoutItem x:Uid="MultiStreamPageSettingDialog_CommandBar_Add_SourceListSubSource"
+                                        Command="{x:Bind AddSourceListSubSourceCommand}"
+                                        IsEnabled="{x:Bind AddSourceListSubSourceAble, Mode=OneWay}">
+                            <MenuFlyoutItem.Icon>
+                                <control:ConditionalFontIcon Symbol="Folder" FluentGlyph="&#xE8B7;"/>
+                            </MenuFlyoutItem.Icon>
+                        </MenuFlyoutItem>
+                    </MenuFlyout>
+                </AppBarButton.Flyout>
+            </AppBarButton>
+            <AppBarButton x:Uid="MultiStreamPageSettingDialog_CommandBar_Reset" Icon="Undo" Command="{x:Bind ResetCommand}" />
         </CommandBar>
 
         <ListView Grid.Row="1" ItemsSource="{x:Bind Result}">
@@ -83,6 +129,13 @@
                                         <control:ComboBoxWithoutNull 
                                             ItemsSource="{Binding ElementName=Dialog, Path=Categories}"
                                             SelectedItem="{x:Bind Category, Mode=TwoWay}"/>
+                                    </StackPanel>
+                                    <StackPanel Visibility="{x:Bind Source, Converter={StaticResource VisibilityConverter}, Mode=OneWay}">
+                                        <TextBlock x:Uid="MultiStreamPageSettingDialog_GameList_Source"
+                                                   Style="{StaticResource ComboBoxDescription}" />
+                                        <control:ComboBoxWithoutNull 
+                                            ItemsSource="{Binding ElementName=Dialog, Path=Sources}"
+                                            SelectedItem="{x:Bind Source, Mode=TwoWay}"/>
                                     </StackPanel>
                                 </cmtk:WrapPanel>
                                 <Button Grid.Column="2" Style="{StaticResource TransparentButtonWithHover}"

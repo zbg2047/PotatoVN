@@ -21,6 +21,7 @@ namespace GalgameManager.ViewModels
 {
     public partial class MultiStreamViewModel : ObservableRecipient, INavigationAware
     {
+        public static bool IsSetting { get; private set; }
         public ObservableCollection<IList> Lists { get; } = new();
 
         private readonly IGalgameCollectionService _gameService;
@@ -82,18 +83,17 @@ namespace GalgameManager.ViewModels
         public static List<IList> GetInitList()
         {
             List<IList> result = new();
-            // test only
-            result.Add(new GameList( "最近游玩的游戏", MultiStreamPageSortKeys.LastPlayed));
+            result.Add(new GameList("MultiStreamPage_RecentPlayGames".GetLocalized(),
+                MultiStreamPageSortKeys.LastPlayed));
             result.Add(new CategoryList(_categoryService.DeveloperGroup));
-            foreach (Category c in _categoryService.StatusGroup.Categories)
-                result.Add(new GameList(c.Name, MultiStreamPageSortKeys.LastPlayed, c));
+            CategoryGroup statusGroup = _categoryService.StatusGroup;
+            result.Add(new GameList(statusGroup.Categories[2].Name, MultiStreamPageSortKeys.LastPlayed,
+                statusGroup.Categories[2])); // 在玩
+            result.Add(new GameList(statusGroup.Categories[1].Name, MultiStreamPageSortKeys.LastPlayed, 
+                statusGroup.Categories[1])); // 已完成
+            result.Add(new GameList(statusGroup.Categories[0].Name, MultiStreamPageSortKeys.LastPlayed,
+                statusGroup.Categories[0])); // 未设置
             result.Add(new SourceList(null));
-            foreach(GalgameSourceBase source in _sourceService.GetGalgameSources())
-                if (source.SubSources.Count > 0)
-                {
-                    result.Add(new SourceList(source));
-                    break;
-                }
             return result;
         }
 
@@ -122,7 +122,9 @@ namespace GalgameManager.ViewModels
         private async Task Setting()
         {
             Views.Dialog.MultiStreamPageSettingDialog dialog = new(Lists);
+            IsSetting = true;
             ContentDialogResult status = await dialog.ShowAsync();
+            IsSetting = false;
             if (status != ContentDialogResult.Primary) return;
             Lists.SyncCollection(dialog.Result);
             foreach (IList list in Lists)
@@ -209,9 +211,8 @@ namespace GalgameManager.MultiStreamPage.Lists
         [ObservableProperty] private string _title = string.Empty;
         [ObservableProperty] private MultiStreamPageSortKeys _sort;
 
-        [ObservableProperty] private Category? _category;
-        // public Category? Category { get; set; } // 如果设置了则为某分类下的游戏列表
-        public GalgameSourceBase? Source { get; set; } // 如果设置了则为某源下的游戏列表
+        [ObservableProperty] private Category? _category; // 如果设置了则为某分类下的游戏列表
+        [ObservableProperty] private GalgameSourceBase? _source; // 如果设置了则为某源下的游戏列表
 
         public GameList()
         {
@@ -269,6 +270,18 @@ namespace GalgameManager.MultiStreamPage.Lists
                 _ => throw new ArgumentOutOfRangeException()
             }, SortDirection.Descending));
         }
+
+        partial void OnCategoryChanged(Category? value)
+        {
+            if (!MultiStreamViewModel.IsSetting) return;
+            Title = value?.Name ?? Title;
+        }
+        
+        partial void OnSourceChanged(GalgameSourceBase? value)
+        {
+            if (!MultiStreamViewModel.IsSetting) return;
+            Title = value?.Name ?? Title;
+        }
     }
 
     public partial class CategoryList : ObservableRecipient, IList
@@ -309,6 +322,12 @@ namespace GalgameManager.MultiStreamPage.Lists
                 MultiStreamPageSortKeys.LastClicked => nameof(Category.LastClicked),
                 _ => throw new ArgumentOutOfRangeException(),
             }, SortDirection.Descending));
+        }
+        
+        partial void OnGroupChanged(CategoryGroup value)
+        {
+            if (!MultiStreamViewModel.IsSetting) return;
+            Title = value.Name;
         }
     }
 
@@ -364,6 +383,12 @@ namespace GalgameManager.MultiStreamPage.Lists
                 MultiStreamPageSortKeys.LastClicked => nameof(GalgameSourceBase.LastClicked),
                 _ => throw new ArgumentOutOfRangeException(),
             }, SortDirection.Descending));
+        }
+        
+        partial void OnRootChanged(GalgameSourceBase? value)
+        {
+            if (!MultiStreamViewModel.IsSetting) return;
+            Title = value?.Name ?? "MultiStreamPage_AllSources".GetLocalized();
         }
     }
 }

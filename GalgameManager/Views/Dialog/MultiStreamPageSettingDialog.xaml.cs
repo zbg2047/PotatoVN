@@ -1,14 +1,18 @@
 ﻿using System.Collections.ObjectModel;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using GalgameManager.Contracts.Services;
 using GalgameManager.Helpers;
 using GalgameManager.Models;
 using GalgameManager.Models.Sources;
 using GalgameManager.MultiStreamPage.Lists;
+using GalgameManager.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
 namespace GalgameManager.Views.Dialog
 {   
+    [INotifyPropertyChanged]
     public partial class MultiStreamPageSettingDialog
     {
         public ObservableCollection<IList> Result { get; } = new();
@@ -31,6 +35,8 @@ namespace GalgameManager.Views.Dialog
         public List<Category> Categories { get; } = new();
         public List<CategoryGroup> CategoryGroups { get; } = new();
         public List<GalgameSourceBase> Sources { get; } = new();
+        [ObservableProperty] private bool _addGameListSourceAble;
+        [ObservableProperty] private bool _addSourceListSubSourceAble;
             
         private readonly ICategoryService _categoryService = App.GetService<ICategoryService>();
         private readonly IGalgameSourceCollectionService _sourceCollectionService =
@@ -49,9 +55,11 @@ namespace GalgameManager.Views.Dialog
                     Categories.AddRange(group.Categories);
                 CategoryGroups.AddRange(await _categoryService.GetCategoryGroupsAsync());
                 Sources.AddRange(_sourceCollectionService.GetGalgameSources());
+                AddGameListSourceAble = Sources.Count > 0;
+                AddSourceListSubSourceAble = Sources.Count > 0;
             };
             
-            foreach (var list in lists)
+            foreach (IList list in lists)
                 Result.Add(list);
         }
 
@@ -59,6 +67,58 @@ namespace GalgameManager.Views.Dialog
         {
             if (sender is Button { DataContext: IList item })
                 Result.Remove(item);
+        }
+
+        [RelayCommand]
+        private void Reset()
+        {
+            List<IList> tmp = MultiStreamViewModel.GetInitList();
+            Result.Clear();
+            Result.SyncCollection(tmp);
+        }
+
+        [RelayCommand]
+        private void AddGameListFull()
+        {
+            Result.Add(new GameList("MultiStreamPageSettingDialog_NewGameList".GetLocalized(),
+                MultiStreamPageSortKeys.LastPlayed));
+        }
+
+        [RelayCommand]
+        private void AddGameListCategory()
+        {
+            if (Categories.Count == 0) return; //不应该
+            Result.Add(new GameList("MultiStreamPageSettingDialog_NewGameList".GetLocalized(),
+                MultiStreamPageSortKeys.LastPlayed, category: Categories[0]));
+        }
+        
+        [RelayCommand]
+        private void AddGameListSource()
+        {
+            if (Sources.Count == 0) return;
+            Result.Add(new GameList("MultiStreamPageSettingDialog_NewGameList".GetLocalized(),
+                MultiStreamPageSortKeys.LastPlayed, source: Sources[0]));
+        }
+        
+        [RelayCommand]
+        private void AddCategoryList()
+        {
+            Result.Add(new CategoryList(_categoryService.StatusGroup)
+                { Title = "MultiStreamPageSettingDialog_NewCategoryList".GetLocalized() });
+        }
+        
+        [RelayCommand]
+        private void AddSourceListFull()
+        {
+            Result.Add(new SourceList {Title = "MultiStreamPageSettingDialog_NewSourceList".GetLocalized()});
+        }
+
+        [RelayCommand]
+        private void AddSourceListSubSource()
+        {
+            if (Sources.Count == 0) return;
+            Result.Add(new SourceList(Sources[0])
+                { Title = "MultiStreamPageSettingDialog_NewSourceList".GetLocalized() });
         }
     }
 }

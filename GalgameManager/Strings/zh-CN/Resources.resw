@@ -1899,4 +1899,43 @@
   <data name="MultiStreamPageSettingDialog_SourceList_Name.Text" xml:space="preserve">
     <value>库列表</value>
   </data>
+  <data name="MultiStreamPageSettingDialog_CommandBar_Add.Label" xml:space="preserve">
+    <value>添加列表</value>
+  </data>
+  <data name="MultiStreamPageSettingDialog_CommandBar_Reset.Label" xml:space="preserve">
+    <value>恢复默认设置</value>
+  </data>
+  <data name="MultiStreamPageSettingDialog_CommandBar_Add_GameListFull.Text" xml:space="preserve">
+    <value>游戏列表（全部游戏）</value>
+  </data>
+  <data name="MultiStreamPageSettingDialog_CommandBar_Add_GameListCategory.Text" xml:space="preserve">
+    <value>游戏列表（某分类中）</value>
+  </data>
+  <data name="MultiStreamPageSettingDialog_CommandBar_Add_GameListSource.Text" xml:space="preserve">
+    <value>游戏列表（某库中）</value>
+  </data>
+  <data name="MultiStreamPageSettingDialog_CommandBar_Add_CategoryList.Text" xml:space="preserve">
+    <value>分类列表（某分类组）</value>
+  </data>
+  <data name="MultiStreamPageSettingDialog_CommandBar_Add_SourceListFull.Text" xml:space="preserve">
+    <value>库列表（全部库）</value>
+  </data>
+  <data name="MultiStreamPageSettingDialog_CommandBar_Add_SourceListSubSource.Text" xml:space="preserve">
+    <value>库列表（某库中）</value>
+  </data>
+  <data name="MultiStreamPageSettingDialog_NewGameList" xml:space="preserve">
+    <value>新建游戏列表</value>
+  </data>
+  <data name="MultiStreamPageSettingDialog_NewCategoryList" xml:space="preserve">
+    <value>新建分类列表</value>
+  </data>
+  <data name="MultiStreamPageSettingDialog_NewSourceList" xml:space="preserve">
+    <value>新建库列表</value>
+  </data>
+  <data name="MultiStreamPageSettingDialog_GameList_Source.Text" xml:space="preserve">
+    <value>游戏库</value>
+  </data>
+  <data name="MultiStreamPage_RecentPlayGames" xml:space="preserve">
+    <value>最近游玩的游戏</value>
+  </data>
 </root>
