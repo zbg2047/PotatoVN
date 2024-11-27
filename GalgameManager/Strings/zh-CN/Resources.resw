@@ -1938,4 +1938,7 @@
   <data name="MultiStreamPage_RecentPlayGames" xml:space="preserve">
     <value>最近游玩的游戏</value>
   </data>
+  <data name="MultiStreamPage_Cmd_AllowScroll.Label" xml:space="preserve">
+    <value>允许鼠标滚轮滚动列表</value>
+  </data>
 </root>

@@ -52,7 +52,8 @@
                     CornerRadius="4"
                     HorizontalAlignment="Right"
                     Padding="5,2,5,2"
-                    VerticalAlignment="Bottom">
+                    VerticalAlignment="Bottom"
+                    Visibility="{x:Bind SourceVisibility, Mode=OneWay}">
                     <Border.Shadow>
                         <ThemeShadow />
                     </Border.Shadow>

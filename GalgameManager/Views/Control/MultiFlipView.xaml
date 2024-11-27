@@ -62,11 +62,12 @@
             x:Name="Scroller"
             Grid.Row="1"
             HorizontalScrollBarVisibility="Hidden"
-            HorizontalScrollMode="Enabled"
+            HorizontalScrollMode="{x:Bind ScrollMode,Mode=OneWay}"
             SizeChanged="scroller_SizeChanged"
             VerticalScrollMode="Disabled" VerticalScrollBarVisibility="Disabled"
             ViewChanging="scroller_ViewChanging">
-            <ItemsRepeater ItemsSource="{x:Bind ItemSource, Mode=OneWay}"
+            <ItemsRepeater x:Name="ItemsRepeater" 
+                           ItemsSource="{x:Bind ItemSource, Mode=OneWay}"
                            ItemTemplate="{x:Bind ItemTemplate, Mode=OneWay}">
                 <ItemsRepeater.Layout>
                     <StackLayout Orientation="Horizontal" Spacing="{x:Bind Spacing, Mode=OneWay}" />

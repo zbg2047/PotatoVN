@@ -20,7 +20,8 @@
                 <DataTemplate x:DataType="multiStreamPage:GameList">
                     <control:MultiFlipView ItemSource="{x:Bind Games}"
                                            Title="{x:Bind Title, Mode=OneWay}"
-                                           TitleClickCommand="{x:Bind ClickTitleCommand}">
+                                           TitleClickCommand="{x:Bind ClickTitleCommand}"
+                                           ScrollMode="{Binding ElementName=Page, Path=ViewModel.ScrollMode, Mode=OneWay}">
                         <control:MultiFlipView.ItemTemplate>
                             <DataTemplate x:DataType="models:Galgame">
                                 <Button DataContext="{Binding}" Padding="0" BorderThickness="0"
@@ -42,7 +43,8 @@
                     <control:MultiFlipView ItemSource="{x:Bind Categories}"
                                            Title="{x:Bind Title, Mode=OneWay}"
                                            TitleClickCommand="{x:Bind ClickTitleCommand}"
-                                           Margin="0 0 0 25">
+                                           Margin="0 0 0 25"
+                                           ScrollMode="{Binding ElementName=Page, Path=ViewModel.ScrollMode, Mode=OneWay}">
                         <control:MultiFlipView.ItemTemplate>
                             <DataTemplate x:DataType="models:Category">
                                 <Button DataContext="{Binding}"
@@ -63,7 +65,8 @@
                     <control:MultiFlipView ItemSource="{x:Bind Sources}"
                                            Title="{x:Bind Title, Mode=OneWay}"
                                            TitleClickCommand="{x:Bind ClickTitleCommand}"
-                                           Margin="0 0 0 25">
+                                           Margin="0 0 0 25"
+                                           ScrollMode="{Binding ElementName=Page, Path=ViewModel.ScrollMode, Mode=OneWay}">
                         <control:MultiFlipView.ItemTemplate>
                             <DataTemplate x:DataType="sources:GalgameSourceBase">
                                 <Button DataContext="{Binding}"
@@ -96,8 +99,16 @@
                 </AppBarButton.KeyboardAccelerators>
             </AppBarButton>
             <CommandBar.SecondaryCommands>
+                <!-- 设置 -->
                 <AppBarButton x:Uid="MultiStreamPage_Cmd_Setting" Icon="Setting"
                               Command="{x:Bind ViewModel.SettingCommand}"/>
+                <!-- 允许鼠标滚动列表 -->
+                <AppBarToggleButton x:Uid="MultiStreamPage_Cmd_AllowScroll"
+                                    IsChecked="{x:Bind ViewModel.AllowScroll, Mode=TwoWay}">
+                    <AppBarToggleButton.Icon>
+                        <control:ConditionalFontIcon Symbol="Remote" FluentGlyph="&#xE8AF;"/>
+                    </AppBarToggleButton.Icon>
+                </AppBarToggleButton>
             </CommandBar.SecondaryCommands>
         </CommandBar>
         

@@ -23,6 +23,9 @@ namespace GalgameManager.ViewModels
     {
         public static bool IsSetting { get; private set; }
         public ObservableCollection<IList> Lists { get; } = new();
+        [ObservableProperty][NotifyPropertyChangedFor(nameof(ScrollMode))] 
+        private bool _allowScroll;
+        public ScrollMode ScrollMode => AllowScroll ? ScrollMode.Enabled : ScrollMode.Disabled;
 
         private readonly IGalgameCollectionService _gameService;
         private static IGalgameSourceCollectionService _sourceService = null!;
@@ -61,6 +64,8 @@ namespace GalgameManager.ViewModels
                 foreach(IList list in tmp)
                     list.Refresh();
                 Lists.SyncCollection(tmp);
+
+                AllowScroll = await _settingsService.ReadSettingAsync<bool>(KeyValues.MultiStreamPageAllowScroll);
             }
             catch (Exception e) // 不应该发生
             {
@@ -136,6 +141,11 @@ namespace GalgameManager.ViewModels
         {
             await _settingsService.SaveSettingAsync(KeyValues.MultiStreamPageList, Lists.ToList(), true,
                 converters: _converters, typeNameHandling: true);
+        }
+
+        partial void OnAllowScrollChanged(bool value)
+        {
+            _settingsService.SaveSettingAsync(KeyValues.MultiStreamPageAllowScroll, value);
         }
 
         #region SEARCH

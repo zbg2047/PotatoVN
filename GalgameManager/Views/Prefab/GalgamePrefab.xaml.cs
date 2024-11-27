@@ -13,6 +13,8 @@ namespace GalgameManager.Views.Prefab;
 [DependencyProperty<Galgame>("Galgame")]
 [DependencyProperty<Visibility>("PlayTypeVisibility", DefaultValue = Visibility.Collapsed,
     DefaultBindingMode = DefaultBindingMode.OneWay)]
+[DependencyProperty<Visibility>("SourceVisibility", DefaultValue = Visibility.Collapsed,
+    DefaultBindingMode = DefaultBindingMode.OneWay)]
 [DependencyProperty<FlyoutBase>("Flyout")]
 [DependencyProperty<double>("ItemScale", DefaultValue = 1.0f)]
 [DependencyProperty<double>("TextHeight", DefaultValue = 80f)]

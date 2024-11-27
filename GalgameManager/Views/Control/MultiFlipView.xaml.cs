@@ -1,4 +1,7 @@
-﻿using System.Windows.Input;
+﻿using System.Collections;
+using System.Windows.Input;
+using Windows.Foundation;
+using CommunityToolkit.WinUI.UI;
 using DependencyPropertyGenerator;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -10,6 +13,7 @@ namespace GalgameManager.Views.Control;
 [DependencyProperty<object>("ItemSource")]
 [DependencyProperty<DataTemplate>("ItemTemplate")]
 [DependencyProperty<double>("Spacing", DefaultValue = 8.0f, DefaultBindingMode = DefaultBindingMode.OneWay)]
+[DependencyProperty<ScrollMode>("ScrollMode", DefaultValue = ScrollMode.Disabled, DefaultBindingMode = DefaultBindingMode.OneWay)]
 public partial class MultiFlipView
 {
     public MultiFlipView()
@@ -28,17 +32,34 @@ public partial class MultiFlipView
 
     private void ScrollBackBtn_Click(object sender, RoutedEventArgs e)
     {
-        Scroller.ChangeView(Scroller.HorizontalOffset - Scroller.ViewportWidth, null, null);
-        // Manually focus to ScrollForwardBtn since this button disappears after scrolling to the end.          
-        ScrollForwardBtn.Focus(FocusState.Programmatic);
+        var currentOffset = Scroller.HorizontalOffset;
+        var targetPos = currentOffset - Scroller.ViewportWidth / 2;
+        for (var i = Count() - 1; i >= 0; i--)
+        {
+            if (ItemsRepeater.TryGetElement(i) is null) continue;
+            UIElement? element = ItemsRepeater.TryGetElement(i);
+            if (element is null) break;
+            var childStart = element.TransformToVisual(Scroller).TransformPoint(new Point(0, 0)).X;
+            if (childStart > 0 && childStart < Scroller.ViewportWidth)
+                targetPos = double.Min(targetPos, currentOffset - Scroller.ViewportWidth + childStart);
+        }
+        Scroller.ChangeView(targetPos, null, null);
     }
 
     private void ScrollForwardBtn_Click(object sender, RoutedEventArgs e)
     {
-        Scroller.ChangeView(Scroller.HorizontalOffset + Scroller.ViewportWidth, null, null);
-
-        // Manually focus to ScrollBackBtn since this button disappears after scrolling to the end.    
-        ScrollBackBtn.Focus(FocusState.Programmatic);
+        var currentOffset = Scroller.HorizontalOffset;
+        var targetPos = currentOffset + Scroller.ViewportWidth / 2;
+        for (var i = 0; i < Count(); i++)
+        {
+            if (ItemsRepeater.TryGetElement(i) is null) continue;
+            UIElement? element = ItemsRepeater.TryGetElement(i);
+            if (element is null) break;
+            var childStart = element.TransformToVisual(Scroller).TransformPoint(new Point(0, 0)).X;
+            if (childStart > 0 && childStart < Scroller.ViewportWidth)
+                targetPos = double.Max(targetPos, childStart + currentOffset);
+        }
+        Scroller.ChangeView(targetPos, null, null);
     }
 
     private void scroller_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -58,5 +79,13 @@ public partial class MultiFlipView
             ScrollBackBtn.Visibility = Visibility.Collapsed;
             ScrollForwardBtn.Visibility = Visibility.Collapsed;
         }
+    }
+
+    private int Count()
+    {
+        IList? tmp = ItemSource as IList;
+        if (ItemSource is AdvancedCollectionView)
+            tmp = (ItemSource as AdvancedCollectionView)?.Source;
+        return tmp?.Count ?? 0;
     }
 }
