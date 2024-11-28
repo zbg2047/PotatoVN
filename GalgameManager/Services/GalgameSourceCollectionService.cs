@@ -43,7 +43,6 @@ public class GalgameSourceCollectionService : IGalgameSourceCollectionService
                               converters: _converters)
                           ?? new ObservableCollection<GalgameSourceBase>();
         await SourceUpgradeAsync();
-        await NameAndSubSourceUpgradeAsync();
         foreach (GalgameSourceBase source in _galgameSources) // 部分崩溃的情况可能导致source里面部分galgame为null
         {
             // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
@@ -308,47 +307,73 @@ public class GalgameSourceCollectionService : IGalgameSourceCollectionService
     }
 
     #region UPGRADES
+    
     /// <summary>
-    /// 将galgame源归属记录从galgame移入source管理
+    /// <b>since v.1.8.0</b><br/>
+    /// 1. 修改存储库的结构（data.galgameFolders.json -> data.galgameSources.json, GalgameFolder -> GalgameSourceBase）<br/>
+    /// 2. 给各库命名<br/>
+    /// 3. 将galgame源归属记录从galgame移入source管理 <br/>
     /// </summary>
     private async Task SourceUpgradeAsync()
     {
         if (await _localSettingsService.ReadSettingAsync<bool>(KeyValues.SourceUpgrade)) return;
-        // 将游戏搬入对应的源中
-        IList<Galgame> games = App.GetService<IGalgameCollectionService>().Galgames;
-        foreach (Galgame g in games)
+        // 修改存储库结构
+        try
         {
-            var gamePath = g.Path;
-            if (!string.IsNullOrEmpty(gamePath))
+            var template = new[] // 旧的GalgameFolder存储库结构
             {
-                var folderPath = Path.GetDirectoryName(gamePath);
-                if (folderPath is null)
+                new
                 {
-                    _infoService.Event(EventType.NotCriticalUnexpectedError, InfoBarSeverity.Error,
-                        "UnexpectedEvent".GetLocalized(),
-                        new PvnException($"Can not get the parent folder of the game{gamePath}"));
-                    continue;
+                    Path = string.Empty,
+                    ScanOnStart = false,
+                },
+            };
+            var tmp = await _localSettingsService.ReadOldSettingAsync(KeyValues.GalgameFolders, template);
+            if (tmp is not null)
+            {
+                foreach (var folder in tmp.Where(f => !string.IsNullOrEmpty(f.Path)))
+                {
+                    GalgameFolderSource source = new(folder.Path) { ScanOnStart = folder.ScanOnStart };
+                    _galgameSources.Add(source);
                 }
+            }
+            await _localSettingsService.RemoveSettingAsync(KeyValues.GalgameFolders, true);
+        }
+        catch (Exception e) //不应该发生
+        {
+            _infoService.Event(EventType.UpgradeError, InfoBarSeverity.Warning, "升级游戏库数据库结构失败", e);
+        }
+        // 给各库命名
+        {
+            foreach (GalgameSourceBase src in _galgameSources)
+                src.SetNameFromPath();
+        }
+        // 将游戏搬入对应的源中
+        {
+            IList<Galgame> games = App.GetService<IGalgameCollectionService>().Galgames;
+            foreach (Galgame g in games)
+            {
+                var gamePath = g.Path;
+                if (!string.IsNullOrEmpty(gamePath))
+                {
+                    var folderPath = Path.GetDirectoryName(gamePath);
+                    if (folderPath is null)
+                    {
+                        _infoService.Event(EventType.NotCriticalUnexpectedError, InfoBarSeverity.Error,
+                            "UnexpectedEvent".GetLocalized(),
+                            new PvnException($"Can not get the parent folder of the game{gamePath}"));
+                        continue;
+                    }
 
-                GalgameSourceBase? source = GetGalgameSource(GalgameSourceType.LocalFolder, folderPath);
-                source ??= await AddGalgameSourceAsync(GalgameSourceType.LocalFolder, folderPath);
-                MoveInNoOperate(source, g, folderPath);
+                    GalgameSourceBase? source = GetGalgameSource(GalgameSourceType.LocalFolder, folderPath);
+                    source ??= await AddGalgameSourceAsync(GalgameSourceType.LocalFolder, folderPath);
+                    MoveInNoOperate(source, g, gamePath);
+                }
             }
         }
-
+        
         await Save();
         await _localSettingsService.SaveSettingAsync(KeyValues.SourceUpgrade, true);
-    }
-
-    private async Task NameAndSubSourceUpgradeAsync()
-    {
-        if (await _localSettingsService.ReadSettingAsync<bool>(KeyValues.SourceNameAndSubUpgrade))
-            return;
-        foreach (GalgameSourceBase src in _galgameSources)
-            src.SetNameFromPath();
-        CalcSubSources();
-        await _localSettingsService.SaveSettingAsync(KeyValues.SourceNameAndSubUpgrade, true);  
-        await Save();
     }
 
     #endregion

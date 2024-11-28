@@ -25,4 +25,5 @@ public enum EventType
     BgTaskSuccessEvent,
     
     PageError,
+    UpgradeError,
 }

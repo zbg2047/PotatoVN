@@ -168,6 +168,16 @@ public class LocalSettingsService : ILocalSettingsService
         return TryGetDefaultValue<T>(key);
     }
 
+    public Task<T?> ReadOldSettingAsync<T>(string key, T template, JsonSerializerSettings? settings = null)
+    {
+        return Task.Run(() =>
+        {
+            var content = _fileService.ReadWithoutJson(_applicationDataFolder, $"data.{key}.json");
+            if (string.IsNullOrEmpty(content)) return default;
+            return JsonConvert.DeserializeAnonymousType(content, template, settings!);
+        });
+    }
+
     private T? TryGetDefaultValue<T>(string key)
     {
         switch (key)
@@ -255,19 +265,17 @@ public class LocalSettingsService : ILocalSettingsService
             await UiThreadInvokeHelper.InvokeAsync(() => OnSettingChanged?.Invoke(key, value));
     }
     
-    public async Task RemoveSettingAsync(string key)
+    public async Task RemoveSettingAsync(string key, bool isLarge = false)
     {
-        if (RuntimeHelper.IsMSIX)
+        if (RuntimeHelper.IsMSIX && !isLarge)
         {
             ApplicationData.Current.LocalSettings.Values.Remove(key);
         }
         else
         {
             await InitializeAsync();
-
             _settings.Remove(key);
-
-            _fileService.Save(_applicationDataFolder, _localsettingsFile, _settings);
+            _fileService.Delete(_applicationDataFolder, $"data.{key}.json");
         }
         await UiThreadInvokeHelper.InvokeAsync(() => OnSettingChanged?.Invoke(key, null));
     }

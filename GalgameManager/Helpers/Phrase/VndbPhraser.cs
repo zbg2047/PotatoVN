@@ -52,6 +52,10 @@ public class VndbPhraser : IGalInfoPhraser, IGalStatusSync, IGalCharacterPhraser
                     _authed = false;
                     _vndbApi.UpdateToken(null);
                 }
+                catch (Exception)
+                {
+                    _authed = false; //todo:修复该phraser
+                }
             });
         }
     }

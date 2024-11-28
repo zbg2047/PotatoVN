@@ -100,13 +100,11 @@ public static class KeyValues
     public const string CategoryIdUpgraded = "categoryIdUpgraded"; //给各分类添加id字段
     public const string CategoryLastPlayedUpgraded = "categoryLastPlayedUpgraded"; //给各分类添加lastPlayed字段
     public const string SourceUpgrade = "sourceUpgrade"; //Source升级
-    public const string SourceNameAndSubUpgrade = "sourceNameAndSubUpgrade"; //Source名称和子库升级
     public const string MixedPhraserOrderVersion = "mixedPhraserOrderVersion"; //int，当前配置中的混合搜刮器顺序的版本
     
     
     //废弃Key，只读，仅用于升级
     public const string BangumiToken = "bangumiToken";
     public const string BangumiOAuthState= "bangumiOAuthState"; //BgmAccount?, Bangumi账户, 若为null则未登录
-    //抛弃GalgameFolders
-    public const string GalgameFolders = "galgameFolders";
+    public const string GalgameFolders = "galgameFolders"; //旧游戏文件夹，仅用于升级
 }

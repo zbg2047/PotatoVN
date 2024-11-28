@@ -7,6 +7,7 @@ using GalgameManager.Helpers;
 using GalgameManager.Helpers.Phrase;
 using GalgameManager.Models;
 using Microsoft.UI.Dispatching;
+using Microsoft.UI.Xaml.Controls;
 
 namespace GalgameManager.Services;
 
@@ -14,6 +15,7 @@ public class CategoryService : ICategoryService
 {
     private ObservableCollection<CategoryGroup> _categoryGroups = new();
     private readonly GalgameCollectionService _galgameService;
+    private readonly IInfoService _infoService;
     private CategoryGroup? _developerGroup, _statusGroup;
     private readonly Category[] _statusCategory = new Category[5];
     private bool _isInit;
@@ -27,9 +29,11 @@ public class CategoryService : ICategoryService
     public CategoryGroup StatusGroup => _statusGroup!;
     public CategoryGroup DeveloperGroup => _developerGroup!;
 
-    public CategoryService(ILocalSettingsService localSettings, IGalgameCollectionService galgameService)
+    public CategoryService(ILocalSettingsService localSettings, IGalgameCollectionService galgameService,
+        IInfoService infoService)
     {
         _localSettings = localSettings;
+        _infoService = infoService;
         _galgameService = (galgameService as GalgameCollectionService)!;
         _galgameService.GalgameAddedEvent += UpdateCategory;
         _galgameService.GalgameDeletedEvent += galgame =>
@@ -330,11 +334,15 @@ public class CategoryService : ICategoryService
         }
     }
 
+    #region UPGRADE
+    
     /// <summary>
     /// 旧的存储格式与新的存储格式不兼容，需要升级
     /// </summary>
     private async Task Upgrade()
     {
+        // 改变游戏索引格式，since v1.8.0
+        await UpdateGameIndexFormat();
         // 给各分类添加id字段, since v1.8.0
         if (!await _localSettings.ReadSettingAsync<bool>(KeyValues.CategoryIdUpgraded))
         {
@@ -353,8 +361,51 @@ public class CategoryService : ICategoryService
             await _localSettings.SaveSettingAsync(KeyValues.CategoryLastPlayedUpgraded, true);
             await SaveAsync();
         }
-        await Task.CompletedTask; //todo：待完成多Source化后添加
     }
+
+    private async Task UpdateGameIndexFormat()
+    {
+        if (await _localSettings.ReadSettingAsync<bool>(KeyValues.CategoryUpgraded)) return;
+        try
+        {
+            var template = new[]
+            {
+                // CategoryGroup
+                new
+                {
+                    Categories = new[]
+                    {
+                        // Category
+                        new
+                        {
+                            Galgames = new[] { string.Empty }, //List of paths
+                        },
+                    },
+                },
+            };
+            var tmp = await _localSettings.ReadOldSettingAsync(KeyValues.CategoryGroups, template);
+            if (tmp is not null)
+            {
+                for (var i = 0; i < tmp.Length && i < _categoryGroups.Count; i++)
+                for (var j = 0; j < tmp[i].Categories.Length && j < _categoryGroups[i].Categories.Count; j++)
+                {
+                    foreach (var path in tmp[i].Categories[j].Galgames)
+                    {
+                        Galgame? galgame = _galgameService.Galgames.FirstOrDefault(g => g.LocalPath == path);
+                        if (galgame is not null) _categoryGroups[i].Categories[j].Add(galgame);
+                    }
+                }
+            }
+            await SaveAsync();
+            await _localSettings.SaveSettingAsync(KeyValues.CategoryUpgraded, true);
+        }
+        catch (Exception e)
+        {
+            _infoService.Event(EventType.UpgradeError, InfoBarSeverity.Warning, "升级分类存储格式（游戏索引方案）失败", e);
+        }
+    }
+    
+    #endregion
 
     /// <summary>
     /// 是否在某个type的分类组中
