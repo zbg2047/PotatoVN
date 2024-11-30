@@ -31,7 +31,7 @@ public partial class GalgameCollectionService
         // 检查该游戏是否已经存在
         if (GetGalgameFromUid(meta.Uid) is { } existGame)
         {
-            Galgame tmp = await DealWithExistGameAsync(sourceType, path, existGame);
+            Galgame tmp = await DealWithExistGameAsync(sourceType, path, existGame, meta);
             GalgameChangedEvent?.Invoke(tmp);
             return tmp;
         }
@@ -56,7 +56,7 @@ public partial class GalgameCollectionService
 
     public async Task<Galgame> SetLocalPathAsync(Galgame galgame, string path)
     {
-        Galgame result = await DealWithExistGameAsync(GalgameSourceType.LocalFolder, path, galgame);
+        Galgame result = await DealWithExistGameAsync(GalgameSourceType.LocalFolder, path, galgame, null);
         GalgameChangedEvent?.Invoke(result);
         await SaveGalgamesAsync(result);
         return result;
@@ -80,8 +80,10 @@ public partial class GalgameCollectionService
         throw new PvnException(string.Empty);
     }
 
-    private async Task<Galgame> DealWithExistGameAsync(GalgameSourceType type, string path, Galgame existGame)
+    private async Task<Galgame> DealWithExistGameAsync(GalgameSourceType type, string path, Galgame existGame,
+        Galgame? meta)
     {
+        existGame.MergeTime(meta);
         switch (type)
         {
             case GalgameSourceType.LocalFolder:

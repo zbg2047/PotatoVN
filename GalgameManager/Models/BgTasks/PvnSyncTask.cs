@@ -72,10 +72,13 @@ public class PvnSyncTask : BgTaskBase
         {
             GalgameDto dto = changedGalgames[index];
             Galgame? game = gameService.GetGalgameFromId(dto.id.ToString(), RssType.PotatoVn);
-            game ??= gameService.GetGalgameFromId(dto.bgmId, RssType.Bangumi);
-            game ??= gameService.GetGalgameFromId(dto.vndbId, RssType.Vndb);
-            game ??= gameService.GetGalgameFromName(dto.name);
-            game ??= gameService.GetGalgameFromName(dto.cnName);
+            game ??= gameService.GetGalgameFromUid(new GalgameUid
+            {
+                BangumiId = dto.bgmId,
+                VndbId = dto.vndbId,
+                Name = dto.name ?? string.Empty,
+                CnName = dto.cnName,
+            });
 
             await UiThreadInvokeHelper.InvokeAsync(async Task() =>
             {
@@ -115,13 +118,10 @@ public class PvnSyncTask : BgTaskBase
 
                 if (dto.playTime is not null)
                 {
-                    dto.playTime.Sort((a, b) => a.dateTimeStamp.CompareTo(b.dateTimeStamp));
-                    game.PlayedTime.Clear();
-                    foreach (PlayLogDto time in dto.playTime)
-                        game.PlayedTime[time.dateTimeStamp.ToDateTime().ToLocalTime().ToStringDefault()] = time.minute;
-                    game.TotalPlayTime = game.PlayedTime.Values.Sum();
-                    if(dto.playTime.Count > 0)
-                        game.LastPlayTime = dto.playTime[^1].dateTimeStamp.ToDateTime().ToLocalTime();
+                    Dictionary<string, int> playTime = new();
+                    foreach(PlayLogDto time in dto.playTime)
+                        playTime[time.dateTimeStamp.ToDateTime().ToLocalTime().ToStringDefault()] = time.minute;
+                    game.MergeTime(new Galgame { PlayedTime = playTime });
                 }
 
                 game.PlayType = dto.playType;

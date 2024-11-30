@@ -1,9 +1,7 @@
 ﻿using System.Collections.ObjectModel;
-using System.Globalization;
 using Windows.Foundation.Metadata;
 using CommunityToolkit.Mvvm.ComponentModel;
 using GalgameManager.Contracts;
-using GalgameManager.Core.Contracts.Services;
 using GalgameManager.Enums;
 using GalgameManager.Helpers;
 using GalgameManager.Helpers.Phrase;
@@ -21,7 +19,7 @@ public partial class Galgame : ObservableObject, IDisplayableGameObject
     public static readonly int PhraserNumber = 6;
     
     public event Action<Galgame, string, object>? GalPropertyChanged;
-    public event GenericDelegate<Exception>? ErrorOccurred; //非致命异常产生时触发
+    public event Action<Exception>? ErrorOccurred; //非致命异常产生时触发
     
     public string Path
     {
@@ -172,24 +170,6 @@ public partial class Galgame : ObservableObject, IDisplayableGameObject
     {
         new DirectoryInfo(Path).Delete(true);
     }
-    
-    /// <summary>
-    /// 时间转换
-    /// </summary>
-    /// <param name="time">年/月/日</param>
-    /// <returns></returns>
-    public static long GetTime(string time)
-    {
-        if (time == DefaultString)
-            return 0;
-        if (DateTime.TryParseExact(time, "yyyy/M/d", CultureInfo.InvariantCulture, DateTimeStyles.None,
-                out DateTime dateTime))
-        {
-            return (long)(dateTime - DateTime.MinValue).TotalDays;
-        }
-
-        return 0;
-    }
 
     /// <summary>
     /// 获取该游戏的本地文件夹路径，若其不是本地游戏则返回null
@@ -220,21 +200,6 @@ public partial class Galgame : ObservableObject, IDisplayableGameObject
         if (LocalPath is null) return [];
         List<string> result = Directory.GetDirectories(LocalPath).ToList();
         return result;
-    }
-
-    /// <summary>
-    /// 获取该游戏信息文件夹地址
-    /// </summary>
-    /// <returns></returns>
-    public string GetMetaPath()
-    {
-        return SourceType switch
-        {
-            GalgameSourceType.LocalFolder => SystemPath.Combine(Path, MetaPath),
-            GalgameSourceType.LocalZip when SystemPath.GetDirectoryName(Path) is { } p => 
-                SystemPath.Combine(p, MetaPath, SystemPath.GetFileNameWithoutExtension(Path)),
-            _ => ""
-        };
     }
 
     /// <summary>
@@ -303,52 +268,6 @@ public partial class Galgame : ObservableObject, IDisplayableGameObject
     }
 
     /// <summary>
-    /// 从meta信息中恢复游戏信息
-    /// </summary>
-    /// <param name="meta">待恢复的数据</param>
-    /// <param name="metaFolderPath">meta文件夹路径</param>
-    /// <returns>恢复过后的信息</returns>
-    public static Galgame ResolveMetaFromLocalFolder(Galgame meta,string metaFolderPath)
-    {
-        if(meta.SourceType is not (GalgameSourceType.LocalFolder or GalgameSourceType.LocalZip))return meta;
-        meta = App.GetService<IFileService>().Read<Galgame>(metaFolderPath, "meta.json")!;
-        meta.Path = SystemPath.GetFullPath(SystemPath.Combine(metaFolderPath, meta.Path));
-        if (meta.Path.EndsWith('\\')) meta.Path = meta.Path[..^1];
-        if (meta.ImagePath.Value != DefaultImagePath)
-        {
-            meta.ImagePath.Value = SystemPath.GetFullPath(SystemPath.Combine(metaFolderPath, meta.ImagePath.Value!));
-            if(File.Exists(meta.ImagePath) == false)
-                meta.ImagePath.Value = DefaultImagePath;
-        }
-        foreach (GalgameCharacter character in meta.Characters)
-        {
-            character.ImagePath = SystemPath.GetFullPath(SystemPath.Combine(metaFolderPath, character.ImagePath));
-            if (!File.Exists(character.ImagePath))
-                character.ImagePath = DefaultImagePath;
-            character.PreviewImagePath = SystemPath.GetFullPath(SystemPath.Combine(metaFolderPath, character.PreviewImagePath));
-            if (!File.Exists(character.PreviewImagePath))
-                character.PreviewImagePath = DefaultImagePath;
-        }
-        meta.UpdateIdFromMixed();
-        if (meta.SourceType == GalgameSourceType.LocalFolder)
-        {
-            if (meta.ExePath != null)
-            {
-                meta.ExePath = SystemPath.GetFullPath(SystemPath.Combine(metaFolderPath, meta.ExePath));
-                if (!File.Exists(meta.ExePath))
-                    meta.ExePath = null;
-            }
-            meta.SavePath = Directory.Exists(meta.SavePath) ? meta.SavePath : null; //检查存档路径是否存在并设置SavePosition字段
-            meta.FindSaveInPath();
-        }
-        else
-        {
-            meta.ExePath = null;
-        }
-        return meta;
-    }
-
-    /// <summary>
     /// 从混合数据源的id更新其他数据源的id
     /// </summary>
     public void UpdateIdFromMixed()
@@ -395,6 +314,27 @@ public partial class Galgame : ObservableObject, IDisplayableGameObject
     
     /// 检查是否所有的id都为空
     public bool IsIdsEmpty() => Ids.All(string.IsNullOrEmpty);
+
+    /// <summary>
+    /// 合并各种时间信息<br/>
+    /// PlayedTime, LastPlayTime, ReleaseDate
+    /// </summary>
+    public void MergeTime(Galgame? other)
+    {
+        if (other is null) return;
+        // 合并PlayedTime
+        foreach (var (key, value) in other.PlayedTime)
+        {
+            if (!PlayedTime.TryAdd(key, value))
+                PlayedTime[key] = int.Max(value, PlayedTime[key]);
+        }
+        // 排序PlayedTime
+        PlayedTime = PlayedTime.OrderBy(pair => Utils.TryParseDateGuessCulture(pair.Key))
+            .ToDictionary(pair => pair.Key, pair => pair.Value);
+        TotalPlayTime = PlayedTime.Values.Sum();
+        LastPlayTime = PlayedTime.Keys.Select(Utils.TryParseDateGuessCulture).Max();
+        ReleaseDate.Value = other.ReleaseDate.Value > ReleaseDate.Value ? other.ReleaseDate.Value : ReleaseDate.Value;
+    }
     
     public string GetLogName() => $"Galgame_{Url.ToBase64().Replace("/", "").Replace("=", "")}.txt";
     
