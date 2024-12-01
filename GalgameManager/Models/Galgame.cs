@@ -332,7 +332,9 @@ public partial class Galgame : ObservableObject, IDisplayableGameObject
         PlayedTime = PlayedTime.OrderBy(pair => Utils.TryParseDateGuessCulture(pair.Key))
             .ToDictionary(pair => pair.Key, pair => pair.Value);
         TotalPlayTime = PlayedTime.Values.Sum();
-        LastPlayTime = PlayedTime.Keys.Select(Utils.TryParseDateGuessCulture).Max();
+        LastPlayTime = PlayedTime.Count > 0
+            ? PlayedTime.Keys.Select(Utils.TryParseDateGuessCulture).Max()
+            : DateTime.MinValue;
         ReleaseDate.Value = other.ReleaseDate.Value > ReleaseDate.Value ? other.ReleaseDate.Value : ReleaseDate.Value;
     }
     
