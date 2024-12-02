@@ -341,31 +341,26 @@ public class CategoryService : ICategoryService
     /// </summary>
     private async Task Upgrade()
     {
+        LocalSettingStatus status =
+            await _localSettings.ReadSettingAsync<LocalSettingStatus>(KeyValues.DataStatus, true) 
+            ?? new();
         // 改变游戏索引格式，since v1.8.0
-        await UpdateGameIndexFormat();
-        // 给各分类添加id字段, since v1.8.0
-        if (!await _localSettings.ReadSettingAsync<bool>(KeyValues.CategoryIdUpgraded))
-        {
-            foreach (CategoryGroup group in _categoryGroups)
-            foreach (Category category in group.Categories)
-                category.Id = Guid.NewGuid();
-            await _localSettings.SaveSettingAsync(KeyValues.CategoryIdUpgraded, true);
-            await SaveAsync();
-        }
+        await UpdateGameIndexFormat(status);
         // 给各分类添加LastPlayed字段, since v1.8.0
-        if (!await _localSettings.ReadSettingAsync<bool>(KeyValues.CategoryLastPlayedUpgraded))
+        if (!status.CategoryAddLastPlayed)
         {
             foreach (CategoryGroup group in _categoryGroups)
             foreach (Category category in group.Categories)
                 category.UpdateLastPlayed();
-            await _localSettings.SaveSettingAsync(KeyValues.CategoryLastPlayedUpgraded, true);
             await SaveAsync();
+            status.CategoryAddLastPlayed = true;
+            await _localSettings.SaveSettingAsync(KeyValues.DataStatus, status, true);
         }
     }
 
-    private async Task UpdateGameIndexFormat()
+    private async Task UpdateGameIndexFormat(LocalSettingStatus status)
     {
-        if (await _localSettings.ReadSettingAsync<bool>(KeyValues.CategoryUpgraded)) return;
+        if (status.CategoryGameIndexUpgrade) return;
         try
         {
             var template = new[]
@@ -387,17 +382,24 @@ public class CategoryService : ICategoryService
             if (tmp is not null)
             {
                 for (var i = 0; i < tmp.Length && i < _categoryGroups.Count; i++)
-                for (var j = 0; j < tmp[i].Categories.Length && j < _categoryGroups[i].Categories.Count; j++)
                 {
-                    foreach (var path in tmp[i].Categories[j].Galgames)
+                    // ReSharper disable once ConditionIsAlwaysTrueOrFalse
+                    if (tmp[i].Categories is null) continue;
+                    for (var j = 0; j < tmp[i].Categories.Length && j < _categoryGroups[i].Categories.Count; j++)
                     {
-                        Galgame? galgame = _galgameService.Galgames.FirstOrDefault(g => g.LocalPath == path);
-                        if (galgame is not null) _categoryGroups[i].Categories[j].Add(galgame);
+                        // ReSharper disable once ConditionIsAlwaysTrueOrFalse
+                        if (tmp[i].Categories[j].Galgames is null) continue;
+                        foreach (var path in tmp[i].Categories[j].Galgames)
+                        {
+                            Galgame? galgame = _galgameService.Galgames.FirstOrDefault(g => g.LocalPath == path);
+                            if (galgame is not null) _categoryGroups[i].Categories[j].Add(galgame);
+                        }
                     }
                 }
             }
             await SaveAsync();
-            await _localSettings.SaveSettingAsync(KeyValues.CategoryUpgraded, true);
+            status.CategoryGameIndexUpgrade = true;
+            await _localSettings.SaveSettingAsync(KeyValues.DataStatus, status, true);
         }
         catch (Exception e)
         {

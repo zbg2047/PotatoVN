@@ -88,18 +88,14 @@ public static class KeyValues
     public const string LastError = "lastError"; //string, 上次错误信息
     
     //是否执行过某种升级, bool
+    public const string DataStatus = "dataStatus"; //LocalSettingStatus, 用于描述某PotatoVN数据的状态
     public const string IdFromMixedUpgraded = "idFromMixedUpgraded"; //其他信息源id从mixed中获取
     public const string SaveFormatUpgraded = "saveFormatUpgraded"; //设置格式升级
-    public const string LargerFileSeparateUpgraded = "largerFileSeparateUpgraded"; //大文件分离升级
     public const string SortKeysUpgraded = "sortKeysUpgraded"; //排序格式升级
     public const string OAuthUpgraded = "OAuthUpgraded"; //BgmOAuth升级1
     public const string OAuthUpgraded2 = "OAuthUpgraded2"; //BgmOAuth升级2
     public const string SavePathUpgraded = "savePathUpgraded"; //存档路径升级
     public const string GameSyncUpgraded = "gameSyncUpgraded"; //游戏同步升级
-    public const string CategoryUpgraded = "categoryUpgraded"; //分类索引升级
-    public const string CategoryIdUpgraded = "categoryIdUpgraded"; //给各分类添加id字段
-    public const string CategoryLastPlayedUpgraded = "categoryLastPlayedUpgraded"; //给各分类添加lastPlayed字段
-    public const string SourceUpgrade = "sourceUpgrade"; //Source升级
     public const string MixedPhraserOrderVersion = "mixedPhraserOrderVersion"; //int，当前配置中的混合搜刮器顺序的版本
     
     

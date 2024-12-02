@@ -84,9 +84,14 @@ public class LocalSettingsService : ILocalSettingsService
             _fileService.SaveNow(_applicationDataFolder, _localsettingsFile, tmp);
             await SaveSettingAsync(KeyValues.SaveFormatUpgraded, true);
         }
+        
+        // 以上的配置均在可导出数据版本前，不需要特殊处理迁移问题
+
+        LocalSettingStatus status = _fileService.Read<LocalSettingStatus>
+            (_applicationDataFolder, $"data.{KeyValues.DataStatus}.json") ?? new();
 
         // 大配置分离保存，而非像原先那样全部放在一个大json中
-        if (await ReadSettingAsync<bool>(KeyValues.LargerFileSeparateUpgraded) == false)
+        if (status.LargerFileSeparateUpgraded == false)
         {
             IDictionary<string, object> old = _fileService.Read<IDictionary<string, object>>
                 (_applicationDataFolder, _localsettingsFile) ??new Dictionary<string, object>();
@@ -97,7 +102,8 @@ public class LocalSettingsService : ILocalSettingsService
             _fileService.Delete(_applicationDataFolder, _localsettingsFile);
             _fileService.Delete(_applicationDataFolder, "LocalSettings.backup.json");
             await _fileService.WaitForWriteFinishAsync();
-            await SaveSettingAsync(KeyValues.LargerFileSeparateUpgraded, true);
+            status.LargerFileSeparateUpgraded = true;
+            _fileService.SaveNow(_applicationDataFolder, $"data.{KeyValues.DataStatus}.json", status);
         }
     }
 

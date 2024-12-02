@@ -42,7 +42,9 @@ public class GalgameSourceCollectionService : IGalgameSourceCollectionService
                               KeyValues.GalgameSources, true,
                               converters: _converters)
                           ?? new ObservableCollection<GalgameSourceBase>();
-        await SourceUpgradeAsync();
+        LocalSettingStatus settingStatus = await _localSettingsService.ReadSettingAsync<LocalSettingStatus>
+            (KeyValues.DataStatus, true) ?? new();
+        await SourceUpgradeAsync(settingStatus);
         foreach (GalgameSourceBase source in _galgameSources) // 部分崩溃的情况可能导致source里面部分galgame为null
         {
             // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
@@ -314,9 +316,9 @@ public class GalgameSourceCollectionService : IGalgameSourceCollectionService
     /// 2. 给各库命名<br/>
     /// 3. 将galgame源归属记录从galgame移入source管理 <br/>
     /// </summary>
-    private async Task SourceUpgradeAsync()
+    private async Task SourceUpgradeAsync(LocalSettingStatus status)
     {
-        if (await _localSettingsService.ReadSettingAsync<bool>(KeyValues.SourceUpgrade)) return;
+        if (status.GalgameSourceFormatUpgrade) return;
         // 修改存储库结构
         try
         {
@@ -357,7 +359,7 @@ public class GalgameSourceCollectionService : IGalgameSourceCollectionService
                 if (!string.IsNullOrEmpty(gamePath))
                 {
                     var folderPath = Path.GetDirectoryName(gamePath);
-                    if (folderPath is null)
+                    if (string.IsNullOrEmpty(folderPath))
                     {
                         _infoService.Event(EventType.NotCriticalUnexpectedError, InfoBarSeverity.Error,
                             "UnexpectedEvent".GetLocalized(),
@@ -373,7 +375,8 @@ public class GalgameSourceCollectionService : IGalgameSourceCollectionService
         }
         
         await Save();
-        await _localSettingsService.SaveSettingAsync(KeyValues.SourceUpgrade, true);
+        status.GalgameSourceFormatUpgrade = true;
+        await _localSettingsService.SaveSettingAsync(KeyValues.DataStatus, status, true);
     }
 
     #endregion
