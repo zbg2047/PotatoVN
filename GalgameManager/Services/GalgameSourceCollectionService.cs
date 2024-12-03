@@ -56,6 +56,18 @@ public class GalgameSourceCollectionService : IGalgameSourceCollectionService
                     "GalgameSourceCollectionService_InitAsync_GalgameIsNull".GetLocalized(g.Path, source.Url));
             }
         }
+        // 去除找不到的库
+        List<GalgameSourceBase> toRemove = _galgameSources.Where(source => !Directory.Exists(source.Path)).ToList();
+        if (toRemove.Count > 0)
+        {
+            foreach (GalgameSourceBase source in toRemove)
+                _galgameSources.Remove(source);
+            _infoService.Event(EventType.GalgameEvent, InfoBarSeverity.Warning,
+                "GalgameSourceCollectionService_RemoveNonExist_Title".GetLocalized(),
+                msg: "GalgameSourceCollectionService_RemoveNonExist_Msg".GetLocalized(
+                    $"\n{string.Join('\n', toRemove.Select(s => s.Path))}"));
+        }
+        
         // 给Galgame注入Source列表
         foreach (GalgameSourceBase s in _galgameSources)
             foreach (Galgame g in s.GetGalgameList().Where(g => !g.Sources.Contains(s)))
