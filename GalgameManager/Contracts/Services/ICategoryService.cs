@@ -69,4 +69,10 @@ public interface ICategoryService
     /// <param name="galgame"></param>
     /// <returns></returns>
     Category? GetDeveloperCategory(Galgame galgame);
+    
+    /// <summary>
+    /// 导出数据
+    /// </summary>
+    /// <returns></returns>
+    Task ExportAsync(Action<string, int, int>? progress);
 }

@@ -1941,4 +1941,49 @@
   <data name="MultiStreamPage_Cmd_AllowScroll.Label" xml:space="preserve">
     <value>允许鼠标滚轮滚动列表</value>
   </data>
+  <data name="SettingsPage_Other_Export.Title" xml:space="preserve">
+    <value>导出数据</value>
+  </data>
+  <data name="SettingsPage_Other_Export.Description" xml:space="preserve">
+    <value>导出所有的游戏、游戏库、分类等信息</value>
+  </data>
+  <data name="SettingsPage_Other_Export_Button.Content" xml:space="preserve">
+    <value>选择导出位置</value>
+  </data>
+  <data name="SettingsPage_Other_Export_Fail" xml:space="preserve">
+    <value>导出数据失败</value>
+  </data>
+  <data name="ExportTask_PathNotWritable" xml:space="preserve">
+    <value>路径 {0} 没有写权限</value>
+  </data>
+  <data name="ExportTask_Title" xml:space="preserve">
+    <value>导出数据任务</value>
+  </data>
+  <data name="SettingsPage_Other_Export_Exporting" xml:space="preserve">
+    <value>已有一个导出任务正在运行，请等待上个任务完成后再新增导出。</value>
+  </data>
+  <data name="ExportTask_Success" xml:space="preserve">
+    <value>成功导出数据至： {0}</value>
+  </data>
+  <data name="ExportTask_FileExist" xml:space="preserve">
+    <value>导出文件 {0} 已存在，请删除或移动该文件后再导出。</value>
+  </data>
+  <data name="ExportTask_Compressing" xml:space="preserve">
+    <value>正在压缩导出文件</value>
+  </data>
+  <data name="GalgameSourceCollectionService_RemoveNonExist_Title" xml:space="preserve">
+    <value>已删除找不到的库</value>
+  </data>
+  <data name="GalgameSourceCollectionService_RemoveNonExist_Msg" xml:space="preserve">
+    <value>无法在文件系统中找到以下库，已在PotatoVN中将其删除。请仔细检查对应的位置是否有库（改名了？）并重新添加库。{0}</value>
+  </data>
+  <data name="GalgameSourceCollectionService_Export_Progress" xml:space="preserve">
+    <value>正在导出游戏库：{0}</value>
+  </data>
+  <data name="CategoryService_Export_Progress" xml:space="preserve">
+    <value>正在导出分类：{0}</value>
+  </data>
+  <data name="GalgameCollectionService_Export_Progress" xml:space="preserve">
+    <value>正在导出游戏：{0}</value>
+  </data>
 </root>

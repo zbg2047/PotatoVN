@@ -255,6 +255,24 @@ public class CategoryService : ICategoryService
         if (_statusGroup != null)
             _categoryGroups.Add(_statusGroup);
     }
+    
+    public async Task ExportAsync(Action<string, int, int>? progress)
+    {
+        ObservableCollection<CategoryGroup> tmp = new(_categoryGroups.Select(g => g.Clone()));
+        var sum = tmp.Sum(group => group.Categories.Count);
+        var current = 0;
+        foreach (CategoryGroup group in tmp)
+        foreach (Category category in group.Categories)
+        {
+            progress?.Invoke(ResourceExtensions.GetLocalized("CategoryService_Export_Progress", category.Name),
+                current++, sum);
+            if (await _localSettings.AddImageToExportAsync(category.ImagePath) is { } path)
+                category.ImagePath = path;
+        }
+
+        await _localSettings.AddToExportAsync(KeyValues.CategoryGroups, tmp,
+            converters: new() { new GalgameAndUidConverter() });
+    }
 
     /// <summary>
     /// 获取开发商分类，如果没有则返回null

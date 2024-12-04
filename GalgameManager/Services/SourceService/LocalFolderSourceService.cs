@@ -37,18 +37,27 @@ public class LocalFolderSourceService : IGalgameSourceService
             var folderPath = source.GetPath(game)!;
             var metaPath = Path.Combine(folderPath, ".PotatoVN");
             if (!Directory.Exists(metaPath)) Directory.CreateDirectory(metaPath);
-            Galgame meta = game.GetMetaCopy(folderPath, source.GetPath(game)!);
-            var destImagePath = Path.Combine(metaPath, meta.ImagePath.Value!);
-            _fileService.Save(metaPath, "meta.json", meta);
+            Galgame meta = game.DeepClone();
             // 备份图片
-            CopyImg(game.ImagePath.Value, destImagePath);
-            foreach (GalgameCharacter character in game.Characters)
+            if (Utils.IsImageValid(meta.ImagePath.Value))
             {
-                var destCharPreviewImagePath = Path.Combine(metaPath, Path.GetFileName(character.PreviewImagePath));
-                var destCharImagePath = Path.Combine(metaPath, Path.GetFileName(character.ImagePath));
-                CopyImg(character.PreviewImagePath, destCharPreviewImagePath);
-                CopyImg(character.ImagePath, destCharImagePath);
+                CopyImg(meta.ImagePath.Value, metaPath);
+                meta.ImagePath.ForceSet(Path.Combine(".", Path.GetFileName(meta.ImagePath.Value!)));
             }
+            foreach (GalgameCharacter character in meta.Characters)
+            {
+                if (Utils.IsImageValid(character.ImagePath))
+                {
+                    CopyImg(character.ImagePath, metaPath);
+                    character.ImagePath = Path.Combine(".", Path.GetFileName(character.ImagePath));
+                }
+                if (Utils.IsImageValid(character.PreviewImagePath))
+                {
+                    CopyImg(character.PreviewImagePath, metaPath);
+                    character.PreviewImagePath = Path.Combine(".", Path.GetFileName(character.PreviewImagePath));
+                }
+            }
+            _fileService.Save(metaPath, "meta.json", meta);
         }
 
         await Task.CompletedTask;
@@ -111,10 +120,10 @@ public class LocalFolderSourceService : IGalgameSourceService
         return null;
     }
 
-    private static void CopyImg(string? src, string target)
+    private static void CopyImg(string? src, string metaPath)
     {
-        if (src is null or Galgame.DefaultImagePath) return;
-        if (!File.Exists(src)) return;
+        if (!Utils.IsImageValid(src) || src is null) return;
+        var target = Path.Combine(metaPath, Path.GetFileName(src));
         if (File.Exists(target) && new FileInfo(target).Length == new FileInfo(src).Length) return; //文件已存在且大小相同就不复制
         File.Copy(src, target, true);
     }

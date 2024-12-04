@@ -20,4 +20,20 @@ public class LocalSettingStatus
     
     /// CategoryService, v1.8.0, 给各分类添加LastPlayed字段
     public bool CategoryAddLastPlayed = false;
+
+
+    /// galgameCollectionService是否已处理过导入
+    public bool ImportGalgame = true;
+    /// galgameSourceCollectionService是否已处理过导入
+    public bool ImportGalgameSource = true;
+    /// categoryService是否已处理过导入
+    public bool ImportCategory = true;
+    public void SetImportToFalse()
+    {
+        ImportGalgame = false;
+        ImportGalgameSource = false;
+        ImportCategory = false;
+    }
+
+    public LocalSettingStatus Clone() => (LocalSettingStatus)MemberwiseClone();
 }

@@ -84,4 +84,6 @@ public interface IGalgameCollectionService
     /// <param name="rssType">指定信息源，若为None则使用设置中的默认值</param>
     /// <returns>修改过后的游戏</returns>
     public Task<Galgame> PhraseGalInfoOnlyAsync(Galgame galgame, RssType rssType = RssType.None);
+
+    public Task ExportAsync(Action<string, int, int>? progress);
 }

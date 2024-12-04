@@ -15,6 +15,7 @@ using Microsoft.Windows.ApplicationModel.Resources;
 using Windows.Security.Credentials.UI;
 using Windows.Security.Credentials;
 using GalgameManager.Helpers.Phrase;
+using GalgameManager.Models.BgTasks;
 using GalgameManager.Views.Dialog;
 
 namespace GalgameManager.ViewModels;
@@ -29,6 +30,7 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
     private readonly IThemeSelectorService _themeSelectorService;
     private readonly ICategoryService _categoryService;
     private readonly IInfoService _infoService;
+    private readonly IBgTaskService _bgTaskService;
     private string _versionDescription;
 
     #region UI_STRINGS //历史遗留，不要继续使用这种方式获取字符串
@@ -86,7 +88,7 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
 
     public SettingsViewModel(IThemeSelectorService themeSelectorService, ILocalSettingsService localSettingsService, 
         IGalgameCollectionService galgameService, IUpdateService updateService, INavigationService navigationService,
-        ICategoryService categoryService, IInfoService infoService)
+        ICategoryService categoryService, IInfoService infoService, IBgTaskService bgTaskService)
     {
         _categoryService = categoryService;
         _themeSelectorService = themeSelectorService;
@@ -96,6 +98,7 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
         _versionDescription = GetVersionDescription();
         _localSettingsService = localSettingsService;
         _infoService = infoService;
+        _bgTaskService = bgTaskService;
         
         //THEME
         _elementTheme = themeSelectorService.Theme;
@@ -466,6 +469,35 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
     partial void OnCloseModeChanged(WindowMode value) => _localSettingsService.SaveSettingAsync(KeyValues.CloseMode, value);
     
     partial void OnDevelopmentModeChanged(bool value) => _localSettingsService.SaveSettingAsync(KeyValues.DevelopmentMode, value);
+
+    [RelayCommand]
+    private async void ExportData()
+    {
+        try
+        {
+            if (_bgTaskService.GetBgTask<ExportTask>(string.Empty) is not null)
+            {
+                _infoService.Info(InfoBarSeverity.Warning, "SettingsPage_Other_Export_Exporting".GetLocalized());
+                return;
+            }
+            
+            FolderPicker openPicker = new();
+            WinRT.Interop.InitializeWithWindow.Initialize(openPicker, App.MainWindow!.GetWindowHandle());
+            openPicker.SuggestedStartLocation = PickerLocationId.HomeGroup;
+            openPicker.FileTypeFilter.Add("*");
+            StorageFolder? folder = await openPicker.PickSingleFolderAsync();
+            var path = folder?.Path;
+            if (path is null) return;
+
+            ExportTask task = new(path);
+            await _bgTaskService.AddBgTask(task);
+        }
+        catch (Exception e)
+        {
+            _infoService.Info(InfoBarSeverity.Error, "SettingsPage_Other_Export_Fail".GetLocalized(),
+                $"{e.Message}\n{e.StackTrace}");
+        }
+    }
 
     #endregion
 

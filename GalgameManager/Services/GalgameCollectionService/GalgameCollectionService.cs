@@ -199,6 +199,31 @@ public partial class GalgameCollectionService : IGalgameCollectionService
         return PhraserAsync(galgame, PhraserList[(int)selectedRss]);
     }
 
+    public async Task ExportAsync(Action<string, int, int>? progress)
+    {
+        ObservableCollection<Galgame> tmp = new(_galgames.Select(g => g.DeepClone()));
+        for(var i = 0; i < tmp.Count; i++)
+        {
+            Galgame game = tmp[i];
+            progress?.Invoke("GalgameCollectionService_Export_Progress".GetLocalized(game.Name.Value ?? string.Empty),
+                i + 1, tmp.Count);
+            if (Utils.IsImageValid(game.ImagePath.Value))
+                game.ImagePath.ForceSet(await LocalSettingsService.AddImageToExportAsync(game.ImagePath.Value) ??
+                                        Galgame.DefaultImagePath);
+            foreach (GalgameCharacter character in game.Characters)
+            {
+                if (Utils.IsImageValid(character.ImagePath))
+                    character.ImagePath = await LocalSettingsService.AddImageToExportAsync(character.ImagePath) ??
+                                          Galgame.DefaultImagePath;
+                if (Utils.IsImageValid(character.PreviewImagePath))
+                    character.PreviewImagePath =
+                        await LocalSettingsService.AddImageToExportAsync(character.PreviewImagePath) ??
+                        Galgame.DefaultImagePath;
+            }
+        }
+        await LocalSettingsService.AddToExportAsync(KeyValues.Galgames, tmp);
+    }
+
     public async Task<GalgameCharacter> PhraseGalCharacterAsync(GalgameCharacter galgameCharacter, RssType rssType = RssType.None)
     {
         GalgameCharacter result = await PhraserCharacterAsync(galgameCharacter, PhraserList[(int)rssType]);

@@ -75,4 +75,6 @@ public partial class Category : ObservableObject
         if (GalgamesX.Count == 0) return;
         LastPlayed = GalgamesX.Max(g => g.LastPlayTime);
     }
+
+    public Category ShallowClone() => (Category)MemberwiseClone();
 }

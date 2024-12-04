@@ -4,6 +4,7 @@ using System.Net.Http.Headers;
 using System.Net.NetworkInformation;
 using System.Text;
 using Windows.Foundation;
+using GalgameManager.Models;
 using TinyPinyin;
 
 namespace GalgameManager.Helpers;
@@ -183,5 +184,34 @@ public static class Utils
             if (DateTime.TryParse(dateString, culture, DateTimeStyles.None, out DateTime parsedDate))
                 return parsedDate;
         return DateTime.MinValue;
+    }
+    
+    /// <summary>
+    /// 检查path是否可写
+    /// </summary>
+    /// <param name="path"></param>
+    /// <returns></returns>
+    public static bool IsPathWritable(string path)
+    {
+        try
+        {
+            using FileStream fs = File.Create(Path.Combine(path, Path.GetRandomFileName()), 1, FileOptions.DeleteOnClose);
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+    
+    /// <summary>
+    /// 检查图片是否有效
+    /// </summary>
+    /// <param name="src"></param>
+    /// <returns></returns>
+    public static bool IsImageValid(string? src)
+    {
+        if (string.IsNullOrEmpty(src) || src is Galgame.DefaultImagePath) return false;
+        return File.Exists(src);
     }
 }

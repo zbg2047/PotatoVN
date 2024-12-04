@@ -1,4 +1,5 @@
 ﻿using GalgameManager.Enums;
+using GalgameManager.Helpers;
 
 namespace GalgameManager.Models;
 
@@ -25,4 +26,11 @@ public class CategoryGroup
     }
 
     public override string ToString() => Name;
+
+    public CategoryGroup Clone()
+    {
+        CategoryGroup result = (CategoryGroup)MemberwiseClone();
+        result.Categories = Categories.Select(c => c.DeepClone()).ToList();
+        return result;
+    }
 }

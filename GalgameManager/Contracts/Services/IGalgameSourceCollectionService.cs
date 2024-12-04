@@ -99,4 +99,10 @@ public interface IGalgameSourceCollectionService
     /// <param name="gamePath"></param>
     /// <returns></returns>
     public string GetSourcePath(GalgameSourceType type, string gamePath);
+
+    /// <summary>
+    /// 备份数据（调用localSettingService导出）
+    /// </summary>
+    /// <returns></returns>
+    public Task ExportAsync(Action<string, int, int>? progress);
 }

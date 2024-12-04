@@ -18,7 +18,7 @@ public partial class GalgameSourceBase : ObservableObject, IDisplayableGameObjec
     /// 父库，若为null则表示这是根库；由Service初始化时计算，不在json中存储
     [JsonIgnore] public GalgameSourceBase? ParentSource { get; set; }
 
-    public string Url => CalcUrl(SourceType, Path);
+    [JsonIgnore] public string Url => CalcUrl(SourceType, Path);
     public string Path { get; set; } = "";
     public virtual GalgameSourceType SourceType => throw new NotImplementedException();
     public bool ScanOnStart { get; set; }

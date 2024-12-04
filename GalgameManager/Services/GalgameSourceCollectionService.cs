@@ -257,6 +257,22 @@ public class GalgameSourceCollectionService : IGalgameSourceCollectionService
         }
     }
 
+    public async Task ExportAsync(Action<string, int, int>? progress)
+    {
+        ObservableCollection<GalgameSourceBase> exportData = new();
+        for (var i = 0; i < _galgameSources.Count; i++)
+        {
+            GalgameSourceBase source = _galgameSources[i];
+            progress?.Invoke("GalgameSourceCollectionService_Export_Progress".GetLocalized(source.Name), i + 1,
+                _galgameSources.Count);
+            GalgameSourceBase clone = source.DeepClone(new JsonSerializerSettings { Converters = _converters });
+            clone.ImagePath = await _localSettingsService.AddImageToExportAsync(clone.ImagePath);
+            exportData.Add(clone);
+        }
+
+        await _localSettingsService.AddToExportAsync(KeyValues.GalgameSources, exportData, converters: _converters);
+    }
+
     /// <summary>
     /// 扫描所有库
     /// </summary>

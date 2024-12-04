@@ -7,7 +7,6 @@ using GalgameManager.Helpers;
 using GalgameManager.Helpers.Phrase;
 using GalgameManager.Models.Sources;
 using Newtonsoft.Json;
-using SystemPath = System.IO.Path;
 
 namespace GalgameManager.Models;
 
@@ -161,7 +160,7 @@ public partial class Galgame : ObservableObject, IDisplayableGameObject
     /// <summary>
     /// 该游戏是否是本地游戏（存在于某个本地文件夹库中）
     /// </summary>
-    public bool IsLocalGame => Sources.Any(s => s.SourceType == GalgameSourceType.LocalFolder);
+    [JsonIgnore] public bool IsLocalGame => Sources.Any(s => s.SourceType == GalgameSourceType.LocalFolder);
 
     /// <summary>
     /// 删除游戏文件夹
@@ -174,7 +173,7 @@ public partial class Galgame : ObservableObject, IDisplayableGameObject
     /// <summary>
     /// 获取该游戏的本地文件夹路径，若其不是本地游戏则返回null
     /// </summary>
-    public string? LocalPath =>
+    [JsonIgnore] public string? LocalPath =>
         Sources.FirstOrDefault(s => s.SourceType == GalgameSourceType.LocalFolder)?.GetPath(this);
 
     /// <summary>
@@ -199,71 +198,6 @@ public partial class Galgame : ObservableObject, IDisplayableGameObject
     {
         if (LocalPath is null) return [];
         List<string> result = Directory.GetDirectories(LocalPath).ToList();
-        return result;
-    }
-
-    /// <summary>
-    /// 获取用来保存meta信息的galgame，用于序列化
-    /// </summary>
-    /// <param name="metaPath">meta文件夹路径</param>
-    /// <param name="gamePath">游戏文件夹路径</param>
-    /// <returns></returns>
-    public Galgame GetMetaCopy(string metaPath, string gamePath)
-    {
-        Dictionary<string, int> playTime = new();
-        foreach (var (key, value) in PlayedTime)
-            playTime.Add(key, value);
-        ObservableCollection<GalgameCharacter> characters = new();
-        foreach (var character in Characters)
-        {
-            characters.Add(new GalgameCharacter
-            {
-                Name = character.Name,
-                Relation = character.Relation,
-                PreviewImagePath = $".{SystemPath.DirectorySeparatorChar}" +
-                                   SystemPath.GetFileName(character.PreviewImagePath),
-                ImagePath = $".{SystemPath.DirectorySeparatorChar}" + SystemPath.GetFileName(character.ImagePath),
-                Summary = character.Summary,
-                Gender = character.Gender,
-                BirthYear = character.BirthYear,
-                BirthMon = character.BirthMon,
-                BirthDay = character.BirthDay,
-                BirthDate = character.BirthDate,
-                BloodType = character.BloodType,
-                Height = character.Height,
-                Weight = character.Weight,
-                BWH = character.BWH,
-            });
-        }
-        Galgame result = new()
-        {
-            SourceType = SourceType, 
-            ImagePath = ImagePath.Value is null or DefaultImagePath ? DefaultImagePath :
-                $".{SystemPath.DirectorySeparatorChar}" + SystemPath.GetFileName(ImagePath),
-            PlayedTime = playTime,
-            Name = Name.Value ?? string.Empty,
-            Characters = characters, 
-            CnName = CnName,
-            Description = Description.Value ?? string.Empty,
-            Developer = Developer.Value ?? DefaultString,
-            LastPlayTime = LastPlayTime,
-            ExpectedPlayTime = ExpectedPlayTime.Value ?? DefaultString,
-            Rating = Rating.Value,
-            ReleaseDate = ReleaseDate.Value,
-            ExePath = ExePath is null ? null : SystemPath.GetRelativePath(metaPath, ExePath),
-            Tags = new ObservableCollection<string>(Tags.Value!.ToList()),
-            TotalPlayTime = TotalPlayTime,
-            RunAsAdmin = RunAsAdmin,
-            PlayType = PlayType,
-            Ids = Ids,
-            RssType = RssType,
-            Comment = Comment,
-            MyRate = MyRate,
-            PrivateComment = PrivateComment,
-            SavePath = SavePath,
-            ProcessName = ProcessName,
-            TextPath =  TextPath,
-        };
         return result;
     }
 
