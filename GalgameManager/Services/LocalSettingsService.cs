@@ -15,6 +15,7 @@ public class LocalSettingsService : ILocalSettingsService
 {
     private const string ErrorFileName ="You_Should_Not_See_This_File.Check_AppSettingsJson.json";
     private const string TmpBackupFolderName = "Export";
+    private const string FailDataFolderName = "FailData";
 
     private readonly IFileService _fileService;
 
@@ -29,6 +30,8 @@ public class LocalSettingsService : ILocalSettingsService
     private bool _isUpgrade;
     
     public event ILocalSettingsService.Delegate? OnSettingChanged;
+    public DirectoryInfo LocalFolder => new(ApplicationData.Current.LocalFolder.Path);
+    public DirectoryInfo TemporaryFolder => new(ApplicationData.Current.TemporaryFolder.Path);
 
     public LocalSettingsService(IFileService fileService, IOptions<LocalSettingsOptions> options)
     {
@@ -336,12 +339,15 @@ public class LocalSettingsService : ILocalSettingsService
         }
     }
 
-    public async Task<string?> GetImageFromImportAsync(string imagePath)
+    public async Task<string?> GetImageFromImportAsync(string? imagePath)
     {
+        await Task.CompletedTask; // 预留异步坑位
+        if (string.IsNullOrEmpty(imagePath)) return null;
+        if (Path.IsPathRooted(imagePath)) return imagePath;
+        if (imagePath == Galgame.DefaultImagePath) return imagePath;
         try
         {
-            StorageFolder imageFolder = await FileHelper.GetFolderAsync(FileHelper.FolderType.Images);
-            var path = Path.GetFullPath(Path.Combine(imageFolder.Path, imagePath));
+            var path = Path.GetFullPath(Path.Combine(LocalFolder.FullName, imagePath));
             return File.Exists(path) ? path : null;
         }
         catch (Exception)
@@ -355,5 +361,17 @@ public class LocalSettingsService : ILocalSettingsService
         StorageFolder? tmp = await ApplicationData.Current.TemporaryFolder
             .CreateFolderAsync(TmpBackupFolderName, CreationCollisionOption.OpenIfExists);
         return tmp;
+    }
+
+    public async Task<string> BackupFailedDataAsync()
+    {
+        DirectoryInfo failedFolder = TemporaryFolder.CreateSubdirectory(FailDataFolderName);
+        await Task.Run(() =>
+        {
+            failedFolder.Delete(true);
+            // 把LocalFolder所有内容移动至FailData文件夹
+            Directory.Move(LocalFolder.FullName, failedFolder.FullName);
+        });
+        return failedFolder.FullName;
     }
 }

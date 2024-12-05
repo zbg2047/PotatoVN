@@ -5,6 +5,7 @@ using GalgameManager.Activation;
 using GalgameManager.Contracts.Services;
 using GalgameManager.Enums;
 using GalgameManager.Helpers;
+using GalgameManager.Views;
 using H.NotifyIcon;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -15,7 +16,6 @@ namespace GalgameManager.Services;
 
 public class ActivationService : IActivationService
 {
-
     private readonly IEnumerable<IActivationHandler> _activationHandlers;//
     private readonly IThemeSelectorService _themeSelectorService; //
     private readonly IUpdateService _updateService;
@@ -30,6 +30,7 @@ public class ActivationService : IActivationService
     private readonly IPageService _pageService;
     private readonly IBgTaskService _bgTaskService;
     private readonly IPvnService _pvnService;
+    private readonly IInfoService _infoService;
     
     public ActivationService(
         IEnumerable<IActivationHandler> activationHandlers, IThemeSelectorService themeSelectorService,
@@ -38,7 +39,8 @@ public class ActivationService : IActivationService
         IUpdateService updateService, IAppCenterService appCenterService,
         ICategoryService categoryService,IBgmOAuthService bgmOAuthService,
         IAuthenticationService authenticationService, ILocalSettingsService localSettingsService,
-        IFilterService filterService, IPageService pageService, IBgTaskService bgTaskService, IPvnService pvnService)
+        IFilterService filterService, IPageService pageService, IBgTaskService bgTaskService, IPvnService pvnService,
+        IInfoService infoService)
     {
         _activationHandlers = activationHandlers;
         _themeSelectorService = themeSelectorService;
@@ -54,6 +56,7 @@ public class ActivationService : IActivationService
         _pageService = pageService;
         _bgTaskService = bgTaskService;
         _pvnService = pvnService;
+        _infoService = infoService;
     }
 
     public async Task LaunchedAsync(object activationArgs)
@@ -82,11 +85,36 @@ public class ActivationService : IActivationService
                 return;
             } 
         }
-        
-        await _galgameCollectionService.InitAsync();
-        await _galgameFolderCollectionService.InitAsync();
-        await _categoryService.Init();
-        await _filterService.InitAsync();
+
+        ImportWindow? importWindow = null;
+        if (await CheckImport() is { } import)
+        {
+            importWindow = new ImportWindow(import, _localSettingsService);
+            importWindow.Activate();
+            await importWindow.Import();
+        }
+
+        try
+        {
+            await _galgameCollectionService.InitAsync();
+            await _galgameFolderCollectionService.InitAsync();
+            await _categoryService.Init();
+            await _filterService.InitAsync();
+            importWindow?.Close();
+        }
+        catch (Exception e)
+        {
+            if (importWindow is not null)
+                await importWindow.Restore(e);
+            else
+            {
+                var backup = await _localSettingsService.BackupFailedDataAsync();
+                await _localSettingsService.SaveSettingAsync(KeyValues.LastError,
+                    $"{"ActivationService_LoadDataError".GetLocalized(backup)} {e.Message}");
+            }
+            AppInstance.Restart("/safemode"); //safemode并没有实现，只是为了和正常的启动参数区分开
+            return;
+        }
         
         if (IsRestart() == false)
         {
@@ -237,5 +265,16 @@ public class ActivationService : IActivationService
             }
         }
         return false;
+    }
+
+    /// <summary>
+    /// 检查数据根目录下是否有导入压缩包
+    /// </summary>
+    private Task<FileInfo?> CheckImport()
+    {
+        if (!_localSettingsService.LocalFolder.Exists) return Task.FromResult<FileInfo?>(null);
+        FileInfo? zip = _localSettingsService.LocalFolder.GetFiles().FirstOrDefault(item =>
+            item.Name.EndsWith(".pvnExport.zip"));
+        return Task.FromResult(zip); // 给后面异步改造预留接口
     }
 }

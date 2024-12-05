@@ -17,6 +17,7 @@ using Windows.Security.Credentials;
 using GalgameManager.Helpers.Phrase;
 using GalgameManager.Models.BgTasks;
 using GalgameManager.Views.Dialog;
+using Microsoft.Windows.AppLifecycle;
 
 namespace GalgameManager.ViewModels;
 
@@ -495,6 +496,44 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
         catch (Exception e)
         {
             _infoService.Info(InfoBarSeverity.Error, "SettingsPage_Other_Export_Fail".GetLocalized(),
+                $"{e.Message}\n{e.StackTrace}");
+        }
+    }
+
+    [RelayCommand]
+    private async Task ImportData()
+    {
+        try
+        {
+            if (_bgTaskService.GetBgTask<ExportTask>(string.Empty) is not null)
+            {
+                _infoService.Info(InfoBarSeverity.Warning, "SettingsPage_Other_Export_Exporting".GetLocalized());
+                return;
+            }
+            
+            FileOpenPicker openPicker = new();
+            WinRT.Interop.InitializeWithWindow.Initialize(openPicker, App.MainWindow!.GetWindowHandle());
+            openPicker.SuggestedStartLocation = PickerLocationId.HomeGroup;
+            openPicker.FileTypeFilter.Add(".zip");
+            StorageFile file = await openPicker.PickSingleFileAsync();
+            var path = file?.Path;
+            if (path is null) return;
+            if (file?.Name.EndsWith("pvnExport.zip") is not true)
+                throw new PvnException("SettingsPage_Other_Import_WrongFile".GetLocalized());
+
+            _infoService.Info(InfoBarSeverity.Success, msg: "SettingsPage_Other_Import_Copying".GetLocalized());
+            await Task.Run(() =>
+            {
+                File.Copy(path, Path.Combine(_localSettingsService.LocalFolder.FullName, file.Name));
+            });
+            _infoService.Info(InfoBarSeverity.Success, msg: "SettingsPage_Other_Import_Restart".GetLocalized(),
+                displayTimeMs: 1000 * 10);
+            await Task.Delay(10 * 1000);
+            AppInstance.Restart("/import"); // 并没有实现这个参数，只是为了和正常启动区分
+        }
+        catch (Exception e)
+        {
+            _infoService.Info(InfoBarSeverity.Error, "SettingsPage_Other_Import_Fail".GetLocalized(),
                 $"{e.Message}\n{e.StackTrace}");
         }
     }

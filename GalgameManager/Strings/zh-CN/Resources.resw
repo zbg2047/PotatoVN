@@ -1986,4 +1986,49 @@
   <data name="GalgameCollectionService_Export_Progress" xml:space="preserve">
     <value>正在导出游戏：{0}</value>
   </data>
+  <data name="ActivationService_LoadDataError" xml:space="preserve">
+    <value>无法读取PotatoVN数据，数据损坏？
+旧数据已被备份到：{0}
+您可以尝试恢复之前导出的数据（如有），或从同步服务器中获取数据（如有），或在github上提出issue联系开发者以尝试恢复数据。
+软件已恢复到初始状态。
+    </value>
+  </data>
+  <data name="ImportWindow_Extracting" xml:space="preserve">
+    <value>正在解压备份文件： {0}</value>
+  </data>
+  <data name="ImportWindow_BackingUp" xml:space="preserve">
+    <value>正在备份当前数据</value>
+  </data>
+  <data name="ImportWindow_Fail" xml:space="preserve">
+    <value>导入数据失败</value>
+  </data>
+  <data name="ImportWindow_Restoring" xml:space="preserve">
+    <value>数据导入失败，恢复原有数据中。失败原因为：
+{0}
+    </value>
+  </data>
+  <data name="ImportWindow_Importing" xml:space="preserve">
+    <value>各模块正在读取数据</value>
+  </data>
+  <data name="SettingsPage_Other_Import.Title" xml:space="preserve">
+    <value>导入数据</value>
+  </data>
+  <data name="SettingsPage_Other_Import.Description" xml:space="preserve">
+    <value>导入所有的游戏、游戏库、分类等信息</value>
+  </data>
+  <data name="SettingsPage_Other_Import_Button.Content" xml:space="preserve">
+    <value>选择数据包</value>
+  </data>
+  <data name="SettingsPage_Other_Import_Fail" xml:space="preserve">
+    <value>导入数据失败</value>
+  </data>
+  <data name="SettingsPage_Other_Import_Copying" xml:space="preserve">
+    <value>正在复制数据包到PotatoVN数据库</value>
+  </data>
+  <data name="SettingsPage_Other_Import_Restart" xml:space="preserve">
+    <value>应用将在10秒后自动重启以完成剩余的导入过程。</value>
+  </data>
+  <data name="SettingsPage_Other_Import_WrongFile" xml:space="preserve">
+    <value>请选择形如"xxx.pvnExport.zip"的PotatoVN导出文件</value>
+  </data>
 </root>

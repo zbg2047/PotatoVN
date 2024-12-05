@@ -10,6 +10,10 @@ public interface ILocalSettingsService
     /// </summary>
     public event Delegate? OnSettingChanged;
     
+    public DirectoryInfo LocalFolder { get; }
+    
+    public DirectoryInfo TemporaryFolder { get; }
+    
     Task<T?> ReadSettingAsync<T>(string key, bool isLarge = false, List<JsonConverter>? converters = null,
         bool typeNameHandling = false);
 
@@ -52,15 +56,26 @@ public interface ILocalSettingsService
     Task<string?> AddImageToExportAsync(string? imagePath);
     
     /// <summary>
-    /// 导入时获取备份中的图片绝对路径，若图片不存在则返回null
+    /// 导入时获取备份中的图片绝对路径<br/>
+    /// <ul>
+    /// <li>若图片不存在或imagePath为null或空则返回null</li>
+    /// <li>若图片已经是绝对路径则直接返回</li>
+    /// <li>若图片为默认图片则直接返回</li>
+    /// </ul>
     /// </summary>
     /// <param name="imagePath"></param>
     /// <returns></returns>
-    Task<string?> GetImageFromImportAsync(string imagePath);
+    Task<string?> GetImageFromImportAsync(string? imagePath);
 
     /// <summary>
     /// 获取临时备份文件夹，若文件夹不存在则创建，若已存在则直接返回该文件夹
     /// </summary>
     /// <returns></returns>
     Task<StorageFolder> GetTmpExportFolder();
+
+    /// <summary>
+    /// 将当前无法读取的数据备份至："$LocalFolder/FailData"
+    /// </summary>
+    /// <returns></returns>
+    Task<string> BackupFailedDataAsync();
 }

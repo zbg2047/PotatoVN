@@ -482,6 +482,14 @@
                                             Command="{x:Bind ViewModel.ExportDataCommand}"/>
                                 </control:Setting>
                             </control:Panel>
+                            <!-- 导入数据 -->
+                            <control:Panel>
+                                <control:Setting x:Uid="SettingsPage_Other_Import">
+                                    <Button x:Uid="SettingsPage_Other_Import_Button" 
+                                            MinWidth="{StaticResource ButtonMinWidth}"
+                                            Command="{x:Bind ViewModel.ImportDataCommand}"/>
+                                </control:Setting>
+                            </control:Panel>
                             <!-- 优化内存占用 -->
                             <control:Panel>
                                 <local:SettingToggleSwitch x:Uid="SettingsPage_Other_Memory"

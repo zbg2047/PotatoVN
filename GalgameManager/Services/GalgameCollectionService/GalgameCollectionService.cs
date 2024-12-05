@@ -98,6 +98,7 @@ public partial class GalgameCollectionService : IGalgameCollectionService
         List<Galgame> galgames = await LocalSettingsService.ReadSettingAsync<List<Galgame>>(KeyValues.Galgames, true) ??
                                  new List<Galgame>();
         _galgames = new ObservableCollection<Galgame>(galgames);
+        await ImportAsync();
         foreach (Galgame g in _galgames)
         {
             _galgameMap[g.Uid] = g;
@@ -658,11 +659,7 @@ public partial class GalgameCollectionService : IGalgameCollectionService
                 break;
         }
     }
-
     
-
-
-
     private async Task MixedPhraserOrderUpdate()
     {
         try
@@ -689,6 +686,26 @@ public partial class GalgameCollectionService : IGalgameCollectionService
         {
             _infoService.Event(EventType.AppError, InfoBarSeverity.Error, "Upgrade failed", e);
         }
+    }
+
+    private async Task ImportAsync()
+    {
+        LocalSettingStatus? status =
+            await LocalSettingsService.ReadSettingAsync<LocalSettingStatus>(KeyValues.DataStatus, true);
+        if (status?.ImportGalgame is not false) return;
+        foreach (Galgame game in _galgames)
+        {
+            game.ImagePath.ForceSet(await LocalSettingsService.GetImageFromImportAsync(game.ImagePath.Value));
+            foreach (GalgameCharacter character in game.Characters)
+            {
+                character.ImagePath = (await LocalSettingsService.GetImageFromImportAsync(character.ImagePath))!;
+                character.PreviewImagePath =
+                    (await LocalSettingsService.GetImageFromImportAsync(character.PreviewImagePath))!;
+            }
+        }
+        status.ImportGalgame = true;
+        await LocalSettingsService.SaveSettingAsync(KeyValues.DataStatus, status, true);
+        await SaveGalgamesAsync();
     }
 }
 

@@ -67,7 +67,7 @@ public class GalgameSourceCollectionService : IGalgameSourceCollectionService
                 msg: "GalgameSourceCollectionService_RemoveNonExist_Msg".GetLocalized(
                     $"\n{string.Join('\n', toRemove.Select(s => s.Path))}"));
         }
-        
+        await ImportAsync(settingStatus);
         // 给Galgame注入Source列表
         foreach (GalgameSourceBase s in _galgameSources)
             foreach (Galgame g in s.GetGalgameList().Where(g => !g.Sources.Contains(s)))
@@ -334,6 +334,18 @@ public class GalgameSourceCollectionService : IGalgameSourceCollectionService
             default:
                 throw new NotSupportedException();
         }
+    }
+
+    private async Task ImportAsync(LocalSettingStatus status)
+    {
+        if (status.ImportGalgameSource) return;
+        foreach (GalgameSourceBase source in _galgameSources)
+        {
+            source.ImagePath = await _localSettingsService.GetImageFromImportAsync(source.ImagePath);
+        }
+        status.ImportGalgameSource = true;
+        await Save();
+        await _localSettingsService.SaveSettingAsync(KeyValues.DataStatus, status, true);
     }
 
     #region UPGRADES

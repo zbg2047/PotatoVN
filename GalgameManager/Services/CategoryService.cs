@@ -65,6 +65,7 @@ public class CategoryService : ICategoryService
             group.Categories.ForEach(c => c.GalgamesX.RemoveNull());
         
         await Upgrade();
+        await ImportAsync();
         
         InitStatusGroup();
         InitDeveloperGroup();
@@ -350,6 +351,22 @@ public class CategoryService : ICategoryService
                 CategoryGroupType.Developer);
             _categoryGroups.Add(_developerGroup);
         }
+    }
+
+    private async Task ImportAsync()
+    {
+        LocalSettingStatus? status =
+            await _localSettings.ReadSettingAsync<LocalSettingStatus>(KeyValues.DataStatus, true);
+        if (status?.ImportCategory is not false) return;
+        foreach (CategoryGroup group in _categoryGroups)
+        foreach (Category category in group.Categories)
+        {
+            if (await _localSettings.GetImageFromImportAsync(category.ImagePath) is { } path)
+                category.ImagePath = path;
+        }
+        status.ImportCategory = true;
+        await SaveAsync();
+        await _localSettings.SaveSettingAsync(KeyValues.DataStatus, status, true);
     }
 
     #region UPGRADE
