@@ -152,7 +152,9 @@ public partial class App : Application
                       string.Empty;
         errMsg += (errMsg.Length > 0 ? "\n\n" : string.Empty) + e.Message + "\n" + e.Exception;
         GetService<ILocalSettingsService>().SaveSettingAsync(KeyValues.LastError, errMsg);
-        e.Handled = false;
+        e.Handled = true;
+        if (Status != WindowMode.Booting)
+            AppInstance.Restart("/safemode");
     }
     
     /// <summary>
