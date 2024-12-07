@@ -140,15 +140,31 @@ public partial class GalgameViewModel : ObservableObject, INavigationAware
         IsTagVisible = Item?.Tags.Value?.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
         IsDescriptionVisible = Item?.Description! != string.Empty ? Visibility.Visible : Visibility.Collapsed;
         IsCharacterVisible = Item?.Characters.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
-        CanOpenInBgm = !string.IsNullOrEmpty(Item?.Ids[(int)RssType.Bangumi]);
-        CanOpenInVndb = !string.IsNullOrEmpty(Item?.Ids[(int)RssType.Vndb]);
-        CanOpenInYmgal = !string.IsNullOrEmpty(Item?.Ids[(int)RssType.Ymgal]);
+        try
+        {
+            CanOpenInBgm = !string.IsNullOrEmpty(Item?.Ids[(int)RssType.Bangumi]);
+            CanOpenInVndb = !string.IsNullOrEmpty(Item?.Ids[(int)RssType.Vndb]);
+            CanOpenInYmgal = !string.IsNullOrEmpty(Item?.Ids[(int)RssType.Ymgal]);
+        }
+        catch (Exception ex)
+        {
+            // 原理上来说是不会越界的，但莫名奇妙有用户反馈过越界问题
+            _infoService.Info(InfoBarSeverity.Warning, $"Error setting open flags: {ex.Message}");
+        }
         IsRemoveSelectedThreadVisible = Item?.ProcessName is not null ? Visibility.Visible : Visibility.Collapsed;
         IsSelectProcessVisible = Item?.ProcessName is null ? Visibility.Visible : Visibility.Collapsed;
 
         var tagChanged = game.Tags.Value?.Count != Tags.Count;
-        for (var i = 0; i < Tags.Count && !tagChanged; i++)
-            tagChanged = Tags[i].Tag != game.Tags.Value?[i];
+        try
+        {
+            for (var i = 0; i < Tags.Count && !tagChanged; i++)
+                tagChanged = Tags[i].Tag != game.Tags.Value?[i];
+        }
+        catch (Exception ex)
+        {
+            // 原理上来说是不会越界的，但莫名奇妙有用户反馈过越界问题
+            _infoService.Info(InfoBarSeverity.Warning, $"Error checking tags: {ex.Message}");
+        }
         if (tagChanged)
         {
             Tags.Clear();
