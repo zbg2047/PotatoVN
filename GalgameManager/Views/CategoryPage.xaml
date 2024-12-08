@@ -4,11 +4,11 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
     xmlns:models="using:GalgameManager.Models"
     xmlns:control="using:GalgameManager.Views.Control"
     xmlns:prefab="using:GalgameManager.Views.Prefab"
-    mc:Ignorable="d">
+    mc:Ignorable="d"
+    x:Name="Page">
     
     <Page.Resources>
         <MenuFlyout Placement="Right" x:Key="Flyout">
@@ -68,21 +68,26 @@
             </CommandBar.SecondaryCommands>
         </CommandBar>
         
-        <controls:AdaptiveGridView
-            Grid.Row="1" 
-            DesiredWidth="220"
-            ItemHeight="160"
-            IsItemClickEnabled="True"
-            ItemClickCommand="{x:Bind ViewModel.ItemClickCommand}"
-            ItemsSource="{x:Bind ViewModel.Source,Mode=OneWay}"
-            SelectionMode="None"
-            StretchContentForSingleRow="False">
-            <controls:AdaptiveGridView.ItemTemplate>
-                <DataTemplate x:DataType="models:Category">
-                    <prefab:CategoryPrefab Category="{x:Bind}"
-                                           ContextFlyout="{StaticResource Flyout}"/>
-                </DataTemplate>
-            </controls:AdaptiveGridView.ItemTemplate>
-        </controls:AdaptiveGridView>
+        <ScrollViewer Grid.Row="1">
+            <ItemsRepeater ItemsSource="{x:Bind ViewModel.Source, Mode=OneWay}">
+                <ItemsRepeater.ItemTemplate>
+                    <DataTemplate x:DataType="models:Category">
+                        <Button
+                            Style="{StaticResource TransparentButtonWithHover}"
+                            DataContext="{x:Bind}"
+                            Command="{Binding ElementName=Page, Path=ViewModel.ItemClickCommand}"
+                            CommandParameter="{x:Bind}"
+                            MinWidth="220" MinHeight="145">
+                            <prefab:CategoryPrefab Category="{x:Bind}"
+                                                   ContextFlyout="{StaticResource Flyout}"
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Button>
+                    </DataTemplate>
+                </ItemsRepeater.ItemTemplate>
+                <ItemsRepeater.Layout>
+                    <UniformGridLayout ItemsStretch="Fill" MinRowSpacing="1"/>
+                </ItemsRepeater.Layout>
+            </ItemsRepeater>
+        </ScrollViewer>
     </Grid>
 </Page>

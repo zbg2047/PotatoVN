@@ -4,13 +4,13 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
     xmlns:sources="using:GalgameManager.Models.Sources"
     xmlns:control="using:GalgameManager.Views.Control"
     xmlns:prefab="using:GalgameManager.Views.Prefab"
     xmlns:models="using:GalgameManager.Models"
     xmlns:dataTemplateSelector="using:GalgameManager.Helpers.DataTemplateSelector"
-    mc:Ignorable="d">
+    mc:Ignorable="d"
+    x:Name="Page">
     
     <Page.Resources>
         <MenuFlyout Placement="Right" x:Key="Flyout">
@@ -19,17 +19,6 @@
             <MenuFlyoutItem Icon="Delete" x:Uid="LibraryPage_DeleteFolder"
                             Command="{x:Bind ViewModel.DeleteFolderCommand}" CommandParameter="{Binding}"/>
         </MenuFlyout>
-        <DataTemplate x:Key="GalgameTemplate" x:DataType="models:Galgame">
-            <prefab:GalgamePrefab Galgame="{x:Bind}"/>
-        </DataTemplate>
-        <DataTemplate x:Key="SourceTemplate" x:DataType="sources:GalgameSourceBase">
-            <prefab:SourcePrefab Source="{x:Bind}"
-                                 Flyout="{StaticResource Flyout}"/>
-        </DataTemplate>
-        <dataTemplateSelector:DisplayableGameObjectTemplateSelector 
-            x:Key="ObjectSelector"
-            GalgameTemplate="{StaticResource GalgameTemplate}"
-            SourceTemplate="{StaticResource SourceTemplate}"/>
     </Page.Resources>
 
     <Grid Margin="0 0 0 20">
@@ -83,16 +72,42 @@
                 </AppBarButton>
             </CommandBar.SecondaryCommands>
         </CommandBar>
-
-        <controls:AdaptiveGridView
-            Grid.Row="1"
-            DesiredWidth="175"
-            IsItemClickEnabled="True"
-            ItemClickCommand="{x:Bind ViewModel.NavigateToCommand}"
-            ItemsSource="{x:Bind ViewModel.Source,Mode=OneWay}"
-            SelectionMode="None"
-            StretchContentForSingleRow="False"
-            PointerPressed="UIElement_OnPointerPressed"
-            ItemTemplateSelector="{StaticResource ObjectSelector}" />
+        
+        <ScrollViewer Grid.Row="1">
+            <ItemsRepeater ItemsSource="{x:Bind ViewModel.Source, Mode=OneWay}"
+                           PointerPressed="UIElement_OnPointerPressed">
+                <ItemsRepeater.ItemTemplate>
+                    <dataTemplateSelector:DisplayableGameObjectTemplateSelector>
+                        <!-- 游戏模板 -->
+                        <dataTemplateSelector:DisplayableGameObjectTemplateSelector.GalgameTemplate>
+                            <DataTemplate x:DataType="models:Galgame">
+                                <Button Style="{StaticResource TransparentButtonWithHover}"
+                                        DataContext="{x:Bind}"
+                                        Command="{Binding ElementName=Page, Path=ViewModel.NavigateToCommand}"
+                                        CommandParameter="{x:Bind}">
+                                    <prefab:GalgamePrefab Galgame="{x:Bind}" />
+                                </Button>
+                            </DataTemplate>
+                        </dataTemplateSelector:DisplayableGameObjectTemplateSelector.GalgameTemplate>
+                        <!-- 游戏库模板 -->
+                        <dataTemplateSelector:DisplayableGameObjectTemplateSelector.SourceTemplate>
+                            <DataTemplate x:DataType="sources:GalgameSourceBase">
+                                <Button Style="{StaticResource TransparentButtonWithHover}"
+                                        DataContext="{x:Bind}"
+                                        Command="{Binding ElementName=Page, Path=ViewModel.NavigateToCommand}"
+                                        CommandParameter="{x:Bind}"
+                                        MinWidth="175">
+                                    <prefab:SourcePrefab Source="{x:Bind}"
+                                                         Flyout="{StaticResource Flyout}" />
+                                </Button>
+                            </DataTemplate>
+                        </dataTemplateSelector:DisplayableGameObjectTemplateSelector.SourceTemplate>
+                    </dataTemplateSelector:DisplayableGameObjectTemplateSelector>
+                </ItemsRepeater.ItemTemplate>
+                <ItemsRepeater.Layout>
+                    <UniformGridLayout ItemsStretch="Fill" MinRowSpacing="1" />
+                </ItemsRepeater.Layout>
+            </ItemsRepeater>
+        </ScrollViewer>
     </Grid>
 </Page>
