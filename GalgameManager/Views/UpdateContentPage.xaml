@@ -24,14 +24,14 @@
         </CommandBar>
 
         <ScrollViewer Grid.Row="1" Margin="{StaticResource MediumTopMargin}">
-            <controls:MarkdownTextBlock Text="{x:Bind ViewModel.UpdateContent, Mode=OneWay}"
-                                        Background="Transparent">
-                <interactivity:Interaction.Behaviors>
-                    <core:EventTriggerBehavior EventName="LinkClicked">
-                        <core:InvokeCommandAction Command="{x:Bind ViewModel.LinkClickCommand}" />
-                    </core:EventTriggerBehavior>
-                </interactivity:Interaction.Behaviors>
-            </controls:MarkdownTextBlock>
+            <!-- <controls:MarkdownTextBlock Text="{x:Bind ViewModel.UpdateContent, Mode=OneWay}" -->
+            <!--                             Background="Transparent"> -->
+            <!--     <interactivity:Interaction.Behaviors> -->
+            <!--         <core:EventTriggerBehavior EventName="LinkClicked"> -->
+            <!--             <core:InvokeCommandAction Command="{x:Bind ViewModel.LinkClickCommand}" /> -->
+            <!--         </core:EventTriggerBehavior> -->
+            <!--     </interactivity:Interaction.Behaviors> -->
+            <!-- </controls:MarkdownTextBlock> -->
         </ScrollViewer>
 
         <ProgressRing Grid.Row="1" Visibility="{x:Bind ViewModel.IsDownloading, Mode=OneWay}"

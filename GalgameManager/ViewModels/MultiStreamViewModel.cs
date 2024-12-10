@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using CommunityToolkit.WinUI.UI;
+using CommunityToolkit.WinUI.Collections;
 using GalgameManager.Contracts.Services;
 using GalgameManager.Contracts.ViewModels;
 using GalgameManager.Enums;
@@ -221,7 +221,7 @@ namespace GalgameManager.MultiStreamPage.Lists
         [ObservableProperty] private string _title = string.Empty;
         [ObservableProperty] private MultiStreamPageSortKeys _sort;
 
-        [ObservableProperty] private Category? _category; // 如果设置了则为某分类下的游戏列表
+        [ObservableProperty] private Category? _category; // 如果设置了则为某分类下的游戏列表 
         [ObservableProperty] private GalgameSourceBase? _source; // 如果设置了则为某源下的游戏列表
 
         public GameList()

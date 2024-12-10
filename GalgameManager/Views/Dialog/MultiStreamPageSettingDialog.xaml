@@ -9,7 +9,7 @@
     xmlns:multiStreamPageSettingDialog="using:MultiStreamPageSettingDialog"
     xmlns:lists="using:GalgameManager.MultiStreamPage.Lists"
     xmlns:control="using:GalgameManager.Views.Control"
-    xmlns:cmtk="using:CommunityToolkit.WinUI.UI.Controls"
+    xmlns:cmtk="using:CommunityToolkit.WinUI.Controls"
     xmlns:converter="using:GalgameManager.Helpers.Converter"
     DefaultButton="Primary"
     Style="{ThemeResource DefaultContentDialogStyle}"

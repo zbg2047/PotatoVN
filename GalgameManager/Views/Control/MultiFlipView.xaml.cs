@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Windows.Input;
 using Windows.Foundation;
-using CommunityToolkit.WinUI.UI;
+using CommunityToolkit.WinUI.Collections;
 using DependencyPropertyGenerator;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;

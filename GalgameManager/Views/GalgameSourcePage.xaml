@@ -4,7 +4,6 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
     xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
     xmlns:core="using:Microsoft.Xaml.Interactions.Core"
     xmlns:converter="using:GalgameManager.Helpers.Converter"
@@ -143,26 +142,26 @@
                     <control:SettingExpander x:Uid="GalgameSourcePage_GamesTable"
                                              SettingIcon="&#xE71D;" IsExpanded="False">
                         <control:SettingExpander.SettingContent>
-                            <controls:DataGrid
-                                Grid.Row="2"
-                                AutoGenerateColumns="False"
-                                GridLinesVisibility="Horizontal"
-                                ItemsSource="{x:Bind ViewModel.Galgames, Mode=OneWay}">
-                                <controls:DataGrid.Columns>
-                                    <controls:DataGridTextColumn Binding="{Binding Galgame.Name.Value}" Header="游戏名"
-                                                                 Width="250" />
-                                    <controls:DataGridComboBoxColumn Binding="{Binding Galgame.RssType}" Header="数据源"
-                                                                     ItemsSource="{x:Bind ViewModel.RssTypes}" />
-                                    <controls:DataGridTextColumn Binding="{Binding Galgame.Id}" Header="id" />
-                                    <controls:DataGridTextColumn Binding="{Binding Path}" Header="游戏目录"
-                                                                 IsReadOnly="True" />
-                                </controls:DataGrid.Columns>
-                                <interactivity:Interaction.Behaviors>
-                                    <core:EventTriggerBehavior EventName="SelectionChanged">
-                                        <core:InvokeCommandAction Command="{x:Bind ViewModel.SelectionChangedCommand}" />
-                                    </core:EventTriggerBehavior>
-                                </interactivity:Interaction.Behaviors>
-                            </controls:DataGrid>
+                            <!-- <controls:DataGrid -->
+                            <!--     Grid.Row="2" -->
+                            <!--     AutoGenerateColumns="False" -->
+                            <!--     GridLinesVisibility="Horizontal" -->
+                            <!--     ItemsSource="{x:Bind ViewModel.Galgames, Mode=OneWay}"> -->
+                            <!--     <controls:DataGrid.Columns> -->
+                            <!--         <controls:DataGridTextColumn Binding="{Binding Galgame.Name.Value}" Header="游戏名" -->
+                            <!--                                      Width="250" /> -->
+                            <!--         <controls:DataGridComboBoxColumn Binding="{Binding Galgame.RssType}" Header="数据源" -->
+                            <!--                                          ItemsSource="{x:Bind ViewModel.RssTypes}" /> -->
+                            <!--         <controls:DataGridTextColumn Binding="{Binding Galgame.Id}" Header="id" /> -->
+                            <!--         <controls:DataGridTextColumn Binding="{Binding Path}" Header="游戏目录" -->
+                            <!--                                      IsReadOnly="True" /> -->
+                            <!--     </controls:DataGrid.Columns> -->
+                            <!--     <interactivity:Interaction.Behaviors> -->
+                            <!--         <core:EventTriggerBehavior EventName="SelectionChanged"> -->
+                            <!--             <core:InvokeCommandAction Command="{x:Bind ViewModel.SelectionChangedCommand}" /> -->
+                            <!--         </core:EventTriggerBehavior> -->
+                            <!--     </interactivity:Interaction.Behaviors> -->
+                            <!-- </controls:DataGrid> -->
                         </control:SettingExpander.SettingContent>
                     </control:SettingExpander>
                 </StackPanel>

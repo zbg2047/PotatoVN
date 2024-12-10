@@ -14,8 +14,8 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml;
 using Windows.ApplicationModel.DataTransfer;
-using CommunityToolkit.WinUI.UI;
-using CommunityToolkit.WinUI.UI.Controls;
+using CommunityToolkit.WinUI.Collections;
+using CommunityToolkit.WinUI.Controls;
 using GalgameManager.Helpers.Converter;
 using GalgameManager.Models.Filters;
 using GalgameManager.Models.Sources;
@@ -56,12 +56,11 @@ public partial class HomeViewModel : ObservableObject, INavigationAware
     public readonly string UiRemove = "HomePage_Remove".GetLocalized();
     private readonly string _uiSearch = "Search".GetLocalized();
     #endregion
-    
+
     /// <summary>
     /// 一定要有ObservableProperty，不然切换页面后不会更新
     /// </summary>
-    [ObservableProperty]
-    private AdvancedCollectionView _source = new(null, true);
+    [ObservableProperty] private AdvancedCollectionView _source = new(new List<Galgame>(), true);
 
     public HomeViewModel(INavigationService navigationService, IGalgameCollectionService dataCollectionService,
         ILocalSettingsService localSettingsService, IFilterService filterService, IInfoService infoService)
@@ -127,7 +126,7 @@ public partial class HomeViewModel : ObservableObject, INavigationAware
     public async void OnNavigatedFrom()
     {
         await Task.Delay(200); //等待动画结束
-        Source.Filter = null;
+        Source.Filter = _ => true; 
         if(await _localSettingsService.ReadSettingAsync<bool>(KeyValues.KeepFilters) == false)
             _filterService.ClearFilters();
         _galgameService.PhrasedEvent -= OnGalgameServicePhrased;

@@ -6,12 +6,13 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:converters="using:GalgameManager.Helpers.Converter"
     xmlns:local="using:GalgameManager.Helpers"
-    xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
-    xmlns:ui="using:CommunityToolkit.WinUI.UI"
+    xmlns:cmtkControls="using:CommunityToolkit.WinUI.Controls"
+    xmlns:cmtkAnimations="using:CommunityToolkit.WinUI.Animations"
+    xmlns:ui="using:CommunityToolkit.WinUI"
     xmlns:models="using:GalgameManager.Models"
-    xmlns:animations="using:CommunityToolkit.WinUI.UI.Animations"
     xmlns:viewModels="using:GalgameManager.ViewModels"
-    mc:Ignorable="d">
+    mc:Ignorable="d"
+    x:Name="Page">
 
     <Page.Resources>
         <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
@@ -329,7 +330,7 @@
                                 </DataTemplate>
                             </ItemsRepeater.ItemTemplate>
                             <ItemsRepeater.Layout>
-                                <controls:WrapLayout Orientation="Horizontal" />
+                                <cmtkControls:WrapLayout Orientation="Horizontal" />
                             </ItemsRepeater.Layout>
                         </ItemsRepeater>
                         
@@ -338,49 +339,46 @@
                             Style="{ThemeResource SubtitleTextBlockStyle}"
                             Visibility="{x:Bind ViewModel.IsCharacterVisible, Mode=OneWay}"
                             x:Uid="GalgamePage_Characters" />
-                        
-                        <controls:AdaptiveGridView
-                            Visibility="{x:Bind ViewModel.IsCharacterVisible, Mode=OneWay}"
-                            DesiredWidth="100"
-                            ItemHeight="160"
-                            ItemsSource="{x:Bind ViewModel.Item.Characters,Mode=OneWay,FallbackValue={}}"
-                            IsItemClickEnabled="True"
-                            ItemClickCommand="{x:Bind ViewModel.CharacterClickCommand}"
-                            SelectionMode="None"
-                            StretchContentForSingleRow="False"
-                            animations:Connected.ListItemKey="galgameCharacter"
-                            animations:Connected.ListItemElementName="ConnectedElement">
-                            <controls:AdaptiveGridView.ItemTemplate>
+
+                        <ItemsRepeater Visibility="{x:Bind ViewModel.IsCharacterVisible, Mode=OneWay}"
+                                       ItemsSource="{x:Bind ViewModel.Item.Characters,Mode=OneWay,FallbackValue={}}"
+                                       cmtkAnimations:Connected.ListItemKey="galgameCharacter"
+                                       cmtkAnimations:Connected.ListItemElementName="ConnectedElement">
+                            <ItemsRepeater.ItemTemplate>
                                 <DataTemplate x:DataType="models:GalgameCharacter">
-                                    <Grid
-                                        Padding="{StaticResource XSmallLeftTopRightBottomMargin}">
-                                        <StackPanel HorizontalAlignment="Center">
-                                            <Rectangle Height="75" Width="75"
-                                                       HorizontalAlignment="Center" 
-                                                       VerticalAlignment="Center"
-                                                       x:Name="ConnectedElement"
-                                            >
-                                                <Rectangle.Fill>
-                                                    <ImageBrush 
-                                                        ImageSource="{x:Bind PreviewImagePath, 
-                                                Mode=OneWay, 
+                                    <Button Style="{ThemeResource TransparentButtonWithHover}"
+                                            DataContext="{x:Bind}"
+                                            Command="{Binding ElementName=Page, Path=ViewModel.CharacterClickCommand}"
+                                            CommandParameter="{x:Bind}" Height="130">
+                                        <Grid
+                                            Padding="{StaticResource XSmallLeftTopRightBottomMargin}">
+                                            <StackPanel HorizontalAlignment="Center">
+                                                <Rectangle Height="75" Width="75"
+                                                           HorizontalAlignment="Center"
+                                                           VerticalAlignment="Center"
+                                                           x:Name="ConnectedElement">
+                                                    <Rectangle.Fill>
+                                                        <ImageBrush
+                                                            ImageSource="{x:Bind PreviewImagePath, Mode=OneWay,
                                                 Converter={StaticResource ImagePathConverter}}"
-                                                        Stretch="UniformToFill"
-                                                    />
-                                                </Rectangle.Fill>
-                                            </Rectangle>
-                            
-                                            <TextBlock
-                                                MaxHeight="85"
-                                                Margin="{StaticResource XXSmallTopMargin}"
-                                                HorizontalAlignment="Center"
-                                                Style="{ThemeResource BodyTextStyle}"
-                                                Text="{x:Bind Name, Mode=OneWay}" />
-                                        </StackPanel>
-                                    </Grid>
+                                                            Stretch="UniformToFill" />
+                                                    </Rectangle.Fill>
+                                                </Rectangle>
+                                                <TextBlock
+                                                    MaxHeight="40"
+                                                    Margin="{StaticResource XXSmallTopMargin}"
+                                                    HorizontalAlignment="Center"
+                                                    Style="{ThemeResource BodyTextStyle}"
+                                                    Text="{x:Bind Name, Mode=OneWay}" />
+                                            </StackPanel>
+                                        </Grid>
+                                    </Button>
                                 </DataTemplate>
-                            </controls:AdaptiveGridView.ItemTemplate>
-                        </controls:AdaptiveGridView>
+                            </ItemsRepeater.ItemTemplate>
+                            <ItemsRepeater.Layout>
+                                <UniformGridLayout ItemsStretch="Fill" MinItemWidth="100" MinRowSpacing="10"/>
+                            </ItemsRepeater.Layout>
+                        </ItemsRepeater>
                     </StackPanel>
                 </StackPanel>
             </ScrollViewer>

@@ -1,7 +1,6 @@
 ﻿using Windows.System;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using CommunityToolkit.WinUI.UI.Controls;
 using GalgameManager.Contracts.Services;
 using GalgameManager.Contracts.ViewModels;
 using GalgameManager.Enums;
@@ -89,17 +88,17 @@ public partial class UpdateContentViewModel : ObservableObject, INavigationAware
         UpdateContent = await _updateService.GetUpdateContentAsync(true);
     }
 
-    [RelayCommand]
-    private async Task OnLinkClick(LinkClickedEventArgs e)
-    {
-        if (e.Link.StartsWith("PotatoVN."))
-        {
-            await DealWithCommand(e.Link);
-            return;
-        }
-        
-        await Launcher.LaunchUriAsync(new Uri(e.Link));
-    }
+    // [RelayCommand]
+    // private async Task OnLinkClick(LinkClickedEventArgs e)
+    // {
+    //     if (e.Link.StartsWith("PotatoVN."))
+    //     {
+    //         await DealWithCommand(e.Link);
+    //         return;
+    //     }
+    //     
+    //     await Launcher.LaunchUriAsync(new Uri(e.Link));
+    // }
 
     #region INFOBAR_CTRL
     

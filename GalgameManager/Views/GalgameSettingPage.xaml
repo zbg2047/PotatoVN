@@ -6,7 +6,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:control="using:GalgameManager.Views.Control"
     xmlns:converter="using:GalgameManager.Helpers.Converter"
-    xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
+    xmlns:cmtkControls="using:CommunityToolkit.WinUI.Controls"
     mc:Ignorable="d">
     
     <Page.Resources>
@@ -164,24 +164,24 @@
                                           OnContent="已锁定"
                                           OffContent="已解锁" HorizontalAlignment="Left"/>
                         </StackPanel>
-                        <controls:TokenizingTextBox
+                        <cmtkControls:TokenizingTextBox
                             IsEnabled="{x:Bind ViewModel.Gal.Tags.IsLock,
                                 Converter={StaticResource InverseBooleanConverter}, Mode=OneWay}"
                             ItemsSource="{x:Bind ViewModel.Gal.Tags.Value, Mode=TwoWay}"
                             PlaceholderText="Add Tags"
                             x:Name="TagsBox"
                             >
-                            <controls:TokenizingTextBox.SuggestedItemTemplate>
+                            <cmtkControls:TokenizingTextBox.SuggestedItemTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding }" />
                                 </DataTemplate>
-                            </controls:TokenizingTextBox.SuggestedItemTemplate>
-                            <controls:TokenizingTextBox.TokenItemTemplate>
+                            </cmtkControls:TokenizingTextBox.SuggestedItemTemplate>
+                            <cmtkControls:TokenizingTextBox.TokenItemTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding }" />
                                 </DataTemplate>
-                            </controls:TokenizingTextBox.TokenItemTemplate>
-                        </controls:TokenizingTextBox>
+                            </cmtkControls:TokenizingTextBox.TokenItemTemplate>
+                        </cmtkControls:TokenizingTextBox>
                         
                     </StackPanel>
                     

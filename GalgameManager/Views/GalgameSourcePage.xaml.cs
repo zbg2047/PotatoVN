@@ -1,6 +1,4 @@
-﻿using CommunityToolkit.WinUI.UI.Animations;
-
-using GalgameManager.Contracts.Services;
+﻿using GalgameManager.Contracts.Services;
 using GalgameManager.ViewModels;
 
 using Microsoft.UI.Xaml.Controls;
