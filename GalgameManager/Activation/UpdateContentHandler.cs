@@ -1,5 +1,5 @@
-﻿using Windows.ApplicationModel.Activation;
-using GalgameManager.Contracts.Services;
+﻿using GalgameManager.Contracts.Services;
+using GalgameManager.Helpers;
 using GalgameManager.ViewModels;
 using Microsoft.Windows.AppLifecycle;
 
@@ -11,6 +11,7 @@ public class UpdateContentHandler : ActivationHandler<AppActivationArguments>
     {
         if(args.Kind != ExtendedActivationKind.Launch || !App.GetService<IUpdateService>().ShouldDisplayUpdateContent()) 
             return false;
+        if (Utils.IsWebview2Ok()) return false;
         return true;
     }
 

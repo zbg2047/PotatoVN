@@ -5,6 +5,7 @@ using System.Net.NetworkInformation;
 using System.Text;
 using Windows.Foundation;
 using GalgameManager.Models;
+using Microsoft.Web.WebView2.Core;
 using TinyPinyin;
 
 namespace GalgameManager.Helpers;
@@ -213,5 +214,21 @@ public static class Utils
     {
         if (string.IsNullOrEmpty(src) || src is Galgame.DefaultImagePath) return false;
         return File.Exists(src);
+    }
+
+    /// <summary>
+    /// 检查WebView2是否可用
+    /// </summary>
+    /// <returns></returns>
+    public static bool IsWebview2Ok()
+    {
+        try
+        {
+            return CoreWebView2Environment.GetAvailableBrowserVersionString() != null;
+        }
+        catch (Exception)
+        {
+            return false;
+        }
     }
 }

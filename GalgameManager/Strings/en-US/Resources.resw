@@ -490,9 +490,6 @@ Failure reasons:</value>
   <data name="UpdateContentPage_Title.Text" xml:space="preserve">
     <value>Recently Updated</value>
   </data>
-  <data name="UpdateContentPage_Refresh.Label" xml:space="preserve">
-    <value>Refresh</value>
-  </data>
   <data name="UpdateContentPage_CurrentVersion" xml:space="preserve">
     <value>Current Version:</value>
   </data>
@@ -867,9 +864,6 @@ Failure reasons:</value>
   </data>
   <data name="HomePage_DragDrop.Text" xml:space="preserve">
     <value>Drag the game's executable here to add the game</value>
-  </data>
-  <data name="UpdateContentPage_CategoryNow" xml:space="preserve">
-    <value>All games categorized by game developer</value>
   </data>
   <data name="Shell_UpdateContent.Content" xml:space="preserve">
     <value>Change log</value>

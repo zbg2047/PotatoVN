@@ -499,9 +499,6 @@
   <data name="UpdateContentPage_Title.Text" xml:space="preserve">
     <value>最近更新的内容</value>
   </data>
-  <data name="UpdateContentPage_Refresh.Label" xml:space="preserve">
-    <value>刷新</value>
-  </data>
   <data name="UpdateContentPage_CurrentVersion" xml:space="preserve">
     <value>当前版本：</value>
   </data>
@@ -904,9 +901,6 @@
   </data>
   <data name="HomePage_DragDrop.Text" xml:space="preserve">
     <value>把游戏可执行文件拖到这里来添加游戏</value>
-  </data>
-  <data name="UpdateContentPage_CategoryNow" xml:space="preserve">
-    <value>已按游戏开发商分类所有游戏</value>
   </data>
   <data name="Shell_UpdateContent.Content" xml:space="preserve">
     <value>更新记录</value>
@@ -2030,5 +2024,14 @@
   </data>
   <data name="SettingsPage_Other_Import_WrongFile" xml:space="preserve">
     <value>请选择形如"xxx.pvnExport.zip"的PotatoVN导出文件</value>
+  </data>
+  <data name="UpdateContentPage_WebView2IsNeeded.Text" xml:space="preserve">
+    <value>本页需要WebView2以正常显示</value>
+  </data>
+  <data name="UpdateContentPage_DownloadWebview2.Content" xml:space="preserve">
+    <value>点此跳转Webview2下载链接</value>
+  </data>
+  <data name="UpdateContentPage_SeeWebsite.Label" xml:space="preserve">
+    <value>查看所有更新记录</value>
   </data>
 </root>
