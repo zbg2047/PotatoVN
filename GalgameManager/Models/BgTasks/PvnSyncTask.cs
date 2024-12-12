@@ -49,7 +49,7 @@ public class PvnSyncTask : BgTaskBase
         if (Result.IsNullOrEmpty())
         {
             Result = "PvnSyncTask_NoChange".GetLocalized();
-            if (await App.GetService<ILocalSettingsService>()
+            if (!await App.GetService<ILocalSettingsService>()
                     .ReadSettingAsync<bool>(KeyValues.EventPvnSyncEmptyNotify))
                 notify = false;
         }
