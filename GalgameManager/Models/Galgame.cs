@@ -4,7 +4,6 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using GalgameManager.Contracts;
 using GalgameManager.Enums;
 using GalgameManager.Helpers;
-using GalgameManager.Helpers.Phrase;
 using GalgameManager.Models.Sources;
 using Newtonsoft.Json;
 
@@ -96,8 +95,8 @@ public partial class Galgame : ObservableObject, IDisplayableGameObject
             {
                Ids[(int)RssType] = value;
                OnPropertyChanged();
-               if (_rssType == RssType.Mixed)
-                   UpdateIdFromMixed();
+               if (_rssType == RssType.Mixed) UpdateIdFromMixed();
+               else UpdateMixedId();
             }
         }
     }
@@ -206,19 +205,32 @@ public partial class Galgame : ObservableObject, IDisplayableGameObject
     /// </summary>
     public void UpdateIdFromMixed()
     {
-        Dictionary<string, string?> tmp = MixedPhraser.Id2IdDict(Ids[(int)RssType.Mixed] ?? "");
-        if (tmp.TryGetValue("bgm", out var bgm) && bgm != "null" && bgm != null)
+        foreach (RssType rss in RssTypeHelper.UsablePhrasers)
+            Ids[(int)rss] = null;
+        var ids = Ids[(int)RssType.Mixed] ?? string.Empty.Replace("，", ",").Replace(" ", "");
+        foreach (var id in ids.Split(",").Where(s => s.Contains(':')))
         {
-            Ids[(int)RssType.Bangumi] = bgm;
+            var parts = id.Split(":");
+            if (parts.Length != 2) continue;
+            if (parts[0].GetRssType() is not { } type) continue;
+            Ids[(int)type] = parts[1] == "null" ? null : parts[1];
         }
-        if (tmp.TryGetValue("vndb", out var vndb) && vndb != "null"&& vndb != null)
+    }
+
+    /// <summary>
+    /// 从其他数据源的id更新混合数据源的id
+    /// </summary>
+    public void UpdateMixedId()
+    {
+        // 更新id
+        var mixedId = string.Empty;
+        foreach (RssType rss in RssTypeHelper.UsablePhrasers)
         {
-            Ids[(int)RssType.Vndb] = vndb;
+            var id = Ids[(int)rss];
+            mixedId += $"{rss.GetAbbr()}:{id ?? "null"},";
+            Ids[(int)rss] = id == "null" ? null : id;
         }
-        if (tmp.TryGetValue("ymgal", out var ymgal) && ymgal != "null"&& ymgal != null)
-        {
-            Ids[(int)RssType.Ymgal] = ymgal;
-        }
+        Ids[(int)RssType.Mixed] = mixedId.TrimEnd(',');
     }
 
     /// <summary>

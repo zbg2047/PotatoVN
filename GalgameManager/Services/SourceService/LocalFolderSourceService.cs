@@ -77,7 +77,6 @@ public class LocalFolderSourceService : IGalgameSourceService
             character.ImagePath = LoadImg(character.ImagePath, metaFolderPath)!;
             character.PreviewImagePath = LoadImg(character.PreviewImagePath, metaFolderPath)!;
         }
-        meta.UpdateIdFromMixed();
         meta.ExePath = LoadImg(meta.ExePath, metaFolderPath, defaultReturn: null);
         meta.SavePath = Directory.Exists(meta.SavePath) ? meta.SavePath : null; //检查存档路径是否存在并设置SavePosition字段
         meta.FindSaveInPath();

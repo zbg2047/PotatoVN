@@ -263,8 +263,6 @@ public partial class GalgameCollectionService : IGalgameCollectionService
 
         galgame.RssType = phraser.GetPhraseType();
         galgame.Id = tmp.Id;
-        if (phraser is MixedPhraser)
-            galgame.UpdateIdFromMixed();
         galgame.Description.Value = tmp.Description.Value;
         if (tmp.Developer != Galgame.DefaultString)
             galgame.Description.Value = tmp.Description.Value;

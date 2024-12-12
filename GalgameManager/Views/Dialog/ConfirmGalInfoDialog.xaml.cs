@@ -60,7 +60,7 @@ public partial class ConfirmGalInfoDialog
     partial void OnIdChanged(string? value)
     {
         Galgame.Ids[(int)SelectedRssType] = string.IsNullOrWhiteSpace(value) ? null : value;
-        Galgame.Ids[(int)RssType.Mixed] = MixedPhraser.IdList2Id(Galgame.Ids);
+        Galgame.UpdateMixedId();
         Update();
     }
 

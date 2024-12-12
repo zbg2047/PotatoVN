@@ -14,12 +14,6 @@ public class MixedPhraser : IGalInfoPhraser, IGalCharacterPhraser
     private bool _init;
     private Dictionary<RssType, IGalInfoPhraser?> _phrasers = new();
 
-    private static readonly RssType[] UsablePhrasers = {
-        RssType.Bangumi,
-        RssType.Ymgal,
-        RssType.Vndb
-    };
-    
     private void Init()
     {
         _init = true;
@@ -61,39 +55,36 @@ public class MixedPhraser : IGalInfoPhraser, IGalCharacterPhraser
     public async Task<Galgame?> GetGalgameInfo(Galgame galgame)
     {
         if (!_init) Init();
-        Dictionary<string, string?> ids = Id2IdDict(galgame.Ids[(int)RssType.Mixed] ?? "");
         Dictionary<RssType, Task<Galgame?>?> phraserTasks = new ();
-        foreach (RssType phraserType in UsablePhrasers)
+        foreach (RssType phraserType in RssTypeHelper.UsablePhrasers)
         {
             if (_phrasers.TryGetValue(phraserType, out IGalInfoPhraser? phraser) && phraser != null)
             {
                 Galgame game = new() { Name = galgame.Name };
-                if ( phraserType.GetAbbr() is {} n && ids.TryGetValue(n, out var id))
-                {
-                    game.RssType = phraserType;
-                    game.Id = id;
-                }
+                game.RssType = phraserType;
+                game.Id = galgame.Ids[(int)phraserType];
                 phraserTasks[phraserType] = phraser.GetGalgameInfo(game);
             }
         }
         await Task.WhenAll(phraserTasks.Values.Where(t=>t != null)!); //这几个源可以并行搜刮
         Dictionary<RssType, Galgame> metas = new();
-        ids.Clear();
-        foreach (RssType phraserType in UsablePhrasers)
+        Galgame result = new();
+        foreach (var (rssType, task) in phraserTasks)
         {
-            if (phraserTasks.TryGetValue(phraserType, out Task<Galgame?>? t) && t?.Result != null)
+            if (task == null) continue;
+            if (await task is { } game)
             {
-                metas[phraserType] = t.Result;
-                ids[phraserType.GetAbbr()!] = t.Result.Id;
+                metas[rssType] = game;
+                result.Ids[(int)rssType] = game.Id;
             }
-                
+            else
+                result.Ids[(int)rssType] = null;
         }
         if(metas.Count == 0) return null;
         
         // 合并信息
-        Galgame result = new();
         result.RssType = RssType.Mixed;
-        result.Id = IdDict2Id(ids); 
+        result.UpdateMixedId();
         // name
         result.Name = GetValue(metas, nameof(Galgame.Name), _ => true, 
             new LockableProperty<string>(string.Empty));
@@ -142,46 +133,6 @@ public class MixedPhraser : IGalInfoPhraser, IGalCharacterPhraser
     }
 
     public void UpdateData(IGalInfoPhraserData data) => _data = (MixedPhraserData) data;
-    
-    public static Dictionary<string, string?> Id2IdDict(string ids)
-    {
-        Dictionary<string, string?> idDict = new();
-        ids = ids.Replace("，", ",").Replace(" ", "");
-        foreach (var id in ids.Split(",").Where(s => s.Contains(':')))
-        {
-            var parts = id.Split(":");
-            if (parts.Length == 2 && parts[0].GetRssType() != null) 
-                idDict[parts[0]] = parts[1] == "null" ? null : parts[1];
-        }
-
-        return idDict;
-    }
-    
-    public static string IdDict2Id(Dictionary<string, string?> ids)
-    {
-        List<string> idParts = new();
-        foreach (var (name, id) in ids)
-        {
-            if (name.GetRssType() != null && !id.IsNullOrEmpty())
-            {
-                idParts.Add($"{name}:{id}");
-            }
-        }
-        return string.Join(",", idParts);
-    }
-    
-    public static string IdList2Id(IList<string?> ids)
-    {
-        Dictionary<string, string?> idDict = new();
-        foreach (RssType phraserType in UsablePhrasers)
-        {
-            if (ids.Count > (int)phraserType)
-            {
-                idDict[phraserType.GetAbbr()!] = ids[(int)phraserType];
-            }
-        }
-        return IdDict2Id(idDict);
-    }
 
     public RssType GetPhraseType() => RssType.Mixed;
 
