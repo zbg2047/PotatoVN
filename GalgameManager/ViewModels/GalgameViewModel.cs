@@ -318,6 +318,21 @@ public partial class GalgameViewModel : ObservableObject, INavigationAware
         if (Item?.IsLocalGame != true) return;
         await _galgameService.ChangeGalgameSavePosition(Item);
     }
+
+    [RelayCommand]
+    private async void ChangeTimeFormat()
+    {
+        try
+        {
+            var current = await _localSettingsService.ReadSettingAsync<bool>(KeyValues.TimeAsHour);
+            await _localSettingsService.SaveSettingAsync(KeyValues.TimeAsHour, !current);
+            Item!.RaisePropertyChanged(nameof(Galgame.TotalPlayTime));
+        }
+        catch (Exception e)
+        {
+            _infoService.Event(EventType.PageError, InfoBarSeverity.Error, "Oops, something went wrong", e);
+        }
+    }
     
     [RelayCommand(CanExecute = nameof(IsLocalGame))]
     private void ResetExePath(object obj)

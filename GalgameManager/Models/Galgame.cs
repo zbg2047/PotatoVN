@@ -281,6 +281,9 @@ public partial class Galgame : ObservableObject, IDisplayableGameObject
                Tags.Value!.Any(str => str.ContainX(searchKey));
     }
 
+    /// 触发属性变更事件，用于手动更新页面
+    public void RaisePropertyChanged(string propertyName) => OnPropertyChanged(propertyName);
+
     partial void OnLastPlayTimeChanged(DateTime value) => GalPropertyChanged?.Invoke(this, nameof(LastPlayTime), value);
     partial void OnPlayTypeChanged(PlayType value) => GalPropertyChanged?.Invoke(this, nameof(PlayType), value);
 }

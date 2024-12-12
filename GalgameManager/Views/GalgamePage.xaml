@@ -11,6 +11,8 @@
     xmlns:ui="using:CommunityToolkit.WinUI"
     xmlns:models="using:GalgameManager.Models"
     xmlns:viewModels="using:GalgameManager.ViewModels"
+    xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
+    xmlns:core="using:Microsoft.Xaml.Interactions.Core"
     mc:Ignorable="d"
     x:Name="Page">
 
@@ -255,7 +257,13 @@
                                 <HyperlinkButton
                                     Content="{x:Bind ViewModel.Item.TotalPlayTime, Mode=OneWay, 
                                            FallbackValue={}, Converter={StaticResource TimeToDisplayTimeConverter}}"
-                                    Padding="0 0 0 0" Command="{x:Bind ViewModel.JumpToPlayedTimePageCommand}"/>
+                                    Padding="0 0 0 0" Command="{x:Bind ViewModel.JumpToPlayedTimePageCommand}">
+                                    <interactivity:Interaction.Behaviors>
+                                        <core:EventTriggerBehavior EventName="RightTapped">
+                                            <core:InvokeCommandAction Command="{x:Bind ViewModel.ChangeTimeFormatCommand}" />
+                                        </core:EventTriggerBehavior>
+                                    </interactivity:Interaction.Behaviors>
+                                </HyperlinkButton>
                             </StackPanel>
                         </StackPanel>
 
