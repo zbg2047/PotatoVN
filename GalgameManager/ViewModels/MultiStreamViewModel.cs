@@ -272,13 +272,21 @@ namespace GalgameManager.MultiStreamPage.Lists
             }
             
             // 更新排序关键字
-            Games.SortDescriptions.Clear();
-            Games.SortDescriptions.Add(new SortDescription(Sort switch
+            try
             {
-                MultiStreamPageSortKeys.LastPlayed => nameof(Galgame.LastPlayTime),
-                MultiStreamPageSortKeys.ReleaseDate => nameof(Galgame.ReleaseDate),
-                _ => throw new ArgumentOutOfRangeException()
-            }, SortDirection.Descending));
+                Games.SortDescriptions.Clear();
+                Games.SortDescriptions.Add(new SortDescription(Sort switch
+                {
+                    MultiStreamPageSortKeys.LastPlayed => nameof(Galgame.LastPlayTime),
+                    MultiStreamPageSortKeys.ReleaseDate => nameof(Galgame.ReleaseDate),
+                    _ => throw new ArgumentOutOfRangeException()
+                }, SortDirection.Descending));
+            }
+            catch (Exception e) 
+            {
+                //有时排序时会发生奇怪的COMException，疑似AdvancedCollectionView的问题，暂时无法处理
+                App.GetService<IInfoService>().DeveloperEvent(e:e);
+            }
         }
 
         partial void OnCategoryChanged(Category? value)
@@ -325,13 +333,20 @@ namespace GalgameManager.MultiStreamPage.Lists
         {
             (Categories.Source as ObservableCollection<Category>)?.SyncCollection(_group.Categories);
             // 更新排序关键字
-            Categories.SortDescriptions.Clear();
-            Categories.SortDescriptions.Add(new SortDescription(Sort switch
+            try
             {
-                MultiStreamPageSortKeys.LastPlayed => nameof(Category.LastPlayed),
-                MultiStreamPageSortKeys.LastClicked => nameof(Category.LastClicked),
-                _ => throw new ArgumentOutOfRangeException(),
-            }, SortDirection.Descending));
+                Categories.SortDescriptions.Clear();
+                Categories.SortDescriptions.Add(new SortDescription(Sort switch
+                {
+                    MultiStreamPageSortKeys.LastPlayed => nameof(Category.LastPlayed),
+                    MultiStreamPageSortKeys.LastClicked => nameof(Category.LastClicked),
+                    _ => throw new ArgumentOutOfRangeException(),
+                }, SortDirection.Descending));
+            }
+            catch (Exception e)
+            {
+                App.GetService<IInfoService>().DeveloperEvent(e:e);
+            }
         }
         
         partial void OnGroupChanged(CategoryGroup value)
@@ -386,13 +401,20 @@ namespace GalgameManager.MultiStreamPage.Lists
                     Sources.Add(source);
             }
             // 更新排序关键字
-            Sources.SortDescriptions.Clear();
-            Sources.SortDescriptions.Add(new SortDescription(Sort switch
+            try
             {
-                MultiStreamPageSortKeys.LastPlayed => nameof(GalgameSourceBase.LastPlayed),
-                MultiStreamPageSortKeys.LastClicked => nameof(GalgameSourceBase.LastClicked),
-                _ => throw new ArgumentOutOfRangeException(),
-            }, SortDirection.Descending));
+                Sources.SortDescriptions.Clear();
+                Sources.SortDescriptions.Add(new SortDescription(Sort switch
+                {
+                    MultiStreamPageSortKeys.LastPlayed => nameof(GalgameSourceBase.LastPlayed),
+                    MultiStreamPageSortKeys.LastClicked => nameof(GalgameSourceBase.LastClicked),
+                    _ => throw new ArgumentOutOfRangeException(),
+                }, SortDirection.Descending));
+            }
+            catch (Exception e)
+            {
+                App.GetService<IInfoService>().DeveloperEvent(e:e);
+            }
         }
         
         partial void OnRootChanged(GalgameSourceBase? value)
