@@ -17,7 +17,7 @@ public class CategoryService : ICategoryService
     private readonly GalgameCollectionService _galgameService;
     private readonly IInfoService _infoService;
     private CategoryGroup? _developerGroup, _statusGroup;
-    private readonly Category[] _statusCategory = new Category[5];
+    private readonly Category[] _statusCategory = new Category[6];
     private bool _isInit;
     private readonly ILocalSettingsService _localSettings;
     private readonly BlockingCollection<Category> _queue = new();
@@ -253,8 +253,6 @@ public class CategoryService : ICategoryService
     {
         await _localSettings.SaveSettingAsync(KeyValues.CategoryGroups, _categoryGroups, true,
             converters: new() { new GalgameAndUidConverter() });
-        if (_statusGroup != null)
-            _categoryGroups.Add(_statusGroup);
     }
     
     public async Task ExportAsync(Action<string, int, int>? progress)
@@ -320,6 +318,8 @@ public class CategoryService : ICategoryService
                 { Id = new Guid("00000000-0000-0000-0000-000000000004") });
             _statusGroup.Categories.Add(new Category(PlayType.Abandoned.GetLocalized())
                 { Id = new Guid("00000000-0000-0000-0000-000000000005") });
+            _statusGroup.Categories.Add(new Category(PlayType.WantToPlay.GetLocalized())
+                { Id = new Guid("00000000-0000-0000-0000-000000000006") });
             SetStatusCategory();
             foreach(Galgame game in _galgameService.Galgames.Where(g => GetStatusCategory(g) is null)) 
                 _statusCategory[(int)game.PlayType].Add(game);
@@ -335,6 +335,7 @@ public class CategoryService : ICategoryService
             _statusCategory[(int)PlayType.Playing] = _statusGroup.Categories[2];
             _statusCategory[(int)PlayType.Shelved] = _statusGroup.Categories[3];
             _statusCategory[(int)PlayType.Abandoned] = _statusGroup.Categories[4];
+            _statusCategory[(int)PlayType.WantToPlay] = _statusGroup.Categories[5];
         }
     }
 
@@ -381,6 +382,8 @@ public class CategoryService : ICategoryService
             ?? new();
         // 改变游戏索引格式，since v1.8.0
         await UpdateGameIndexFormat(status);
+        // 添加“想玩”分类，since v1.8.0
+        await AddWantToPlayCategory(status);
         // 给各分类添加LastPlayed字段, since v1.8.0
         if (!status.CategoryAddLastPlayed)
         {
@@ -439,6 +442,32 @@ public class CategoryService : ICategoryService
         catch (Exception e)
         {
             _infoService.Event(EventType.UpgradeError, InfoBarSeverity.Warning, "升级分类存储格式（游戏索引方案）失败", e);
+        }
+    }
+
+    private async Task AddWantToPlayCategory(LocalSettingStatus status)
+    {
+        if (status.CategoryAddWantToPlay) return;
+        try
+        {
+            CategoryGroup? statusGroup = _categoryGroups.FirstOrDefault(g => g.Type == CategoryGroupType.Status);
+            if (statusGroup is not null)
+            {
+                var containsWantToPlay =
+                    statusGroup.Categories.Any(c => c.Id == new Guid("00000000-0000-0000-0000-000000000006"));
+                if (!containsWantToPlay)
+                {
+                    statusGroup.Categories.Add(new Category(PlayType.WantToPlay.GetLocalized())
+                        { Id = new Guid("00000000-0000-0000-0000-000000000006") });
+                    await SaveAsync();
+                }
+            }
+            status.CategoryAddWantToPlay = true;
+            await _localSettings.SaveSettingAsync(KeyValues.DataStatus, status, true);
+        }
+        catch (Exception e)
+        {
+            _infoService.Event(EventType.UpgradeError, InfoBarSeverity.Warning, "添加“想玩”分类失败", e);
         }
     }
     

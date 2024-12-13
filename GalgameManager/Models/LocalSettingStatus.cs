@@ -20,6 +20,9 @@ public class LocalSettingStatus
     
     /// CategoryService, v1.8.0, 给各分类添加LastPlayed字段
     public bool CategoryAddLastPlayed = false;
+    
+    /// CategoryService, v1.8.0, 添加“想玩”分类
+    public bool CategoryAddWantToPlay = false;
 
 
     /// galgameCollectionService是否已处理过导入
