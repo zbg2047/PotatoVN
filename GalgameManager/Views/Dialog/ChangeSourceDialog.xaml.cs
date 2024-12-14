@@ -1,4 +1,6 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿#pragma warning disable MVVMTK0049 //警告INotifyPropertyChanged无法NativeAOT，等后续处理
+
+using CommunityToolkit.Mvvm.ComponentModel;
 using GalgameManager.Contracts.Services;
 using GalgameManager.Enums;
 using GalgameManager.Helpers;
@@ -16,7 +18,7 @@ public sealed partial class ChangeSourceDialog
     public List<GalgameSourceBase> Sources { get; }
     public List<GalgameSourceBase> GalgameSources { get; }
     public string TargetPath => _targetPath;
-    public GalgameSourceBase MoveInSource => Sources[_selectSourceIndex];
+    public GalgameSourceBase MoveInSource => Sources[SelectSourceIndex];
     public GalgameSourceBase? MoveOutSource => RemoveFromSource ? GalgameSources![RemoveFromSourceIndex] : null;
     
     [ObservableProperty] private int _selectSourceIndex;
@@ -109,7 +111,7 @@ public sealed partial class ChangeSourceDialog
         GalgameSourceBase selectedSource = Sources[SelectSourceIndex];
         MoveInDescription = SourceServiceFactory.GetSourceService(selectedSource.SourceType)
             .GetMoveInDescription(selectedSource, _targetPath);
-        if (_removeFromSource)
+        if (RemoveFromSource)
         {
             GalgameSourceBase selectedMoveOutSource = GalgameSources[RemoveFromSourceIndex];
             MoveOutDescription = SourceServiceFactory.GetSourceService(selectedMoveOutSource.SourceType)
@@ -119,3 +121,5 @@ public sealed partial class ChangeSourceDialog
             MoveOutDescription = null;
     }
 }
+
+#pragma warning restore MVVMTK0049 //警告INotifyPropertyChanged无法NativeAOT，等后续处理

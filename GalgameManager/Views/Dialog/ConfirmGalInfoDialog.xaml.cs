@@ -1,9 +1,9 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿#pragma warning disable MVVMTK0049 //警告INotifyPropertyChanged无法NativeAOT，等后续处理
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using GalgameManager.Contracts.Services;
 using GalgameManager.Enums;
 using GalgameManager.Helpers;
-using GalgameManager.Helpers.Phrase;
 using GalgameManager.Models;
 using Microsoft.UI.Xaml;
 
@@ -66,3 +66,5 @@ public partial class ConfirmGalInfoDialog
 
     partial void OnSelectedRssTypeChanged(RssType value) => Id = Galgame.Ids[(int)value];
 }
+
+#pragma warning restore MVVMTK0049

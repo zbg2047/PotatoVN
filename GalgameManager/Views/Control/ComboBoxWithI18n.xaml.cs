@@ -1,5 +1,4 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using DependencyPropertyGenerator;
+﻿using DependencyPropertyGenerator;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
@@ -8,25 +7,18 @@ namespace GalgameManager.Views.Control;
 [DependencyProperty<DataTemplate>("ItemTemplate")]
 [DependencyProperty<object>("ItemsSource")]
 [DependencyProperty<object>("SelectedItem")]
-[INotifyPropertyChanged]
 public partial class ComboBoxWithI18N
 {
-    [ObservableProperty] private object? _selectedItemTmp;
     public ComboBoxWithI18N()
     {
         InitializeComponent();
+        ComboBox.SelectionChanged += (_, _) => SelectedItem = ComboBox.SelectedItem;
     }
 
     partial void OnSelectedItemChanged(object? newValue)
     {
-        if (newValue != SelectedItemTmp)
-            SelectedItemTmp = newValue;
-    }
-
-    partial void OnSelectedItemTmpChanged(object? value)
-    {
-        if (value is not null && value != SelectedItem)
-            SelectedItem = value;
+        if (newValue != ComboBox.SelectedItem)
+            ComboBox.SelectedItem = newValue;
     }
 }
 

@@ -147,7 +147,7 @@ public partial class LibraryViewModel : ObservableObject, INavigationAware
     }
 
     [RelayCommand]
-    private async void AddLibrary()
+    private async Task AddLibrary()
     {
         try
         {

@@ -157,13 +157,13 @@ namespace GalgameManager.ViewModels
         [RelayCommand]
         private void Search()
         {
-            Galgame? game = _gameService.GetGalgameFromName(_searchKey);
+            Galgame? game = _gameService.GetGalgameFromName(SearchKey);
             if (game is not null)
             {
                 NavigationHelper.NavigateToGalgamePage(_navigationService, new GalgamePageParameter { Galgame = game });
                 return;
             }
-            Category? category = _categoryService.GetCategory(_searchKey);
+            Category? category = _categoryService.GetCategory(SearchKey);
             if (category is not null)
             {
                 NavigationHelper.NavigateToHomePage(_navigationService, _filterService, new[] { new CategoryFilter(category) });
@@ -326,12 +326,12 @@ namespace GalgameManager.MultiStreamPage.Lists
         private void ClickTitle()
         {
             INavigationService service = App.GetService<INavigationService>();
-            service.NavigateTo(typeof(CategoryViewModel).FullName!, _group);
+            service.NavigateTo(typeof(CategoryViewModel).FullName!, Group);
         }
 
         public void Refresh()
         {
-            (Categories.Source as ObservableCollection<Category>)?.SyncCollection(_group.Categories);
+            (Categories.Source as ObservableCollection<Category>)?.SyncCollection(Group.Categories);
             // 更新排序关键字
             try
             {

@@ -472,7 +472,7 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
     partial void OnDevelopmentModeChanged(bool value) => _localSettingsService.SaveSettingAsync(KeyValues.DevelopmentMode, value);
 
     [RelayCommand]
-    private async void ExportData()
+    private async Task ExportData()
     {
         try
         {

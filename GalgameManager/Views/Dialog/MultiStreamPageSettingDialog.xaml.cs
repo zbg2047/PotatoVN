@@ -1,4 +1,6 @@
-﻿using System.Collections.ObjectModel;
+﻿#pragma warning disable MVVMTK0049 //警告INotifyPropertyChanged无法NativeAOT，等后续处理
+
+using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using GalgameManager.Contracts.Services;
@@ -122,6 +124,8 @@ namespace GalgameManager.Views.Dialog
         }
     }
 }
+
+#pragma warning restore MVVMTK0049
 
 namespace MultiStreamPageSettingDialog
 {

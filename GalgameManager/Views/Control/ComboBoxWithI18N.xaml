@@ -15,8 +15,7 @@
         </DataTemplate>
     </UserControl.Resources>
 
-    <ComboBox ItemsSource="{x:Bind ItemsSource, Mode=OneWay}"
-              SelectedItem="{x:Bind SelectedItemTmp, Mode=TwoWay}">
+    <ComboBox x:Name="ComboBox" ItemsSource="{x:Bind ItemsSource, Mode=OneWay}">
         <ComboBox.ItemTemplateSelector>
             <control:ComboBoxWithI18NDataTemplateSelector DefaultTemplate="{StaticResource DefaultItemTemplate}"
                                                           ItemTemplate="{x:Bind ItemTemplate, Mode=OneWay}"/>

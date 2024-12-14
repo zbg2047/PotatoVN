@@ -60,7 +60,7 @@ public partial class GalgameViewModel : ObservableObject, INavigationAware
     [ObservableProperty] private string _infoBarMsg = string.Empty;
     [ObservableProperty] private InfoBarSeverity _infoBarSeverity = InfoBarSeverity.Informational;
     private int _msgIndex;
-    private bool IsNotLocalGame => !_isLocalGame;
+    private bool IsNotLocalGame => !IsLocalGame;
     
     [RelayCommand]
     private void OnCharacterClick(GalgameCharacter? clickedItem)
@@ -99,7 +99,7 @@ public partial class GalgameViewModel : ObservableObject, INavigationAware
         Item = param.Galgame;
         IsLocalGame = Item.IsLocalGame;
         Item.SavePath = Item.SavePath; //更新存档位置显示
-        Update(_item);
+        Update(Item);
         
         if (param.StartGame && await _localSettingsService.ReadSettingAsync<bool>(KeyValues.QuitStart))
             await Play();
@@ -135,7 +135,7 @@ public partial class GalgameViewModel : ObservableObject, INavigationAware
     
     private void Update(Galgame? game)
     {
-        if (game is null || game != _item) return;
+        if (game is null || game != Item) return;
         IsPhrasing = false;
         IsTagVisible = Item?.Tags.Value?.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
         IsDescriptionVisible = Item?.Description! != string.Empty ? Visibility.Visible : Visibility.Collapsed;
@@ -320,7 +320,7 @@ public partial class GalgameViewModel : ObservableObject, INavigationAware
     }
 
     [RelayCommand]
-    private async void ChangeTimeFormat()
+    private async Task ChangeTimeFormat()
     {
         try
         {
@@ -384,8 +384,8 @@ public partial class GalgameViewModel : ObservableObject, INavigationAware
     [RelayCommand]
     private void JumpToHomePageWithDeveloperFilter()
     {
-        if (_item is null) return;
-        Category? category = _categoryService.GetDeveloperCategory(_item);
+        if (Item is null) return;
+        Category? category = _categoryService.GetDeveloperCategory(Item);
         if (category is null)
         {
             _infoService.Info(InfoBarSeverity.Error, msg:"HomePage_NoDeveloperCategory".GetLocalized());
@@ -497,7 +497,7 @@ public partial class GalgameViewModel : ObservableObject, INavigationAware
     private async Task RemoveSelectedThread()
     {
         Item!.ProcessName = null;
-        Update(_item);
+        Update(Item);
         _ = DisplayMsg(InfoBarSeverity.Success, "GalgamePage_RemoveSelectedThread_Success".GetLocalized());
         await SaveAsync();
     }
@@ -511,7 +511,7 @@ public partial class GalgameViewModel : ObservableObject, INavigationAware
         if (dialog.SelectedProcessName is not null)
         {
             Item.ProcessName = dialog.SelectedProcessName;
-            Update(_item);
+            Update(Item);
             await SaveAsync();
             _ = DisplayMsg(InfoBarSeverity.Success, "HomePage_ProcessNameSet".GetLocalized());
         }
