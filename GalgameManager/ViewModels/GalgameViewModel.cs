@@ -337,14 +337,14 @@ public partial class GalgameViewModel : ObservableObject, INavigationAware
     [RelayCommand(CanExecute = nameof(IsLocalGame))]
     private void ResetExePath(object obj)
     {
-        if (Item is not {SourceType:GalgameSourceType.LocalFolder}) return;
+        if (Item is null || !Item.IsLocalGame) return;
         Item!.ExePath = null;
     }
     
     [RelayCommand(CanExecute = nameof(IsLocalGame))]
     private async Task DeleteFromDisk()
     {
-        if (Item is not {SourceType:GalgameSourceType.LocalFolder}) return;
+        if (Item is null || !Item.IsLocalGame) return;
         ContentDialog dialog = new()
         {
             XamlRoot = App.MainWindow!.Content.XamlRoot,

@@ -395,7 +395,9 @@ public class GalgameSourceCollectionService : IGalgameSourceCollectionService
             IList<Galgame> games = App.GetService<IGalgameCollectionService>().Galgames;
             foreach (Galgame g in games)
             {
+#pragma warning disable CS0618 // 类型或成员已过时，升级旧数据使用
                 var gamePath = g.Path;
+#pragma warning restore CS0618 // 类型或成员已过时
                 if (!string.IsNullOrEmpty(gamePath))
                 {
                     var folderPath = Path.GetDirectoryName(gamePath);

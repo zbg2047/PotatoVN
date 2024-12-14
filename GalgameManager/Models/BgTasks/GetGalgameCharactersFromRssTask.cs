@@ -8,23 +8,25 @@ namespace GalgameManager.Models.BgTasks;
 
 public class GetGalgameCharactersFromRssTask : BgTaskBase
 {
-    public string GalgamesName = "";
+    public GalgameUid GalgameUid
+    {
+        get => _galgame?.Uid ?? new();
+        set =>
+            _galgame =
+                (App.GetService<IGalgameCollectionService>() as GalgameCollectionService)
+                ?.GetGalgameFromUid(value);
+    }
+
     private Galgame? _galgame;
-
-
-    public GetGalgameCharactersFromRssTask() { }
+    
+    private GetGalgameCharactersFromRssTask() { } //For Json
 
     public GetGalgameCharactersFromRssTask(Galgame galgame)
     {
         _galgame = galgame;
-        GalgamesName = galgame.Name.Value ?? "";
     }
     
-    protected override Task RecoverFromJsonInternal()
-    {
-        _galgame =  (App.GetService<IGalgameCollectionService>() as GalgameCollectionService)?.GetGalgameFromName(GalgamesName);
-        return Task.CompletedTask;
-    }
+    protected override Task RecoverFromJsonInternal() => Task.CompletedTask;
 
     protected override Task RunInternal()
     {
@@ -36,7 +38,7 @@ public class GetGalgameCharactersFromRssTask : BgTaskBase
         
         return Task.Run((async Task () =>
         {
-            log += $"{DateTime.Now}\n{_galgame.Name}\n\n";
+            log += $"{DateTime.Now}\n{_galgame.Name.Value}\n\n";
             var total = _galgame.Characters.Count;
             for (var i = 0; i < _galgame.Characters.Count; i++)
             {
@@ -47,7 +49,7 @@ public class GetGalgameCharactersFromRssTask : BgTaskBase
                 {
                     character = await galgameService.PhraseGalCharacterAsync(character, _galgame.RssType);
                 });
-                log += $"{_galgame.Name.Value}->{character.Name} Done";
+                log += $"{_galgame.Name.Value}->{character.Name} Done\n";
                 ChangeProgress(i+1, total, 
                     "Galgame_GetCharacterInfo_GottenInfo".GetLocalized(character.Name, _galgame.Name.Value??""));
 
@@ -68,7 +70,11 @@ public class GetGalgameCharactersFromRssTask : BgTaskBase
         })!);
     }
 
-    public override bool OnSearch(string key) => _galgame?.Url.Contains(key) ?? false;
-    
+    public override bool OnSearch(string key)
+    {
+        if (_galgame is null) return false;
+        return _galgame.Uid.ToString() == key;
+    }
+
     public override string Title { get; } = "GetCharacterInfoTask_Title".GetLocalized();
 }

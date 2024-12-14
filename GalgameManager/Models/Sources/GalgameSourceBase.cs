@@ -85,16 +85,6 @@ public partial class GalgameSourceBase : ObservableObject, IDisplayableGameObjec
     }
 
     /// <summary>
-    /// 检查该游戏是否应该在这个库中
-    /// </summary>
-    /// <param name="galgame">游戏</param>
-    /// <returns></returns>
-    public virtual bool IsInSource(Galgame galgame)
-    {
-        return galgame.SourceType == SourceType && !string.IsNullOrEmpty(galgame.Path) && IsInSource(galgame.Path);
-    }
-
-    /// <summary>
     /// 检查这个路径的游戏是否应该这个库中
     /// </summary>
     /// <param name="path">路径</param>

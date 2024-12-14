@@ -1,5 +1,4 @@
 ﻿using System.Collections.ObjectModel;
-using Windows.Foundation.Metadata;
 using CommunityToolkit.Mvvm.ComponentModel;
 using GalgameManager.Contracts;
 using GalgameManager.Enums;
@@ -19,16 +18,6 @@ public partial class Galgame : ObservableObject, IDisplayableGameObject
     public event Action<Galgame, string, object>? GalPropertyChanged;
     public event Action<Exception>? ErrorOccurred; //非致命异常产生时触发
     
-    public string Path
-    {
-        get;
-        set;
-    } = "";
-    
-    public GalgameSourceType SourceType { get; set; }=GalgameSourceType.UnKnown; //todo: dev中废弃值，应删除
-    
-    public string Url => $"{SourceType.SourceTypeToString()}://{Path}"; //todo: dev中废弃值，应删除
-
     [JsonIgnore] public GalgameUid Uid => new()
     {
         Name = Name.Value!,
@@ -76,14 +65,18 @@ public partial class Galgame : ObservableObject, IDisplayableGameObject
     public PvnUploadProperties PvnUploadProperties; // 要更新到Pvn的属性
     [ObservableProperty] private string _startup_parameters = string.Empty;//启动参数
 
+    #region OBSOLETE_PROPERTIES //已被废弃的属性，为了兼容旧版本保留（用于反序列化迁移数据）
     
-    // 已被废弃的属性，为了兼容旧版本保留（用于反序列化迁移数据）
-    [Deprecated($"use {nameof(LastPlayTime)} instead", DeprecationType.Deprecate, 0)]
+    [Obsolete($"use {nameof(LastPlayTime)} instead")]
     [JsonProperty]
     public LockableProperty<string> LastPlay
     {
         set => LastPlayTime = Utils.TryParseDateGuessCulture(value.Value ?? string.Empty);
     }
+    
+    [Obsolete($"Use {nameof(LocalPath)} instead")]
+    public string Path { get; set; } = "";
+    #endregion
 
     [JsonIgnore] public string? Id
     {
@@ -134,12 +127,6 @@ public partial class Galgame : ObservableObject, IDisplayableGameObject
         _developer.OnValueChanged += _ => GalPropertyChanged?.Invoke(this, nameof(Developer), Developer);
     }
 
-    public Galgame(GalgameSourceType sourceType, string name, string path) : this(name) //todo: dev中废弃，应删除
-    {
-        SourceType = sourceType;
-        Path = path;
-    }
-
     public Galgame(string name) : this()
     {
         Name = name;
@@ -166,7 +153,8 @@ public partial class Galgame : ObservableObject, IDisplayableGameObject
     /// </summary>
     public void Delete()
     {
-        new DirectoryInfo(Path).Delete(true);
+        if (LocalPath is not { } path) return;
+        new DirectoryInfo(path).Delete(true);
     }
 
     /// <summary>
@@ -238,12 +226,12 @@ public partial class Galgame : ObservableObject, IDisplayableGameObject
     /// </summary>
     public void FindSaveInPath()
     {
-        if (!CheckExistLocal()) return;
+        if (!CheckExistLocal() || LocalPath is not { } path) return;
         try
         {
             var cnt = 0;
             string? result = null;
-            foreach (var subDir in Directory.GetDirectories(Path))
+            foreach (var subDir in Directory.GetDirectories(path))
                 if (FolderOperations.IsSymbolicLink(subDir))
                 {
                     cnt++;
@@ -283,8 +271,8 @@ public partial class Galgame : ObservableObject, IDisplayableGameObject
             : DateTime.MinValue;
         ReleaseDate.Value = other.ReleaseDate.Value > ReleaseDate.Value ? other.ReleaseDate.Value : ReleaseDate.Value;
     }
-    
-    public string GetLogName() => $"Galgame_{Url.ToBase64().Replace("/", "").Replace("=", "")}.txt";
+
+    public string GetLogName() => $"Galgame_{(Name.Value ?? string.Empty).RemoveInvalidChars()}.txt";
     
     public bool ApplySearchKey(string searchKey)
     {
