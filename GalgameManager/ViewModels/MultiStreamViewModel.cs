@@ -26,6 +26,7 @@ namespace GalgameManager.ViewModels
         public ObservableCollection<IList> Lists { get; } = new();
         [ObservableProperty][NotifyPropertyChangedFor(nameof(ScrollMode))] 
         private bool _allowScroll;
+        private bool _isRetry;
         public ScrollMode ScrollMode => AllowScroll ? ScrollMode.Enabled : ScrollMode.Disabled;
 
         private readonly IGalgameCollectionService _gameService;
@@ -54,35 +55,39 @@ namespace GalgameManager.ViewModels
             _converters.Add(new GalgameSourceAndUrlConverter(sourceService));
         }
 
-
-        public async void OnNavigatedTo(object parameter)
+        [RelayCommand]
+        private async Task Load()
         {
-            for (var retry = 0; retry < 3; retry++)
+            try
             {
-                try
-                {
-                    List<IList> tmp = await _settingsService.ReadSettingAsync<List<IList>>(
-                        KeyValues.MultiStreamPageList,
-                        true, _converters, true) ?? GetInitList();
-                    tmp = tmp.Count == 0 ? GetInitList() : tmp; // 崩溃时会保存空表，重新初始化
-                    foreach (IList list in tmp)
-                        list.Refresh();
-                    Lists.SyncCollection(tmp);
+                List<IList> tmp = await _settingsService.ReadSettingAsync<List<IList>>(
+                    KeyValues.MultiStreamPageList,
+                    true, _converters, true) ?? GetInitList();
+                tmp = tmp.Count == 0 ? GetInitList() : tmp; // 崩溃时会保存空表，重新初始化
+                foreach (IList list in tmp)
+                    list.Refresh();
+                Lists.SyncCollection(tmp);
 
-                    AllowScroll = await _settingsService.ReadSettingAsync<bool>(KeyValues.MultiStreamPageAllowScroll);
-                    break;
-                }
-                catch (COMException) // 奇怪bug，暂时无法解决，重新加载界面
-                {
-                    Lists.Clear();
-                    await Task.Delay(100);
-                }
-                catch (Exception e) // 不应该发生
-                {
-                    _infoService.Event(EventType.PageError, InfoBarSeverity.Error, title: "Something went wrong", e);
-                    break;
-                }
+                AllowScroll = await _settingsService.ReadSettingAsync<bool>(KeyValues.MultiStreamPageAllowScroll);
             }
+            catch (COMException e) // 奇怪bug，暂时无法解决，重新加载界面
+            {
+                if (_isRetry)
+                    _infoService.Event(EventType.PageError, InfoBarSeverity.Error, "Page reload retry failed", e);
+                else
+                    _infoService.DeveloperEvent(InfoBarSeverity.Warning, "Page reload failed. Trying reloading", e);
+                _navigationService.NavigateTo(typeof(InfoViewModel).FullName!);
+                _navigationService.NavigateTo(typeof(MultiStreamViewModel).FullName!, true);
+            }
+            catch (Exception e) // 不应该发生
+            {
+                _infoService.Event(EventType.PageError, InfoBarSeverity.Error, title: "Something went wrong", e);
+            }
+        }
+        
+        public void OnNavigatedTo(object parameter)
+        {
+            if (parameter is bool b) _isRetry = b;
         }
 
         public async void OnNavigatedFrom()
@@ -282,23 +287,14 @@ namespace GalgameManager.MultiStreamPage.Lists
                     Games.Source = App.GetService<IGalgameCollectionService>().Galgames;
                 // else 不需要更新（因为直接用的galgameCollectionService的可观测游戏列表）
             }
-            
-            // 更新排序关键字
-            try
+
+            Games.SortDescriptions.Clear();
+            Games.SortDescriptions.Add(new SortDescription(Sort switch
             {
-                Games.SortDescriptions.Clear();
-                Games.SortDescriptions.Add(new SortDescription(Sort switch
-                {
-                    MultiStreamPageSortKeys.LastPlayed => nameof(Galgame.LastPlayTime),
-                    MultiStreamPageSortKeys.ReleaseDate => nameof(Galgame.ReleaseDate),
-                    _ => throw new ArgumentOutOfRangeException()
-                }, SortDirection.Descending));
-            }
-            catch (Exception e) 
-            {
-                //有时排序时会发生奇怪的COMException，疑似AdvancedCollectionView的问题，暂时无法处理
-                App.GetService<IInfoService>().DeveloperEvent(e:e);
-            }
+                MultiStreamPageSortKeys.LastPlayed => nameof(Galgame.LastPlayTime),
+                MultiStreamPageSortKeys.ReleaseDate => nameof(Galgame.ReleaseDate),
+                _ => throw new ArgumentOutOfRangeException()
+            }, SortDirection.Descending));
         }
 
         partial void OnCategoryChanged(Category? value)
@@ -345,20 +341,14 @@ namespace GalgameManager.MultiStreamPage.Lists
         {
             (Categories.Source as ObservableCollection<Category>)?.SyncCollection(Group.Categories);
             // 更新排序关键字
-            try
+
+            Categories.SortDescriptions.Clear();
+            Categories.SortDescriptions.Add(new SortDescription(Sort switch
             {
-                Categories.SortDescriptions.Clear();
-                Categories.SortDescriptions.Add(new SortDescription(Sort switch
-                {
-                    MultiStreamPageSortKeys.LastPlayed => nameof(Category.LastPlayed),
-                    MultiStreamPageSortKeys.LastClicked => nameof(Category.LastClicked),
-                    _ => throw new ArgumentOutOfRangeException(),
-                }, SortDirection.Descending));
-            }
-            catch (Exception e)
-            {
-                App.GetService<IInfoService>().DeveloperEvent(e:e);
-            }
+                MultiStreamPageSortKeys.LastPlayed => nameof(Category.LastPlayed),
+                MultiStreamPageSortKeys.LastClicked => nameof(Category.LastClicked),
+                _ => throw new ArgumentOutOfRangeException(),
+            }, SortDirection.Descending));
         }
         
         partial void OnGroupChanged(CategoryGroup value)
@@ -413,20 +403,13 @@ namespace GalgameManager.MultiStreamPage.Lists
                     Sources.Add(source);
             }
             // 更新排序关键字
-            try
+            Sources.SortDescriptions.Clear();
+            Sources.SortDescriptions.Add(new SortDescription(Sort switch
             {
-                Sources.SortDescriptions.Clear();
-                Sources.SortDescriptions.Add(new SortDescription(Sort switch
-                {
-                    MultiStreamPageSortKeys.LastPlayed => nameof(GalgameSourceBase.LastPlayed),
-                    MultiStreamPageSortKeys.LastClicked => nameof(GalgameSourceBase.LastClicked),
-                    _ => throw new ArgumentOutOfRangeException(),
-                }, SortDirection.Descending));
-            }
-            catch (Exception e)
-            {
-                App.GetService<IInfoService>().DeveloperEvent(e:e);
-            }
+                MultiStreamPageSortKeys.LastPlayed => nameof(GalgameSourceBase.LastPlayed),
+                MultiStreamPageSortKeys.LastClicked => nameof(GalgameSourceBase.LastClicked),
+                _ => throw new ArgumentOutOfRangeException(),
+            }, SortDirection.Descending));
         }
         
         partial void OnRootChanged(GalgameSourceBase? value)

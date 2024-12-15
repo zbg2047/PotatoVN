@@ -10,8 +10,16 @@
     xmlns:viewModels="using:GalgameManager.ViewModels"
     xmlns:multiStreamPage="using:GalgameManager.MultiStreamPage.Lists"
     xmlns:sources="using:GalgameManager.Models.Sources"
+    xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
+    xmlns:core="using:Microsoft.Xaml.Interactions.Core"
     mc:Ignorable="d"
     x:Name="Page">
+    
+    <interactivity:Interaction.Behaviors>
+        <core:EventTriggerBehavior EventName="Loaded">
+            <core:InvokeCommandAction Command="{x:Bind ViewModel.LoadCommand}" />
+        </core:EventTriggerBehavior>
+    </interactivity:Interaction.Behaviors>
 
     <Page.Resources>
         <viewModels:MultiStreamPageSelector x:Key="Selector">
