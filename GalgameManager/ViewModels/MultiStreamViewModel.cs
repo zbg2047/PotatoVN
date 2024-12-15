@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.WinUI.Collections;
@@ -56,20 +57,31 @@ namespace GalgameManager.ViewModels
 
         public async void OnNavigatedTo(object parameter)
         {
-            try
+            for (var retry = 0; retry < 3; retry++)
             {
-                List<IList> tmp = await _settingsService.ReadSettingAsync<List<IList>>(KeyValues.MultiStreamPageList,
-                    true, _converters, true) ?? GetInitList();
-                tmp = tmp.Count == 0 ? GetInitList() : tmp; // 崩溃时会保存空表，重新初始化
-                foreach(IList list in tmp)
-                    list.Refresh();
-                Lists.SyncCollection(tmp);
+                try
+                {
+                    List<IList> tmp = await _settingsService.ReadSettingAsync<List<IList>>(
+                        KeyValues.MultiStreamPageList,
+                        true, _converters, true) ?? GetInitList();
+                    tmp = tmp.Count == 0 ? GetInitList() : tmp; // 崩溃时会保存空表，重新初始化
+                    foreach (IList list in tmp)
+                        list.Refresh();
+                    Lists.SyncCollection(tmp);
 
-                AllowScroll = await _settingsService.ReadSettingAsync<bool>(KeyValues.MultiStreamPageAllowScroll);
-            }
-            catch (Exception e) // 不应该发生
-            {
-                _infoService.Event(EventType.PageError, InfoBarSeverity.Error, title: "Something went wrong", e);
+                    AllowScroll = await _settingsService.ReadSettingAsync<bool>(KeyValues.MultiStreamPageAllowScroll);
+                    break;
+                }
+                catch (COMException) // 奇怪bug，暂时无法解决，重新加载界面
+                {
+                    Lists.Clear();
+                    await Task.Delay(100);
+                }
+                catch (Exception e) // 不应该发生
+                {
+                    _infoService.Event(EventType.PageError, InfoBarSeverity.Error, title: "Something went wrong", e);
+                    break;
+                }
             }
         }
 
