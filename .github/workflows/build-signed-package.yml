@@ -13,7 +13,7 @@ jobs:
 
     strategy:
       matrix:
-        platform: [ "x86", "x64", "ARM64" ]
+        platform: ${{ contains(['flight-released'], github.ref_name) && ['x64'] || ['x86', 'x64', 'ARM64'] }}
 
     env:
       BRANCH_NAME: ${{ github.ref_name }}
@@ -48,7 +48,7 @@ jobs:
             /p:UapAppxPackageBuildMode=SideloadOnly `
             /p:AppxPackageDir=..\publish\ `
             /p:GenerateAppxPackageOnBuild=true `
-          
+
       - name: Move package
         shell: pwsh
         run: |
