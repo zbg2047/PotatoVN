@@ -43,7 +43,7 @@ public sealed partial class ImportWindow
         Height *= 2;
         TitleTextBlock.Text = "ImportWindow_Fail".GetLocalized();
         StatusTextBlock.Text = "ImportWindow_Restoring".GetLocalized($"{e.Message}\n{e.StackTrace}");
-        if (_localSettingsService.LocalFolder.Exists) _localSettingsService.LocalFolder.Delete();
+        if (_localSettingsService.LocalFolder.Exists) _localSettingsService.LocalFolder.Delete(true);
         _tmp.MoveTo(_localSettingsService.LocalFolder.FullName);
         await Task.Delay(2 * 1000); // 停留一会，让用户看到错误信息
     }
