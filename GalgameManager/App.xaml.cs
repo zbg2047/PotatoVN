@@ -193,9 +193,9 @@ public partial class App : Application
         {
             case WindowMode.Normal:
                 GetService<IPageService>().InitAsync();
-                WindowExtensions.Show(MainWindow!);
-                MainWindow!.Restore();
+                MainWindow!.Activate();
                 MainWindow!.BringToFront();
+                MainWindow.Content.Visibility = Visibility.Visible; 
                 if (GetService<ILocalSettingsService>().ReadSettingAsync<string>(KeyValues.LastError)
                         .Result is { } error)
                 {
@@ -210,6 +210,7 @@ public partial class App : Application
             case WindowMode.SystemTray:
                 OnAppClosing?.Invoke();
                 GetService<IBgTaskService>().SaveBgTasksString();
+                MainWindow?.Close();
                 AppInstance.Restart("/r");
                 WindowExtensions.Hide(MainWindow!);
                 break;

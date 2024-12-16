@@ -115,14 +115,6 @@ public class ActivationService : IActivationService
             AppInstance.Restart("/safemode"); //safemode并没有实现，只是为了和正常的启动参数区分开
             return;
         }
-        
-        if (IsRestart() == false)
-        {
-            //准备好数据后，再呈现页面
-            App.MainWindow!.Content.Visibility = Visibility.Visible;
-            //使窗口重新获得焦点
-            App.MainWindow.Activate();
-        }
 
         // Handle activation via ActivationHandlers.
         await HandleActivationAsync(activationArgs);
