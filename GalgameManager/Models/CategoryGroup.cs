@@ -33,4 +33,6 @@ public class CategoryGroup
         result.Categories = Categories.Select(c => c.DeepClone()).ToList();
         return result;
     }
+    
+    public int GamesCount => Categories.Sum(c => c.GalgamesX.Count);
 }

@@ -302,6 +302,26 @@ public class CategoryService : ICategoryService
 
     private void InitStatusGroup()
     {
+        // 不知道为什么会保存多个游玩状态，先把多余的删了，临时解决方案
+        // todo: 找到真正bug来源
+        try
+        {
+            List<CategoryGroup> status = _categoryGroups.Where(g => g.Type == CategoryGroupType.Status).ToList();
+            if (status.Count > 1)
+            {
+                CategoryGroup toKeep = status.First();
+                foreach (CategoryGroup group in status.Skip(1))
+                    if (group.GamesCount > toKeep.GamesCount)
+                        toKeep = group;
+                foreach (CategoryGroup group in status.Where(g => g != toKeep))
+                    _categoryGroups.Remove(group);
+            }
+        }
+        catch (Exception e)
+        {
+            _infoService.DeveloperEvent(e: e);
+        }
+        
         _statusGroup = _categoryGroups.FirstOrDefault(group => group.Type == CategoryGroupType.Status);
         if (_statusGroup is null)
         {
