@@ -125,7 +125,6 @@ public class Program
         result = Check("AppSettings:Minio:EndPoint") && result;
         result = Check("AppSettings:Minio:AccessKey") && result;
         result = Check("AppSettings:Minio:SecretKey") && result;
-        result = Check("AppSettings:Minio:EventToken") && result;
         
         result = CheckBoolValue("AppSettings:Minio:UseSSL", out _) && result;
         result = CheckBoolValue("AppSettings:Bangumi:OAuth2Enable", out var isBgmOAuth2Enable) && result;
