@@ -1,4 +1,59 @@
-## 在测试环境中运行
+# PotatoVN 同步服务器
+
+## 简介
+PotatoVN 同步服务器是一个用于帮助PotatoVN跨电脑同步/备份数据的服务器，它提供了一个RESTful API用于客户端与服务器之间的通信。
+
+它能同步什么：[请参考potatovn wiki](https://potatovn.net/usage/advance/data-exchange.html)
+
+## 部署
+### 推荐部署方式：Docker (Compose)
+1. 在服务器任意位置创建一个文件夹，它将用来存放docker-compose.yml文件及数据库数据。**以下操作均在此文件夹内进行**。
+2. 下载docker-compose.yml文件：
+```shell
+curl -O https://raw.githubusercontent.com/GoldenPotato137/PotatoVN/refs/heads/dev/GalgameManager.Server/docker-compose.yml
+```
+> 国内服务器在访问github时可能会遇到网络问题，可以使用代理解决这个问题，或者直接下载docker-compose.yml文件到本地，然后上传到服务器。
+
+3. 修改docker-compose.yml里必填内容，该文件内包含详细注释，按照注释填写即可。
+```shell
+nano docker-compose.yml
+```
+
+4. 新建一个`data`文件夹，并修改其权限，其用于存放数据库数据。
+```shell
+mkdir data
+sudo chown -R 1001:1001 ./data
+```
+5. 测试性启动服务
+```shell
+sudo docker-compose up
+```
+检查是否正常启动，尝试用potatovn客户端链接服务器。如果你没有修改docker-compose.yml文件中的端口，
+那么potatovn中应该输入的服务器地址为`http://你的服务器地址:8080` （如： http://192.168.114.114:8080）。
+
+6. 如果一切正常，按`Ctrl+C`停止服务，然后使用以下命令正式启动服务：
+```shell
+sudo docker-compose down
+sudo docker-compose up -d
+```
+
+7. （可选）使用https保护你的服务器，自行使用任何你喜欢的反向代理工具代理服务即可，如Nginx、Caddy等。
+
+以下为一个简单的使用Caddy的配置文件示例：
+```caddy
+your.domain.name {
+    reverse_proxy localhost:8080
+    encode zstd gzip
+}
+```
+
+### 二进制部署
+
+> 请注意，二进制部署需要你自行安装并配置PostgreSQL数据库，以及设置环境变量。
+
+该部分文档TODO
+
+### 在测试环境中运行
 初始化用户密钥:
 ```shell
 dotnet user-secrets init
