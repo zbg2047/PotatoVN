@@ -37,7 +37,9 @@ public partial class AccountViewModel : ObservableObject, INavigationAware
         _localSettingsService.OnSettingChanged += OnLocalSettingsChanged;
         _bgmService.OnAuthResultChange += BgmAuthResultNotify;
         _pvnService.StatusChanged += HandelPvnServiceStatusChanged;
-        PvnServerType = await _localSettingsService.ReadSettingAsync<PvnServerType>(KeyValues.PvnServerType);
+#pragma warning disable MVVMTK0034 //防止触发属性更改事件，该事件是手动切换服务器类型时才应该触发的
+        _pvnServerType = await _localSettingsService.ReadSettingAsync<PvnServerType>(KeyValues.PvnServerType);
+#pragma warning restore MVVMTK0034
         PvnSyncGames = await _localSettingsService.ReadSettingAsync<bool>(KeyValues.SyncGames);
         await UpdateAccountDisplay();
     }

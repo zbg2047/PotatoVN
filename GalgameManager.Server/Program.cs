@@ -97,7 +97,16 @@ public class Program
         // DataBase Migration
         using (IServiceScope scope = app.Services.CreateScope())
         {
-            scope.ServiceProvider.GetRequiredService<DataContext>().Database.Migrate();
+            try
+            {
+                scope.ServiceProvider.GetRequiredService<DataContext>().Database.Migrate();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Failed to migrate database:\n{e.Message}{e.StackTrace}");
+                return;
+            }
+            
         }
 
         // Configure the HTTP request pipeline.
