@@ -1107,7 +1107,7 @@
     <value>添加游戏(压缩包)</value>
   </data>
   <data name="GalgameFolderPage_Refresh.Label" xml:space="preserve">
-    <value>自动寻找游戏</value>
+    <value>扫描游戏</value>
   </data>
   <data name="LibraryPage_AddGalgameFolder.Label" xml:space="preserve">
     <value>新增库</value>

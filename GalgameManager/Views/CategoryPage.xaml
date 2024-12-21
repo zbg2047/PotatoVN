@@ -77,9 +77,9 @@
                             DataContext="{x:Bind}"
                             Command="{Binding ElementName=Page, Path=ViewModel.ItemClickCommand}"
                             CommandParameter="{x:Bind}"
-                            MinWidth="220" MinHeight="145">
+                            MinWidth="220" MinHeight="145"
+                            ContextFlyout="{StaticResource Flyout}">
                             <prefab:CategoryPrefab Category="{x:Bind}"
-                                                   ContextFlyout="{StaticResource Flyout}"
                                                    HorizontalAlignment="Center" VerticalAlignment="Center" />
                         </Button>
                     </DataTemplate>

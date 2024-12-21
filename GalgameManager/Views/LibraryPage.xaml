@@ -96,9 +96,9 @@
                                         DataContext="{x:Bind}"
                                         Command="{Binding ElementName=Page, Path=ViewModel.NavigateToCommand}"
                                         CommandParameter="{x:Bind}"
-                                        MinWidth="175">
-                                    <prefab:SourcePrefab Source="{x:Bind}"
-                                                         Flyout="{StaticResource Flyout}" />
+                                        MinWidth="175"
+                                        ContextFlyout="{StaticResource Flyout}">
+                                    <prefab:SourcePrefab Source="{x:Bind}"/>
                                 </Button>
                             </DataTemplate>
                         </dataTemplateSelector:DisplayableGameObjectTemplateSelector.SourceTemplate>
