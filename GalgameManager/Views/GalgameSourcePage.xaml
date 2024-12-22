@@ -135,6 +135,22 @@
                                         x:Uid="GalgameSourcePage_Setting_AutoScan"
                                         IsOn="{x:Bind ViewModel.Item.ScanOnStart, Mode=TwoWay, FallbackValue=False}" />
                                 </control:Panel>
+                                <!-- 自动添加/取消托管游戏 -->
+                                <control:Panel>
+                                    <StackPanel Spacing="12">
+                                        <views:SettingToggleSwitch
+                                            x:Uid="GalgameSourcePage_Setting_Auto"
+                                            IsOn="{x:Bind ViewModel.Item.Detect, Mode=TwoWay, FallbackValue=False}" />
+                                        <views:SettingToggleSwitch
+                                            x:Uid="GalgameSourcePage_Setting_Auto_Add"
+                                            IsOn="{x:Bind ViewModel.Item.DetectFolderAdd, Mode=TwoWay, FallbackValue=False}" 
+                                            Visibility="{x:Bind ViewModel.Item.Detect, Mode=OneWay, FallbackValue=0}"/>
+                                        <views:SettingToggleSwitch
+                                            x:Uid="GalgameSourcePage_Setting_Auto_Remove"
+                                            IsOn="{x:Bind ViewModel.Item.DetectFolderRemove, Mode=TwoWay, FallbackValue=False}" 
+                                            Visibility="{x:Bind ViewModel.Item.Detect, Mode=OneWay, FallbackValue=0}"/>
+                                    </StackPanel>    
+                                </control:Panel>
                             </StackPanel>
                         </control:SettingExpander.SettingContent>
                     </control:SettingExpander>

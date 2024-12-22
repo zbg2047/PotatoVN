@@ -39,6 +39,20 @@ public interface IGalgameSourceService
     /// </summary>
     /// <param name="source"></param>
     public Task<(long total, long used)> GetSpaceAsync(GalgameSourceBase source);
+    
+    /// <summary>
+    /// 监听库的变化
+    /// </summary>
+    /// <param name="source"></param>
+    /// <returns></returns>
+    public Task AddListenAsync(GalgameSourceBase source);
+    
+    /// <summary>
+    /// 取消监听库的变化
+    /// </summary>
+    /// <param name="source"></param>
+    /// <returns></returns>
+    public Task RemoveListenAsync(GalgameSourceBase source);
 
     /// <summary>
     /// 获取移入描述 <br/>

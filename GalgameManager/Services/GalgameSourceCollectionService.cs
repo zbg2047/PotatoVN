@@ -74,6 +74,12 @@ public class GalgameSourceCollectionService : IGalgameSourceCollectionService
                 g.Sources.Add(s);
         // 计算子库
         CalcSubSources();
+        // 添加监听变动检测
+        foreach (GalgameSourceBase s in _galgameSources)
+        {
+            s.DetectChanged += DetectionChanged;
+            DetectionChanged(s); // 手动触发一次，挂上监听（如果这个库之前有设置监听需求）
+        }
     }
 
     public async Task StartAsync()
@@ -167,6 +173,8 @@ public class GalgameSourceCollectionService : IGalgameSourceCollectionService
         }
         
         CalcSubSources();
+        galgameSource.DetectChanged += DetectionChanged;
+        DetectionChanged(galgameSource); // 手动触发一次，挂上监听
         OnSourceChanged?.Invoke();
         
         return galgameSource;
@@ -201,6 +209,7 @@ public class GalgameSourceCollectionService : IGalgameSourceCollectionService
         }
         _galgameSources.Remove(source);
         CalcSubSources();
+        source.Detect = false; // 关掉监听，触发取消监听事件
         await Save();
         OnSourceDeleted?.Invoke(source);
         OnSourceChanged?.Invoke();
@@ -348,6 +357,28 @@ public class GalgameSourceCollectionService : IGalgameSourceCollectionService
         await _localSettingsService.SaveSettingAsync(KeyValues.DataStatus, status, true);
     }
 
+    #region DETECTION SOURCE CHANGE
+
+    private void DetectionChanged(GalgameSourceBase source)
+    {
+        Task.Run(async () =>
+        {
+            try
+            {
+                IGalgameSourceService srcHandler = SourceServiceFactory.GetSourceService(source.SourceType);
+                await srcHandler.RemoveListenAsync(source); // 先移除旧有监听
+                if (source.Detect) await srcHandler.AddListenAsync(source);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        });
+    }
+
+    #endregion
+    
     #region UPGRADES
     
     /// <summary>

@@ -10,6 +10,8 @@ public partial class GalgameSourceBase : ObservableObject, IDisplayableGameObjec
 {
     /// 当游戏列表发生变化时触发，第二个bool为true时为删除，否则为添加
     public event Action<Galgame, bool>? GalgamesChanged;
+    /// 当监听需求改变时触发，对于各个实现的具体触发时机（比如说具体什么监听目标发生改变）由具体实现决定，应手动triger
+    public event Action<GalgameSourceBase>? DetectChanged;
     [JsonIgnore] public bool IsRunning;
     /// 所有游戏和路径，只用于序列化，任何时候都不应该直接操作这个列表
     public List<GalgameAndPath> Galgames { get; } = new();
@@ -26,6 +28,10 @@ public partial class GalgameSourceBase : ObservableObject, IDisplayableGameObjec
     [ObservableProperty] private string? _imagePath;
     [ObservableProperty] private DateTime _lastPlayed = DateTime.MinValue;
     [ObservableProperty] private DateTime _lastClicked = DateTime.MinValue;
+    /// 是否对库进行监听总开关
+    [ObservableProperty] private bool _detect;
+    [ObservableProperty] private bool _detectFolderAdd;
+    [ObservableProperty] private bool _detectFolderRemove = true;
     
     public static string CalcUrl(GalgameSourceType type, string path) => $"{type.SourceTypeToString()}://{path}";
 
@@ -128,6 +134,15 @@ public partial class GalgameSourceBase : ObservableObject, IDisplayableGameObjec
     }
     
     public void UpdateLastPlayed() => LastPlayed = Galgames.Select(g => g.Galgame.LastPlayTime).Max();
+
+    // ReSharper disable once UnusedParameterInPartialMethod
+    partial void OnDetectChanged(bool value) => DetectChanged?.Invoke(this);
+
+    // ReSharper disable once UnusedParameterInPartialMethod
+    partial void OnDetectFolderAddChanged(bool value) => DetectChanged?.Invoke(this);
+
+    // ReSharper disable once UnusedParameterInPartialMethod
+    partial void OnDetectFolderRemoveChanged(bool value) => DetectChanged?.Invoke(this);
 }
 
 public enum GalgameSourceType

@@ -1,14 +1,17 @@
 ﻿using GalgameManager.Contracts.Services;
 using GalgameManager.Core.Contracts.Services;
+using GalgameManager.Enums;
 using GalgameManager.Helpers;
 using GalgameManager.Models;
 using GalgameManager.Models.BgTasks;
 using GalgameManager.Models.Sources;
+using Microsoft.UI.Xaml.Controls;
 
 namespace GalgameManager.Services;
 
 public class LocalFolderSourceService : IGalgameSourceService
 {
+    private readonly Dictionary<GalgameFolderSource, FileSystemWatcher> _watchers = new();
     private readonly IInfoService _infoService;
     private readonly IFileService _fileService;
 
@@ -16,6 +19,20 @@ public class LocalFolderSourceService : IGalgameSourceService
     {
         _infoService = infoService;
         _fileService = fileService;
+        App.OnAppClosing += () =>
+        {
+            foreach (FileSystemWatcher watcher in _watchers.Values)
+            {
+                try
+                {
+                    watcher.Dispose();
+                }
+                catch (Exception)
+                {
+                    // ignored
+                }
+            }
+        };
     }
 
     public BgTaskBase MoveInAsync(GalgameSourceBase target, Galgame game, string? targetPath = null)
@@ -32,6 +49,7 @@ public class LocalFolderSourceService : IGalgameSourceService
 
     public async Task SaveMetaAsync(Galgame game)
     {
+        if (!game.CheckExistLocal()) return;
         foreach (GalgameFolderSource source in game.Sources.OfType<GalgameFolderSource>())
         {
             var folderPath = source.GetPath(game)!;
@@ -98,6 +116,32 @@ public class LocalFolderSourceService : IGalgameSourceService
         }
     }
 
+    public async Task AddListenAsync(GalgameSourceBase source)
+    {
+        if (source is not GalgameFolderSource folderSource)
+            throw new ArgumentException($"source {source.Path} is not GalgameFolderSource");
+        FileSystemWatcher watcher = new(folderSource.Path);
+        watcher.NotifyFilter = NotifyFilters.DirectoryName;
+        watcher.Filter = "*";
+        watcher.EnableRaisingEvents = true;
+        if (folderSource.DetectFolderAdd) watcher.Created += OnFolderCreated;
+        if (folderSource.DetectFolderRemove) watcher.Deleted += OnFolderDelete;
+        _watchers.Add(folderSource, watcher);
+        await Task.CompletedTask;
+    }
+
+    public async Task RemoveListenAsync(GalgameSourceBase source)
+    {
+        if (source is not GalgameFolderSource folderSource) 
+            throw new ArgumentException($"source {source.Path} is not GalgameFolderSource");
+        if (_watchers.TryGetValue(folderSource, out FileSystemWatcher? watcher))
+        {
+            watcher.Dispose();
+            _watchers.Remove(folderSource);
+        }
+        await Task.CompletedTask;
+    }
+
     public string GetMoveInDescription(GalgameSourceBase target, string targetPath)
     {
         return "LocalFolderSourceService_MoveInDescription".GetLocalized(targetPath);
@@ -138,5 +182,69 @@ public class LocalFolderSourceService : IGalgameSourceService
     {
         var root = Path.GetPathRoot(path);
         return root is null ? null : new DriveInfo(root);
+    }
+
+    private void OnFolderCreated(object sender, FileSystemEventArgs e)
+    {
+        if (!Directory.Exists(e.FullPath)) return;
+        UiThreadInvokeHelper.Invoke(async () =>
+        {
+            try
+            {
+                IGalgameCollectionService gameService = App.GetService<IGalgameCollectionService>();
+                await gameService.AddGameAsync(GalgameSourceType.LocalFolder, e.FullPath, true);
+                _infoService.Event(EventType.GalgameEvent, InfoBarSeverity.Success,
+                    "LocalFolderSourceService_OnFolderCreated".GetLocalized(), msg: e.FullPath);
+            }
+            catch (Exception exception)
+            {
+                _infoService.Event(EventType.GalgameEvent, InfoBarSeverity.Warning,
+                    "LocalFolderSourceService_OnFolderCreatedError".GetLocalized(), exception);
+            }
+        });
+    }
+
+    private void OnFolderDelete(object sender, FileSystemEventArgs e)
+    {
+        try
+        {
+            DirectoryInfo? sourceDir = new DirectoryInfo(e.FullPath).Parent;
+            if (sourceDir is null)
+            {
+                Log($"Failed to get parent directory of {e.FullPath}", InfoBarSeverity.Warning);
+                return;
+            }
+            IGalgameSourceCollectionService sourceService = App.GetService<IGalgameSourceCollectionService>();
+            GalgameSourceBase? source =
+                sourceService.GetGalgameSource(GalgameSourceType.LocalFolder, sourceDir.FullName);
+            if (source is null)
+            {
+                Log($"Failed to get source from {sourceDir.FullName}");
+                return;
+            }
+
+            GalgameAndPath? game = source.Galgames.FirstOrDefault(g => Utils.ArePathsEqual(g.Path, e.FullPath));
+            if (game is null)
+            {
+                Log($"Failed to get game from {source.Path}");
+                return;
+            }
+
+            sourceService.MoveOutOperate(source, game.Galgame);
+
+            _infoService.Event(EventType.GalgameEvent, InfoBarSeverity.Success,
+                "LocalFolderSourceService_OnFolderDelete".GetLocalized(), msg: e.FullPath);
+            Log($"Game {game.Galgame.Name} moved out from {source.Path}");
+        }
+        catch (Exception exception)
+        {
+            _infoService.Event(EventType.GalgameEvent, InfoBarSeverity.Warning,
+                "LocalFolderSourceService_OnFolderDeleteError".GetLocalized(), exception);
+        }
+
+        return;
+
+        void Log(string msg, InfoBarSeverity severity = InfoBarSeverity.Informational) =>
+            _infoService.Log(severity, msg: $"[OnFolderDelete] {msg}");
     }
 }

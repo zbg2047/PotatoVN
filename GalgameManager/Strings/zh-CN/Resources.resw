@@ -2034,4 +2034,34 @@
   <data name="UpdateContentPage_SeeWebsite.Label" xml:space="preserve">
     <value>查看所有更新记录</value>
   </data>
+  <data name="LocalFolderSourceService_OnFolderCreatedError" xml:space="preserve">
+    <value>自动添加游戏失败</value>
+  </data>
+  <data name="GalgameSourcePage_Setting_Auto.Title" xml:space="preserve">
+    <value>自动添加/取消托管游戏</value>
+  </data>
+  <data name="GalgameSourcePage_Setting_Auto.Description" xml:space="preserve">
+    <value>PotatoVN运行时，在文件管理器手动修改游戏库的内容是否反馈到PotatoVN里。</value>
+  </data>
+  <data name="GalgameSourcePage_Setting_Auto_Add.Title" xml:space="preserve">
+    <value>自动添加游戏</value>
+  </data>
+  <data name="GalgameSourcePage_Setting_Auto_Add.Description" xml:space="preserve">
+    <value>手动往游戏库添加游戏文件夹时，PotatoVN自动添加该游戏到库里。</value>
+  </data>
+  <data name="GalgameSourcePage_Setting_Auto_Remove.Title" xml:space="preserve">
+    <value>自动取消托管游戏</value>
+  </data>
+  <data name="GalgameSourcePage_Setting_Auto_Remove.Description" xml:space="preserve">
+    <value>手动在游戏库删除游戏文件夹时，PotatoVN自动从该库取消托管游戏。</value>
+  </data>
+  <data name="LocalFolderSourceService_OnFolderCreated" xml:space="preserve">
+    <value>自动添加游戏成功</value>
+  </data>
+  <data name="LocalFolderSourceService_OnFolderDelete" xml:space="preserve">
+    <value>自动从库中移出游戏成功</value>
+  </data>
+  <data name="LocalFolderSourceService_OnFolderDeleteError" xml:space="preserve">
+    <value>自动从库中移出游戏失败</value>
+  </data>
 </root>
