@@ -37,7 +37,7 @@
             <NavigationView.MenuItems>
                 <NavigationViewItem x:Uid="Shell_MultiStream" helpers:NavigationHelper.NavigateTo="GalgameManager.ViewModels.MultiStreamViewModel">
                     <NavigationViewItem.Icon>
-                        <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xe7c3;"/>
+                        <control:ConditionalFontIcon Symbol="List" FluentGlyph="&#xE71D;"/>
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
                 <NavigationViewItem x:Uid="Shell_Home" helpers:NavigationHelper.NavigateTo="GalgameManager.ViewModels.HomeViewModel">
