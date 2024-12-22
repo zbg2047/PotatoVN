@@ -25,8 +25,8 @@
         </Grid.RowDefinitions>
 
 
-        <ScrollViewer Grid.Row="1">
-            <Grid>
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <Grid Margin="{StaticResource SmallRightMargin}">
                 <Grid.Resources>
                     <x:Double x:Key="TileHeight">150</x:Double>
                 </Grid.Resources>

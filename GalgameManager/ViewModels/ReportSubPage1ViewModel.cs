@@ -80,7 +80,7 @@ public partial class ReportSubPage1ViewModel : ObservableObject, INavigationAwar
                 Values = new double[] { 20, 35, 15, 25, 30, 20, 35, 15, 25, 30, 20, 35 },
                 Name = "月度游玩时长",
                 Fill = new SolidColorPaint(SKColor.Parse("#266489")),
-                TooltipLabelFormatter = (point) => $"{point.Model:F1} 小时"
+                YToolTipLabelFormatter = point => $"{point.Model} 小时",
             }
         };
         
@@ -103,7 +103,10 @@ public partial class ReportSubPage1ViewModel : ObservableObject, INavigationAwar
                 Values = new double[] { 5 },
                 Name = "已完成",
                 Fill = new SolidColorPaint(SKColor.Parse("#2c3e50")),
-                TooltipLabelFormatter = (point) => $"{point.Model:F0} 部"
+#pragma warning disable CS0618 // 类型或成员已过时 假警报，PipeSeries根本没有XToolTipLabelFormatter或YToolTipLabelFormatter
+                //see https://livecharts.dev/api/2.0.0-rc1/LiveChartsCore.PieSeries-5
+                TooltipLabelFormatter = (point) => $"{point.Model:F0} 部",
+#pragma warning restore CS0618 // 类型或成员已过时
             },
             new PieSeries<double>
             {
