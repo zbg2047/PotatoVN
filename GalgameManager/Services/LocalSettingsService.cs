@@ -213,7 +213,7 @@ public class LocalSettingsService : ILocalSettingsService
             case KeyValues.GameFolderShouldContain:
                 return (T?)(object)".xp3\n.arc\n.dat\n.ini\n.dll\n.txt";
             case KeyValues.SaveBackupMetadata:
-                return (T?)(object)true;
+                return (T?)(object)false;
             case KeyValues.FixHorizontalPicture:
                 return (T?)(object)true;
             case KeyValues.LastNoticeUpdateVersion:

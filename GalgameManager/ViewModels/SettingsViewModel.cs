@@ -16,6 +16,7 @@ using Windows.Security.Credentials.UI;
 using Windows.Security.Credentials;
 using GalgameManager.Helpers.Phrase;
 using GalgameManager.Models.BgTasks;
+using GalgameManager.Models.Sources;
 using GalgameManager.Views.Dialog;
 using Microsoft.Windows.AppLifecycle;
 
@@ -331,6 +332,7 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
 
     [ObservableProperty] private bool _metaBackup;
     [ObservableProperty] private string _metaBackupProgress = "";
+    [ObservableProperty] private string _removeMetaBackupProgress = string.Empty;
     [ObservableProperty] private bool _searchSubFolder;
     [ObservableProperty] private int _searchSubFolderDepth;
     [ObservableProperty] private bool _ignoreFetchResult;
@@ -372,6 +374,18 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
     {
         await _galgameCollectionService.SaveAllMetaAsync();
         MetaBackupProgress = "Done!";
+    }
+
+    [RelayCommand]
+    private async Task RemoveMetaBackUp()
+    {
+        foreach(Galgame game in _galgameCollectionService.Galgames)
+        foreach (GalgameSourceBase source in game.Sources)
+        {
+            RemoveMetaBackupProgress = "SettingsPage_Library_RemoveMetaBackupProgress".GetLocalized(game.Name);
+            await SourceServiceFactory.GetSourceService(source.SourceType).RemoveMetaAsync(game);
+        }
+        RemoveMetaBackupProgress = "Done!";
     }
 
     #endregion

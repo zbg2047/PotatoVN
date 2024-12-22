@@ -2067,4 +2067,13 @@
   <data name="Shell_AnnualReport.Content" xml:space="preserve">
     <value>年度报告</value>
   </data>
+  <data name="SettingsPage_Library_RemoveAllBackup.Title" xml:space="preserve">
+    <value>移除所有的.PotatoVN备份文件</value>
+  </data>
+  <data name="SettingsPage_Library_RemoveAllBackup.Description" xml:space="preserve">
+    <value>删除所有游戏目录下的.PotatoVN备份文件（只是备份，不影响当前数据）</value>
+  </data>
+  <data name="SettingsPage_Library_RemoveMetaBackupProgress" xml:space="preserve">
+    <value>正在删除 {0} 的.PotatoVN备份文件</value>
+  </data>
 </root>
