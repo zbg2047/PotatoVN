@@ -18,6 +18,9 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.AppLifecycle;
 using UnhandledExceptionEventArgs = Microsoft.UI.Xaml.UnhandledExceptionEventArgs;
 using WindowExtensions = H.NotifyIcon.WindowExtensions;
+using LiveChartsCore;
+using LiveChartsCore.SkiaSharpView;
+using SkiaSharp;
 
 namespace GalgameManager;
 
@@ -105,6 +108,8 @@ public partial class App : Application
             // Views and ViewModels
             services.AddTransient<AnnualReportViewModel>();
             services.AddTransient<AnnualReportPage>();
+            services.AddTransient<ReportSubPage1ViewModel>();
+            services.AddTransient<AnnualReportSubPage1>();
             services.AddTransient<MultiStreamViewModel>();
             services.AddTransient<Views.MultiStreamPage>();
             services.AddTransient<InfoViewModel>();
@@ -165,6 +170,8 @@ public partial class App : Application
     protected async override void OnLaunched(LaunchActivatedEventArgs args)
     {
         base.OnLaunched(args);
+        // 设置LiveCharts字体
+        LiveCharts.Configure(config => config.HasGlobalSKTypeface(SKFontManager.Default.MatchCharacter('汉')));
         _instance = this;
         Status = WindowMode.Booting;
         await GetService<IActivationService>().LaunchedAsync(AppInstance.GetCurrent().GetActivatedEventArgs());

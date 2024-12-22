@@ -4,9 +4,46 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:prefab="using:GalgameManager.Views.Prefab"
+    xmlns:controls="using:Microsoft.UI.Xaml.Controls"
+    xmlns:local="using:GalgameManager.Views"
+    xmlns:core="using:Microsoft.Xaml.Interactions.Core"
+    xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
     mc:Ignorable="d">
 
-    <Grid x:Name="ContentArea">
-        
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <controls:SelectorBar x:Name="SelectorBar"
+                              SelectionChanged="{x:Bind ViewModel.SelectorBar_SelectionChanged}"
+                              Grid.Row="0">
+            <controls:SelectorBarItem x:Name="AnnualReportSubPage1"
+                                      Text="Page1"
+                                      IsSelected="True"/>
+            <controls:SelectorBarItem x:Name="AnnualReportSubPage2"
+                                      Text="Page2"/>
+            
+        </controls:SelectorBar>
+
+        <Frame x:Name="ContentFrame" 
+               Grid.Row="1"
+               IsNavigationStackEnabled="False"/>
+
+
+        <StackPanel Grid.Row="2"
+                Orientation="Horizontal"
+                HorizontalAlignment="Center"
+                Margin="10">
+            <Button Content="Previous Page"
+                    Command="{x:Bind ViewModel.PreviousPageCommand}"
+                    Margin="5"/>
+            <Button Content="Next Page"
+                    Command="{x:Bind ViewModel.NextPageCommand}"
+                    Margin="5"/>
+        </StackPanel>
     </Grid>
 </Page>

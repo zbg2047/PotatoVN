@@ -15,5 +15,6 @@ public sealed partial class AnnualReportPage : Page
     {
         ViewModel = App.GetService<AnnualReportViewModel>();
         InitializeComponent();
+        ViewModel.ContentFrame = ContentFrame;
     }
 }
