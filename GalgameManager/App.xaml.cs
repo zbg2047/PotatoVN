@@ -103,6 +103,8 @@ public partial class App : Application
             services.AddSingleton<IFileService, FileService>();
 
             // Views and ViewModels
+            services.AddTransient<AnnualReportViewModel>();
+            services.AddTransient<AnnualReportPage>();
             services.AddTransient<MultiStreamViewModel>();
             services.AddTransient<Views.MultiStreamPage>();
             services.AddTransient<InfoViewModel>();

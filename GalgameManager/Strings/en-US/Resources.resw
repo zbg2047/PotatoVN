@@ -1171,4 +1171,7 @@ If play time can record correctly, just cancel this popup.
   <data name="Shell_MultiStream.Content" xml:space="preserve">
     <value>MultiStream</value>
   </data>
+  <data name="Shell_AnnualReport.Content" xml:space="preserve">
+    <value>AnnualReport</value>
+  </data>
 </root>
