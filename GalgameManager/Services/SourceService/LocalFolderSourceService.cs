@@ -100,6 +100,28 @@ public class LocalFolderSourceService : IGalgameSourceService
         return meta;
     }
 
+    public Task RemoveMetaAsync(Galgame game)
+    {
+        return Task.Run(() =>
+        {
+            foreach (GalgameFolderSource source in game.Sources.OfType<GalgameFolderSource>())
+            {
+                try
+                {
+                    var folderPath = source.GetPath(game)!;
+                    var metaPath = Path.Combine(folderPath, ".PotatoVN");
+                    if (!Directory.Exists(metaPath)) return;
+                    Directory.Delete(metaPath, true);
+                    _infoService.Log(msg: $"[LocalFolderSourceService] remove meta folder {metaPath}");
+                }
+                catch (Exception e)
+                {
+                    _infoService.DeveloperEvent(msg: $"failed to remove meta folder with exception: {e}");
+                }
+            }
+        });
+    }
+
     public async Task<(long total, long used)> GetSpaceAsync(GalgameSourceBase source)
     {
         await Task.CompletedTask;

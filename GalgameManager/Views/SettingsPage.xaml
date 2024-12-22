@@ -260,6 +260,15 @@
                                             </Button.Flyout>
                                         </Button>
                                     </control:Setting>
+                                    <control:Setting x:Uid="SettingsPage_Library_RemoveAllBackup">
+                                        <Button Content="Go" Width="75" Command="{x:Bind ViewModel.RemoveMetaBackUpCommand}">
+                                            <Button.Flyout>
+                                                <Flyout Placement="Bottom">
+                                                    <TextBlock Text="{x:Bind ViewModel.RemoveMetaBackupProgress, Mode=OneWay}"/>
+                                                </Flyout>
+                                            </Button.Flyout>
+                                        </Button>
+                                    </control:Setting>
                                 </StackPanel>
                             </control:Panel>
                             <!-- 递归搜索子目录 -->

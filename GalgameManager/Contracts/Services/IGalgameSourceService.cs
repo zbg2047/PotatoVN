@@ -35,6 +35,13 @@ public interface IGalgameSourceService
     public Task<Galgame?> LoadMetaAsync(string path);
     
     /// <summary>
+    /// 从库中删除游戏的Meta文件夹
+    /// </summary>
+    /// <param name="game"></param>
+    /// <returns></returns>
+    public Task RemoveMetaAsync(Galgame game);
+    
+    /// <summary>
     /// 获取库的（总空间，已用空间）（byte），若无法获取则返回(-1,-1)
     /// </summary>
     /// <param name="source"></param>
