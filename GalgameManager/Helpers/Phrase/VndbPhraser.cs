@@ -353,7 +353,7 @@ public class VndbPhraser : IGalInfoPhraser, IGalStatusSync, IGalCharacterPhraser
             {
                 LabelsSet = new List<int> {labelSet},
                 Notes = galgame.Comment,
-                Vote = galgame.MyRate * 10 // BgmRate: 0~10, VndbRate: 10~100, vndb的一个奇怪的点, 它网站上是 0~10
+                Vote = galgame.MyRate == 0 ? null : galgame.MyRate * 10 // BgmRate: 0~10, VndbRate: 10~100, vndb的一个奇怪的点, 它网站上是 0~10
                 // Vndb无private选项
             };
             if (tryGetResponse.Results?.Count == 1)
