@@ -110,6 +110,8 @@ public partial class App : Application
             services.AddTransient<AnnualReportPage>();
             services.AddTransient<ReportSubPage1ViewModel>();
             services.AddTransient<AnnualReportSubPage1>();
+            services.AddTransient<ReportSubPage2ViewModel>();
+            services.AddTransient<AnnualReportSubPage2>();
             services.AddTransient<MultiStreamViewModel>();
             services.AddTransient<Views.MultiStreamPage>();
             services.AddTransient<InfoViewModel>();
