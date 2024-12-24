@@ -26,8 +26,8 @@ using Windows.UI;
 namespace GalgameManager.ViewModels;
 public partial class ReportSubPage2ViewModel : ObservableObject, INavigationAware
 {
-    private Dictionary<string, int> wordFrequencies;
-    private DispatcherTimer tipCloseTimer;
+    private Dictionary<string, int> wordFrequencies = null!;
+    private DispatcherTimer tipCloseTimer = null!;
 
     [ObservableProperty]
     private bool isWordTipOpen;
@@ -88,9 +88,9 @@ public partial class ReportSubPage2ViewModel : ObservableObject, INavigationAwar
 
         private void GenerateWordCloud()
         {
-            if (wordCloudCanvas == null) return;
+            if (WordCloudCanvas == null) return;
             
-            wordCloudCanvas.Children.Clear();
+            WordCloudCanvas.Children.Clear();
 
             var wordCloud = new WordCloudInput(
                 wordFrequencies.Select(p => new WordCloudEntry(p.Key, p.Value)))
@@ -124,7 +124,7 @@ public partial class ReportSubPage2ViewModel : ObservableObject, INavigationAwar
                 textBlock.PointerEntered += (s, args) =>
                 {
                     tipCloseTimer.Stop();
-                    wordTipContent.Text = $"词语：{item.Entry.Word}\n频率：{item.Entry.Count}";
+                    WordTipContent.Text = $"词语：{item.Entry.Word}\n频率：{item.Entry.Count}";
                     WordTipTarget = textBlock;
                     IsWordTipOpen = true;
                 };
@@ -134,7 +134,7 @@ public partial class ReportSubPage2ViewModel : ObservableObject, INavigationAwar
                     tipCloseTimer.Start();
                 };
 
-                wordCloudCanvas.Children.Add(textBlock);
+                WordCloudCanvas.Children.Add(textBlock);
             }
         }
 
