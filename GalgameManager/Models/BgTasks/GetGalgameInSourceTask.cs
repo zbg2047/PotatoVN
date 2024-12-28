@@ -49,13 +49,20 @@ public class GetGalgameInSourceTask : BgTaskBase
                     log += l;
                     continue;
                 }
+                if (_galgameFolderSource.Galgames.FirstOrDefault(g => Utils.ArePathsEqual(g.Path, path)) is { } game) 
+                {
+                    log += $"{path}: AlreadyExists ({game.Galgame.Name.Value})\n";
+                    continue;
+                }
+                
                 ChangeProgress(0, 1, "GalgameFolder_GetGalInFolder_Progress".GetLocalized(path));
                 var msg = $"{path}: ";
                 await UiThreadInvokeHelper.InvokeAsync(async Task() =>
                 {
                     try
                     {
-                        await galgameService.AddGameAsync(_galgameFolderSource.SourceType, path, ignoreFetchResult);
+                        await galgameService.AddGameAsync(_galgameFolderSource.SourceType, path, ignoreFetchResult,
+                            false);
                         cnt++;
                         msg += "AddGalgameResult_Success".GetLocalized();
                     }

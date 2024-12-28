@@ -11,7 +11,8 @@ namespace GalgameManager.Services;
 
 public partial class GalgameCollectionService
 {
-    public async Task<Galgame> AddGameAsync(GalgameSourceType sourceType, string path, bool force)
+    public async Task<Galgame> AddGameAsync(GalgameSourceType sourceType, string path, bool force,
+        bool requireConfirm = true)
     {
         IGalgameSourceService sourceService = SourceServiceFactory.GetSourceService(sourceType);
         Galgame? meta = null;
@@ -27,7 +28,8 @@ public partial class GalgameCollectionService
         }
 
         // 尝试从数据源获取游戏信息
-        meta ??= await PhraseGalInfoAsync(new Galgame(await GetNameFromPath(sourceType, path)), requireConfirm: !force);
+        meta ??= await PhraseGalInfoAsync(new Galgame(await GetNameFromPath(sourceType, path)),
+            requireConfirm: !force && requireConfirm);
         // 检查该游戏是否已经存在
         if (GetGalgameFromUid(meta.Uid) is { } existGame)
         {

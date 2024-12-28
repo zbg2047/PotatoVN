@@ -22,8 +22,10 @@ public interface IGalgameCollectionService
     /// <param name="sourceType">游戏所属库</param>
     /// <param name="path">游戏文件夹路径</param>
     /// <param name="force">没有在信息源中搜到该游戏时是否强制添加游戏</param>
+    /// <param name="requireConfirm">是否要确认搜刮结果</param>
     /// <returns></returns>
-    public Task<Galgame> AddGameAsync(GalgameSourceType sourceType, string path, bool force);
+    public Task<Galgame> AddGameAsync(GalgameSourceType sourceType, string path, bool force,
+        bool requireConfirm = true);
     
     /// <summary>
     /// 指定某个游戏的本地路径，注意捕获异常
