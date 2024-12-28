@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using GalgameManager.Contracts.Services;
+using GalgameManager.Models;
 using GalgameManager.Models.Filters;
 using GalgameManager.ViewModels;
 using Microsoft.UI.Xaml;
@@ -59,5 +60,15 @@ public class NavigationHelper
     {
         navigationService.SetListDataItemForNextConnectedAnimation(parameter.Galgame);
         navigationService.NavigateTo(typeof(GalgameViewModel).FullName!, parameter);
+    }
+    
+    /// <summary>
+    /// 导航到游戏设置页
+    /// </summary>
+    /// <param name="navigationService"></param>
+    /// <param name="target"></param>
+    public static void NavigateToGalgameSettingPage(INavigationService navigationService, Galgame target)
+    {
+        navigationService.NavigateTo(typeof(GalgameSettingViewModel).FullName!, target);
     }
 }

@@ -2076,4 +2076,16 @@
   <data name="SettingsPage_Library_RemoveMetaBackupProgress" xml:space="preserve">
     <value>正在删除 {0} 的.PotatoVN备份文件</value>
   </data>
+  <data name="GalgameSourcePage_GamesTable_RssType.Text" xml:space="preserve">
+    <value>搜刮源</value>
+  </data>
+  <data name="GalgameSourcePage_GamesTable_Name.Text" xml:space="preserve">
+    <value>游戏名</value>
+  </data>
+  <data name="GalgameSourcePage_GamesTable_Path.Text" xml:space="preserve">
+    <value>路径</value>
+  </data>
+  <data name="GalgameSourcePage_GamesTable_Edit.Text" xml:space="preserve">
+    <value>编辑</value>
+  </data>
 </root>

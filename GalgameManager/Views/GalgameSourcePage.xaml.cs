@@ -16,6 +16,7 @@ public sealed partial class GalgameSourcePage : Page
     public GalgameSourcePage()
     {
         ViewModel = App.GetService<GalgameSourceViewModel>();
+        DataContext = ViewModel;
         InitializeComponent();
     }
 

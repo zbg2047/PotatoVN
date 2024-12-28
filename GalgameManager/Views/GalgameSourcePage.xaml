@@ -9,11 +9,21 @@
     xmlns:converter="using:GalgameManager.Helpers.Converter"
     xmlns:control="using:GalgameManager.Views.Control"
     xmlns:views="using:GalgameManager.Views"
-    mc:Ignorable="d">
+    xmlns:viewModels="using:GalgameManager.ViewModels"
+    xmlns:behaviors="using:CommunityToolkit.WinUI.Behaviors"
+    mc:Ignorable="d"
+    x:Name="Page">
 
     <Page.Resources>
         <converter:EnumToStringConverter x:Key="EnumStringConverter" />
+        <converter:ImagePathConverter x:Key="ImagePathConverter" />
     </Page.Resources>
+    
+    <interactivity:Interaction.Behaviors>
+        <core:EventTriggerBehavior EventName="SizeChanged">
+            <core:InvokeCommandAction Command="{x:Bind ViewModel.PageSizeChangedCommand}"/>
+        </core:EventTriggerBehavior>
+    </interactivity:Interaction.Behaviors>
     
     <Grid Margin="0 0 0 10">
         <Grid>
@@ -72,11 +82,6 @@
                         </core:EventTriggerBehavior>
                     </interactivity:Interaction.Behaviors>
                 </CommandBar>
-                <interactivity:Interaction.Behaviors>
-                    <core:EventTriggerBehavior EventName="SizeChanged">
-                        <core:InvokeCommandAction Command="{x:Bind ViewModel.PageSizeChangedCommand}"/>
-                    </core:EventTriggerBehavior>
-                </interactivity:Interaction.Behaviors>
             </RelativePanel>
 
             <!-- 库路径 -->
@@ -156,28 +161,88 @@
                     </control:SettingExpander>
                     <!-- 游戏列表 -->
                     <control:SettingExpander x:Uid="GalgameSourcePage_GamesTable"
-                                             SettingIcon="&#xE71D;" IsExpanded="False">
+                                             SettingIcon="&#xE71D;" 
+                                             IsExpanded="{x:Bind ViewModel.GameListExpend, Mode=TwoWay}">
                         <control:SettingExpander.SettingContent>
-                            <!-- <controls:DataGrid -->
-                            <!--     Grid.Row="2" -->
-                            <!--     AutoGenerateColumns="False" -->
-                            <!--     GridLinesVisibility="Horizontal" -->
-                            <!--     ItemsSource="{x:Bind ViewModel.Galgames, Mode=OneWay}"> -->
-                            <!--     <controls:DataGrid.Columns> -->
-                            <!--         <controls:DataGridTextColumn Binding="{Binding Galgame.Name.Value}" Header="游戏名" -->
-                            <!--                                      Width="250" /> -->
-                            <!--         <controls:DataGridComboBoxColumn Binding="{Binding Galgame.RssType}" Header="数据源" -->
-                            <!--                                          ItemsSource="{x:Bind ViewModel.RssTypes}" /> -->
-                            <!--         <controls:DataGridTextColumn Binding="{Binding Galgame.Id}" Header="id" /> -->
-                            <!--         <controls:DataGridTextColumn Binding="{Binding Path}" Header="游戏目录" -->
-                            <!--                                      IsReadOnly="True" /> -->
-                            <!--     </controls:DataGrid.Columns> -->
-                            <!--     <interactivity:Interaction.Behaviors> -->
-                            <!--         <core:EventTriggerBehavior EventName="SelectionChanged"> -->
-                            <!--             <core:InvokeCommandAction Command="{x:Bind ViewModel.SelectionChangedCommand}" /> -->
-                            <!--         </core:EventTriggerBehavior> -->
-                            <!--     </interactivity:Interaction.Behaviors> -->
-                            <!-- </controls:DataGrid> -->
+                            <ListView ItemsSource="{x:Bind ViewModel.Galgames}" 
+                                      Height="{x:Bind ViewModel.GameListHeight, Mode=OneWay}"
+                                      SelectionMode="Extended">
+                                <ListView.Header>
+                                    <Grid Padding="16,12"
+                                          Background="{ThemeResource SolidBackgroundFillColorTertiaryBrush}"
+                                          RowDefinitions="Auto, Auto, Auto" RowSpacing="3"
+                                          CornerRadius="5">
+                                        <TextBlock Grid.Row="0" x:Uid="GalgameSourcePage_GamesTable_Name"
+                                                   Style="{StaticResource DescriptionTextStyle}" />
+                                        <TextBlock Grid.Row="1" x:Uid="GalgameSourcePage_GamesTable_Path"
+                                                   Style="{StaticResource DescriptionTextStyle}" />
+                                        <StackPanel Grid.Row="2" Orientation="Horizontal" Spacing="20">
+                                            <TextBlock x:Uid="GalgameSourcePage_GamesTable_RssType"
+                                                       Style="{StaticResource DescriptionTextStyle}" />
+                                            <TextBlock Text="ID"
+                                                       Style="{StaticResource DescriptionTextStyle}" />
+                                        </StackPanel>
+                                        <interactivity:Interaction.Behaviors>
+                                            <behaviors:StickyHeaderBehavior />
+                                        </interactivity:Interaction.Behaviors>
+                                    </Grid>
+                                </ListView.Header>
+                                <ListView.ItemTemplate>
+                                    <DataTemplate x:DataType="viewModels:GalgameSourcePageCustomGalgameViewModel">
+                                        <Grid>
+                                            <!-- 透明控件，确保右键时射线检测能够打到Item上 -->
+                                            <Rectangle Fill="Transparent" /> 
+                                            <Grid ColumnDefinitions="Auto, *" Margin="0, 7">
+                                                <Button Grid.Column="0" Margin="0 0 10 0"
+                                                        Style="{StaticResource TransparentButtonWithHover}">
+                                                    <Grid CornerRadius="10">
+                                                        <Rectangle Height="70" Width="50">
+                                                            <Rectangle.Fill>
+                                                                <ImageBrush
+                                                                    ImageSource="{x:Bind Galgame.ImagePath.Value,
+                                                                    Mode=OneWay,
+                                                                    Converter={StaticResource ImagePathConverter},
+                                                                    FallbackValue={x:Null}}"
+                                                                    Stretch="UniformToFill" />
+                                                            </Rectangle.Fill>
+                                                        </Rectangle>
+                                                    </Grid>
+                                                </Button>
+                                                <StackPanel Grid.Column="1" Spacing="3">
+                                                    <TextBlock Text="{x:Bind Galgame.Name.Value, Mode=OneWay}" />
+                                                    <TextBlock Text="{x:Bind Path}"
+                                                               Style="{StaticResource DescriptionTextStyle}" />
+                                                    <StackPanel Orientation="Horizontal" Spacing="20">
+                                                        <control:ComboBoxWithoutNull
+                                                            SelectedItem="{x:Bind Galgame.RssType, Mode=TwoWay}"
+                                                            ItemsSource="{x:Bind RssTypes}" />
+                                                        <TextBox MinWidth="350"
+                                                                 Text="{x:Bind Galgame.Id, Mode=TwoWay}" />
+                                                    </StackPanel>
+                                                </StackPanel>
+                                            </Grid>
+                                            <Grid.ContextFlyout>
+                                                    <MenuFlyout>
+                                                        <MenuFlyoutItem x:Uid="GalgameSourcePage_GamesTable_Edit"
+                                                                        Command="{x:Bind EditCommand}"
+                                                                        CommandParameter="{x:Bind}" />
+                                                    </MenuFlyout>
+                                                </Grid.ContextFlyout>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+                                <interactivity:Interaction.Behaviors>
+                                    <core:EventTriggerBehavior EventName="SelectionChanged">
+                                        <core:InvokeCommandAction Command="{x:Bind ViewModel.SelectionChangedCommand}" />
+                                    </core:EventTriggerBehavior>
+                                </interactivity:Interaction.Behaviors>
+                                <ListView.ItemContainerStyle>
+                                    <Style BasedOn="{StaticResource DefaultListViewItemStyle}"
+                                           TargetType="ListViewItem">
+                                        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                    </Style>
+                                </ListView.ItemContainerStyle>
+                            </ListView>
                         </control:SettingExpander.SettingContent>
                     </control:SettingExpander>
                 </StackPanel>

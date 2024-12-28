@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.Windows.Input;
 using Windows.Storage;
 using Windows.Storage.Pickers;
 using Windows.System;
@@ -24,14 +25,14 @@ public partial class GalgameSourceViewModel : ObservableObject, INavigationAware
     private readonly GalgameCollectionService _galgameService;
     private readonly IBgTaskService _bgTaskService;
     private readonly IInfoService _infoService;
+    private readonly INavigationService _navigationService;
     
     private GalgameSourceBase? _item;
-    public ObservableCollection<GalgameAndPath> Galgames { get; } = new();
+    public ObservableCollection<GalgameSourcePageCustomGalgameViewModel> Galgames { get; } = new();
     private readonly List<Galgame> _selectedGalgames = new();
     private BgTaskBase? _getGalTask;
     private GetGalgameInfoFromRssTask? _getGalgameInfoFromRss;
     private UnpackGameTask? _unpackGameTask;
-    public readonly RssType[] RssTypes = { RssType.Bangumi, RssType.Vndb, RssType.Mixed};
     
     [ObservableProperty] private bool _isUnpacking;
     [ObservableProperty] private int _progressValue;
@@ -44,6 +45,8 @@ public partial class GalgameSourceViewModel : ObservableObject, INavigationAware
     [ObservableProperty] private bool _logExists; //是否存在日志文件
 
     [ObservableProperty] private double _titleMaxWidth = 200;
+    [ObservableProperty] private double _gameListHeight;
+    [ObservableProperty] private bool _gameListExpend;
     private double _commandBarWidth;
     private double _pageWidth;
 
@@ -64,25 +67,47 @@ public partial class GalgameSourceViewModel : ObservableObject, INavigationAware
             SetProperty(ref _item, value);
             if (value != null)
             {
-                Galgames.SyncCollection(value.Galgames);
+                foreach (GalgameAndPath g in value.Galgames)
+                {
+                    Galgames.Add(new GalgameSourcePageCustomGalgameViewModel
+                    {
+                        Galgame = g.Galgame,
+                        Path = g.Path,
+                        EditCommand = new RelayCommand(() =>
+                        {
+                            NavigationHelper.NavigateToGalgameSettingPage(_navigationService, g.Galgame);
+                        })
+                    });
+                }
                 value.GalgamesChanged += ReloadGalgameList;
             }
         }
     }
 
     public GalgameSourceViewModel(IGalgameSourceCollectionService dataCollectionService, 
-        IGalgameCollectionService galgameService, IBgTaskService bgTaskService, IInfoService infoService)
+        IGalgameCollectionService galgameService, IBgTaskService bgTaskService, IInfoService infoService, 
+        INavigationService navigationService)
     {
         _sourceService = dataCollectionService;
         _galgameService = (GalgameCollectionService)galgameService;
         _bgTaskService = bgTaskService;
         _infoService = infoService;
+        _navigationService = navigationService;
     }
 
     private void ReloadGalgameList(Galgame game, bool isDeleted)
     {
         if (_item == null) return;
-        Galgames.SyncCollection(_item.Galgames);
+        if (isDeleted && Galgames.FirstOrDefault(g => g.Galgame == game) is { } tmp)
+            Galgames.Remove(tmp);
+        else if (!isDeleted && _item.GetPath(game) is {} path)
+        {
+            Galgames.Add(new GalgameSourcePageCustomGalgameViewModel
+            {
+                Galgame = game, 
+                Path = path
+            });
+        }
     }
 
     public void OnNavigatedTo(object parameter)
@@ -288,9 +313,9 @@ public partial class GalgameSourceViewModel : ObservableObject, INavigationAware
     private void OnSelectionChanged(object et)
     {
         SelectionChangedEventArgs e = (SelectionChangedEventArgs) et;
-        foreach(GalgameAndPath g in e.AddedItems)
+        foreach(GalgameSourcePageCustomGalgameViewModel g in e.AddedItems)
             _selectedGalgames.Add(g.Galgame);
-        foreach (GalgameAndPath g in e.RemovedItems)
+        foreach (GalgameSourcePageCustomGalgameViewModel g in e.RemovedItems)
             _selectedGalgames.Remove(g.Galgame);
         UiDownloadInfo = _selectedGalgames.Count == 0
             ? "GalgameFolderPage_DownloadInfo".GetLocalized()
@@ -308,6 +333,7 @@ public partial class GalgameSourceViewModel : ObservableObject, INavigationAware
     {
         _pageWidth = e.NewSize.Width;
         UpdateTitleMaxWidth();
+        GameListHeight = Math.Max(e.NewSize.Height - 200, 0);
     }
 
     [RelayCommand]
@@ -316,7 +342,7 @@ public partial class GalgameSourceViewModel : ObservableObject, INavigationAware
         _commandBarWidth = e.NewSize.Width;
         UpdateTitleMaxWidth();
     }
-
+    
     [RelayCommand]
     private async Task ViewLog()
     {
@@ -325,4 +351,13 @@ public partial class GalgameSourceViewModel : ObservableObject, INavigationAware
         if(FileHelper.Exists(path) == false) return; 
         await Launcher.LaunchFileAsync(await StorageFile.GetFileFromPathAsync(FileHelper.GetFullPath(path)));
     }
+}
+
+public partial class GalgameSourcePageCustomGalgameViewModel : ObservableObject
+{
+    public Galgame Galgame = null!;
+    public string Path = null!;
+    // 以下属性是共有的，写在这里而不是ViewModel里是因为没法Bind到ViewModel里（bug）
+    public ICommand EditCommand = null!;
+    public RssType[] RssTypes { get; } = [RssType.Bangumi, RssType.Vndb, RssType.Ymgal, RssType.Mixed, RssType.None];
 }
