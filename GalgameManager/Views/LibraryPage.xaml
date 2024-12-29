@@ -9,6 +9,9 @@
     xmlns:prefab="using:GalgameManager.Views.Prefab"
     xmlns:models="using:GalgameManager.Models"
     xmlns:dataTemplateSelector="using:GalgameManager.Helpers.DataTemplateSelector"
+    xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
+    xmlns:core="using:Microsoft.Xaml.Interactions.Core"
+    xmlns:behaviors="using:GalgameManager.Behaviors"
     mc:Ignorable="d"
     x:Name="Page">
     
@@ -74,9 +77,20 @@
         </CommandBar>
         
         <ScrollViewer Grid.Row="1">
-            <ItemsRepeater ItemsSource="{x:Bind ViewModel.Source, Mode=OneWay}"
-                           PointerPressed="UIElement_OnPointerPressed">
-                <ItemsRepeater.ItemTemplate>
+            <GridView x:Name="GridView" 
+                      ItemsSource="{x:Bind ViewModel.Source, Mode=OneWay}"
+                      PointerPressed="UIElement_OnPointerPressed"
+                      SelectionMode="None">
+                <interactivity:Interaction.Behaviors>
+                    <core:EventTriggerBehavior EventName="SizeChanged">
+                        <core:InvokeCommandAction Command="{x:Bind ViewModel.GridViewSizeChangedCommand}"/>
+                    </core:EventTriggerBehavior>
+                </interactivity:Interaction.Behaviors>
+                <behaviors:GridViewSpacingBehavior GridView="{x:Bind GridView}"
+                                                   TargetWidth="175"
+                                                   ItemSource="{x:Bind ViewModel.Source, Mode=OneWay}"
+                                                   Calc="{x:Bind ViewModel.UpdateGridSpacing, Mode=OneWay}"/>
+                <GridView.ItemTemplateSelector>
                     <dataTemplateSelector:DisplayableGameObjectTemplateSelector>
                         <!-- 游戏模板 -->
                         <dataTemplateSelector:DisplayableGameObjectTemplateSelector.GalgameTemplate>
@@ -96,18 +110,15 @@
                                         DataContext="{x:Bind}"
                                         Command="{Binding ElementName=Page, Path=ViewModel.NavigateToCommand}"
                                         CommandParameter="{x:Bind}"
-                                        MinWidth="175"
+                                        Width="175"
                                         ContextFlyout="{StaticResource Flyout}">
                                     <prefab:SourcePrefab Source="{x:Bind}"/>
                                 </Button>
                             </DataTemplate>
                         </dataTemplateSelector:DisplayableGameObjectTemplateSelector.SourceTemplate>
                     </dataTemplateSelector:DisplayableGameObjectTemplateSelector>
-                </ItemsRepeater.ItemTemplate>
-                <ItemsRepeater.Layout>
-                    <UniformGridLayout ItemsStretch="Fill" MinRowSpacing="1" />
-                </ItemsRepeater.Layout>
-            </ItemsRepeater>
+                </GridView.ItemTemplateSelector>
+            </GridView>
         </ScrollViewer>
     </Grid>
 </Page>

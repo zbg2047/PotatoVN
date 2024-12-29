@@ -7,10 +7,10 @@ using GalgameManager.Contracts.Services;
 using GalgameManager.Contracts.ViewModels;
 using GalgameManager.Helpers;
 using GalgameManager.Models;
-using GalgameManager.Models.Filters;
 using GalgameManager.Models.Sources;
 using GalgameManager.Services;
 using GalgameManager.Views.Dialog;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
 namespace GalgameManager.ViewModels;
@@ -40,6 +40,7 @@ public partial class LibraryViewModel : ObservableObject, INavigationAware
     [ObservableProperty] private string _searchTitle = "Search".GetLocalized();
     [ObservableProperty] private string _searchKey = "";
     [ObservableProperty] private ObservableCollection<string> _searchSuggestions = new();
+    [ObservableProperty] private bool _updateGridSpacing;
     
     [RelayCommand]
     private void Search(string searchKey)
@@ -93,6 +94,7 @@ public partial class LibraryViewModel : ObservableObject, INavigationAware
     [RelayCommand]
     private void NavigateTo(IDisplayableGameObject? clickedItem)
     {
+        UpdateGridSpacing = false;
         Source.Clear();
         if (clickedItem == null)
         {
@@ -118,17 +120,18 @@ public partial class LibraryViewModel : ObservableObject, INavigationAware
             }
             else
             {
-                _filterService.ClearFilters();
-                _filterService.AddFilter(new SourceFilter(source));
-                _navigationService.NavigateTo(typeof(HomeViewModel).FullName!);
-                // foreach (GalgameAndPath game in source.Galgames)
-                //     Source.Add(game.Galgame);
+                // _filterService.ClearFilters();
+                // _filterService.AddFilter(new SourceFilter(source));
+                // _navigationService.NavigateTo(typeof(HomeViewModel).FullName!);
+                foreach (GalgameAndPath game in source.Galgames)
+                    Source.Add(game.Galgame);
             }
 
             CurrentSource = source;
         }
         else if (clickedItem is null)
             CurrentSource = null;
+        UpdateGridSpacing = true;
     }
 
     [RelayCommand]
@@ -193,5 +196,11 @@ public partial class LibraryViewModel : ObservableObject, INavigationAware
     {
         _galSourceCollectionService.ScanAll();
         _infoService.Info(InfoBarSeverity.Success, msg: "LibraryPage_ScanAll_Success".GetLocalized(Source.Count));
+    }
+
+    [RelayCommand]
+    private void GridViewSizeChanged(SizeChangedEventArgs e)
+    {
+        
     }
 }
