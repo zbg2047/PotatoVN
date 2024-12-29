@@ -5,17 +5,16 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:prefab="using:GalgameManager.Views.Prefab"
     xmlns:converter="using:GalgameManager.Helpers.Converter"
-    xmlns:controls="using:Microsoft.UI.Xaml.Controls"
-    xmlns:local="using:GalgameManager.Views"
     xmlns:core="using:Microsoft.Xaml.Interactions.Core"
     xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
     xmlns:lvc="using:LiveChartsCore.SkiaSharpView.WinUI"
+    xmlns:cmtkConverter="using:CommunityToolkit.WinUI.Converters"
     mc:Ignorable="d">
 
-<Page.Resources>
+    <Page.Resources>
         <converter:ImagePathConverter x:Key="ImagePathConverter" />
+        <cmtkConverter:StringFormatConverter x:Key="StrFmt"/>
     </Page.Resources>
 
     <Grid>
@@ -42,6 +41,7 @@
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
                
+                <!-- 游戏时长 & 各月游戏时长 -->
                 <Grid Grid.Row="1"
                       Grid.Column="1"
                       MinHeight="{StaticResource TileHeight}"
@@ -60,7 +60,8 @@
                     <StackPanel>
                         <TextBlock Text="过去一年总游玩时长" 
                                    Style="{StaticResource SubtitleTextBlockStyle}"/>
-                        <TextBlock Text="{x:Bind ViewModel.TotalPlayHours, Mode=OneWay}"
+                        <TextBlock Text="{x:Bind ViewModel.AnnualReportData.PlayedTime, Mode=OneWay, 
+                                    Converter={StaticResource StrFmt}, ConverterParameter='{}{0:0.##}'}"
                                    Style="{StaticResource DisplayTextBlockStyle}"
                                    FontSize="32"/>
                         <TextBlock Text="小时" 
@@ -81,6 +82,8 @@
                             />
                     </TeachingTip>
                 </Grid>
+                
+                <!-- 游戏完成数 & 游戏完成度分析 -->
                 <Grid Grid.Row="1"
                       Grid.Column="2"
                       x:Name="TotalGamesPlayedCard"
@@ -99,7 +102,7 @@
                     <StackPanel>
                         <TextBlock Text="游玩游戏数" 
                                    Style="{StaticResource SubtitleTextBlockStyle}"/>
-                        <TextBlock Text="{x:Bind ViewModel.TotalGamesPlayed, Mode=OneWay}"
+                        <TextBlock Text="{x:Bind ViewModel.AnnualReportData.TotalGamesPlayed, Mode=OneWay}"
                                    Style="{StaticResource DisplayTextBlockStyle}"
                                    FontSize="32"/>
                         <TextBlock Text="部作品" 
@@ -118,6 +121,8 @@
                             Width="300"/>
                     </TeachingTip>
                 </Grid>
+                
+                <!-- 最活跃的月份 && 月度活跃度分析 -->
                 <Grid Grid.Row="2"
                       Grid.Column="1"
                       x:Name="MostActiveMonthCard"
@@ -134,7 +139,7 @@
                         </core:EventTriggerBehavior>
                     </interactivity:Interaction.Behaviors>
                     <StackPanel>
-                        <TextBlock Text="游戏最多的月份" 
+                        <TextBlock Text="游戏最活跃的月份" 
                                    Style="{StaticResource SubtitleTextBlockStyle}"/>
                         <TextBlock Text="{x:Bind ViewModel.MostActiveMonth, Mode=OneWay}"
                                    Style="{StaticResource DisplayTextBlockStyle}"
@@ -156,6 +161,8 @@
                             />
                     </TeachingTip>
                 </Grid>
+                
+                <!-- 平均游戏时长 & 游玩时长分布 -->
                 <Grid Grid.Row="2"
                       Grid.Column="2"
                       x:Name="AveragePlayHoursCard"
@@ -174,7 +181,8 @@
                     <StackPanel>
                         <TextBlock Text="平均每部游玩时长" 
                                    Style="{StaticResource SubtitleTextBlockStyle}"/>
-                        <TextBlock Text="{x:Bind ViewModel.AveragePlayHours, Mode=OneWay}"
+                        <TextBlock Text="{x:Bind ViewModel.AveragePlayHours, Mode=OneWay, 
+                                    Converter={StaticResource StrFmt}, ConverterParameter='{}{0:0.##}'}"
                                    Style="{StaticResource DisplayTextBlockStyle}"
                                    FontSize="32"/>
                         <TextBlock Text="小时" 
@@ -194,6 +202,8 @@
                             />
                     </TeachingTip>
                 </Grid>
+                
+                <!-- 最喜欢游戏 -->
                 <Grid x:Name="SourceElement"
                       Grid.Row="1"
                       Grid.Column="0"
@@ -209,24 +219,23 @@
                     <StackPanel>
                         <TextBlock Text="本年度最长游玩时间" 
                                   Style="{StaticResource SubtitleTextBlockStyle}"/>
-                        <TextBlock Text="{x:Bind ViewModel.PlayedTime, Mode=OneWay}"
+                        <TextBlock Text="{x:Bind ViewModel.AnnualReportData.FavoriteGamePlayedTime, Mode=OneWay, 
+                                    Converter={StaticResource StrFmt}, ConverterParameter='{}{0:0.##}'}"
                                   Style="{StaticResource DisplayTextBlockStyle}"
                                   FontSize="32"/>
                         <TextBlock Text="小时" 
                                   Style="{StaticResource CaptionTextBlockStyle}"/>
-                        <Image Source="{x:Bind ViewModel.Game.ImagePath.Value, Mode=OneWay, 
+                        <Image Source="{x:Bind ViewModel.AnnualReportData.FavoriteGame.ImagePath.Value, Mode=OneWay, 
                                Converter={StaticResource ImagePathConverter}}"
                                Height="200"
                                Stretch="Uniform"
                                Margin="0,8,0,0"/>
-                        <TextBlock Text="{x:Bind ViewModel.Game.Name.Value, Mode=OneWay}"
+                        <TextBlock Text="{x:Bind ViewModel.AnnualReportData.FavoriteGame.Name.Value, Mode=OneWay}"
                                   TextWrapping="Wrap"
                                   Style="{StaticResource SubtitleTextBlockStyle}"
                                   Margin="0,8,0,0"/>
                     </StackPanel>
                 </Grid>
-
-                
             </Grid>
         </ScrollViewer>
     </Grid>

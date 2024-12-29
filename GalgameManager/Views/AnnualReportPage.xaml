@@ -4,46 +4,48 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:prefab="using:GalgameManager.Views.Prefab"
     xmlns:controls="using:Microsoft.UI.Xaml.Controls"
-    xmlns:local="using:GalgameManager.Views"
-    xmlns:core="using:Microsoft.Xaml.Interactions.Core"
-    xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
+    xmlns:converter="using:GalgameManager.Helpers.Converter"
     mc:Ignorable="d">
+    
+    <Page.Resources>
+        <converter:InverseVisibilityConverter x:Key="InverseVisibilityConverter"/>
+    </Page.Resources>
 
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
+        <Grid Visibility="{x:Bind ViewModel.Calculating, Mode=OneWay, 
+                Converter={StaticResource InverseVisibilityConverter}}"
+              RowDefinitions="Auto,*,Auto">
 
-        <controls:SelectorBar x:Name="SelectorBar"
-                              SelectionChanged="{x:Bind ViewModel.SelectorBar_SelectionChanged}"
-                              Grid.Row="0">
-            <controls:SelectorBarItem x:Name="AnnualReportSubPage1"
-                                      Text="Page1"
-                                      IsSelected="True"/>
-            <controls:SelectorBarItem x:Name="AnnualReportSubPage2"
-                                      Text="Page2"/>
-            
-        </controls:SelectorBar>
+            <controls:SelectorBar SelectionChanged="{x:Bind ViewModel.SelectorBar_SelectionChanged}"
+                                  Grid.Row="0">
+                <controls:SelectorBarItem Text="Page1" IsSelected="True"/>
+                <controls:SelectorBarItem Text="Page2"/>
+            </controls:SelectorBar>
 
-        <Frame x:Name="ContentFrame" 
-               Grid.Row="1"
-               IsNavigationStackEnabled="False"/>
+            <Frame x:Name="ContentFrame" Grid.Row="1"
+                   IsNavigationStackEnabled="False"/>
 
-
-        <StackPanel Grid.Row="2"
-                Orientation="Horizontal"
-                HorizontalAlignment="Center"
-                Margin="10">
-            <Button Content="Previous Page"
-                    Command="{x:Bind ViewModel.PreviousPageCommand}"
-                    Margin="5"/>
-            <Button Content="Next Page"
-                    Command="{x:Bind ViewModel.NextPageCommand}"
-                    Margin="5"/>
-        </StackPanel>
+            <StackPanel Grid.Row="2"
+                        Orientation="Horizontal"
+                        HorizontalAlignment="Center"
+                        Margin="10">
+                <Button Content="Previous Page"
+                        Command="{x:Bind ViewModel.PreviousPageCommand}"
+                        Margin="5"/>
+                <Button Content="Next Page"
+                        Command="{x:Bind ViewModel.NextPageCommand}"
+                        Margin="5"/>
+            </StackPanel>
+        </Grid>
+        
+        <!-- 正在计算年度数据，请稍后... -->
+        <Grid Visibility="{x:Bind ViewModel.Calculating, Mode=OneWay}"
+              HorizontalAlignment="Center" VerticalAlignment="Center"
+              RowDefinitions="Auto, Auto" RowSpacing="20">
+            <ProgressRing Grid.Row="0" IsActive="True" Width="100" Height="100"/>
+            <TextBlock Grid.Row="1" x:Uid="AnnualReportPage_Calculating" 
+                       Style="{StaticResource SubtitleTextBlockStyle}"/>
+        </Grid>
     </Grid>
 </Page>

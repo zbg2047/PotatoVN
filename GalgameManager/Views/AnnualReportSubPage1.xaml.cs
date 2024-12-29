@@ -2,6 +2,7 @@
 using GalgameManager.ViewModels;
 
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Navigation;
 
 
 // To learn more about WinUI, the WinUI project structure,
@@ -22,5 +23,11 @@ public sealed partial class AnnualReportSubPage1 : Page
     {
         ViewModel = App.GetService<ReportSubPage1ViewModel>();
         this.InitializeComponent();
+    }
+
+    protected override void OnNavigatedTo(NavigationEventArgs e)
+    {
+        base.OnNavigatedTo(e);
+        ViewModel.OnNavigatedTo(e.Parameter);
     }
 }

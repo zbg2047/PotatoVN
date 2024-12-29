@@ -1,9 +1,9 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using GalgameManager.Contracts.Services;
 using GalgameManager.Contracts.ViewModels;
-using GalgameManager.Models;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
+using GalgameManager.Enums;
 using SkiaSharp;
 using LiveChartsCore;
 using LiveChartsCore.SkiaSharpView;
@@ -13,12 +13,8 @@ using LiveChartsCore.Kernel.Sketches;
 namespace GalgameManager.ViewModels;
 public partial class ReportSubPage1ViewModel : ObservableObject, INavigationAware
 {
-    private readonly IGalgameCollectionService _galgameCollectionService;
-    [ObservableProperty] private Galgame _game = null!;
-
-    [ObservableProperty] private double _playedTime = 0;
-    [ObservableProperty] private int _totalPlayHours = 0;
-    [ObservableProperty] private int _totalGamesPlayed = 0;
+    [ObservableProperty] private AnnualReportData _annualReportData = new();
+    
     [ObservableProperty] private int _mostActiveMonth = 0;
     [ObservableProperty] private double _averagePlayHours = 0;
     [ObservableProperty] private bool _isPlayHoursDetailVisible;
@@ -43,48 +39,25 @@ public partial class ReportSubPage1ViewModel : ObservableObject, INavigationAwar
     [ObservableProperty]
     private IEnumerable<ICartesianAxis>? _averageHoursXAxes;
 
-    public ReportSubPage1ViewModel(IGalgameCollectionService galgameCollectionService)
-    {
-        _galgameCollectionService = galgameCollectionService;
-        
-        // 初始化基础数据
-        Game = _galgameCollectionService.Galgames.FirstOrDefault() ?? new Galgame();
-
-        PlayedTime = 20.2;
-        TotalPlayHours = 100;
-        TotalGamesPlayed = 10;
-        MostActiveMonth = 1;
-        AveragePlayHours = 10;
-        
-        // 初始化图表数据
-        InitializeCharts();
-    }
-
     private void InitializeCharts()
     {
         var months = new string[] { "1月", "2月", "3月", "4月", "5月", "6月", 
                                   "7月", "8月", "9月", "10月", "11月", "12月" };
         
         // 设置默认的图表样式
-        var defaultLabelStyle = new SolidColorPaint
-        {
-            Color = SKColor.Parse("#303030"),
-        
-        };
+        SolidColorPaint defaultLabelStyle = new() { Color = SKColor.Parse("#303030"), };
 
         // 游玩时长柱状图
         PlayHoursSeries = new ISeries[]
         {
             new ColumnSeries<double>
             {
-                Values = new double[] { 20, 35, 15, 25, 30, 20, 35, 15, 25, 30, 20, 35 },
+                Values = AnnualReportData.PlayedTimePerMonth,
                 Name = "月度游玩时长",
                 Fill = new SolidColorPaint(SKColor.Parse("#266489")),
-                YToolTipLabelFormatter = point => $"{point.Model} 小时",
+                YToolTipLabelFormatter = point => $"{point.Model:F1} 小时",
             }
         };
-        
-        
         PlayHoursXAxes = new[]
         {
             new Axis
@@ -96,38 +69,32 @@ public partial class ReportSubPage1ViewModel : ObservableObject, INavigationAwar
         };
 
         // 游戏完成度饼图
-        GamesPlayedSeries = new ISeries[]
+        List<ISeries> gamesPlayedSeries = new();
+        foreach (KeyValuePair<PlayType, int> series in AnnualReportData.PlayTypeCnt)
         {
-            new PieSeries<double>
+            if (series.Value == 0) continue;
+            gamesPlayedSeries.Add(new PieSeries<double>
             {
-                Values = new double[] { 5 },
-                Name = "已完成",
-                Fill = new SolidColorPaint(SKColor.Parse("#2c3e50")),
-#pragma warning disable CS0618 // 类型或成员已过时 假警报，PipeSeries根本没有XToolTipLabelFormatter或YToolTipLabelFormatter
-                //see https://livecharts.dev/api/2.0.0-rc1/LiveChartsCore.PieSeries-5
-                TooltipLabelFormatter = (point) => $"{point.Model:F0} 部",
-#pragma warning restore CS0618 // 类型或成员已过时
-            },
-            new PieSeries<double>
-            {
-                Values = new double[] { 3 },
-                Name = "进行中",
-                Fill = new SolidColorPaint(SKColor.Parse("#77d065"))
-            },
-            new PieSeries<double>
-            {
-                Values = new double[] { 2 },
-                Name = "未开始",
-                Fill = new SolidColorPaint(SKColor.Parse("#b455b6"))
-            }
-        };
+                Values = [series.Value],
+                Name = series.Key.GetLocalized(),
+                // Fill = new SolidColorPaint(SKColor.Parse("#2c3e50")),
+            });
+        }
+        GamesPlayedSeries = gamesPlayedSeries.ToArray();
 
         // 月度活跃度折线图
+        var activity = new double[12];
+        for (var i = 0; i < 12; i++)
+        {
+            activity[i] = AnnualReportData.PlayedTimePerMonth[i] + AnnualReportData.PlayedGamesPerMonth[i] * 10;
+            MostActiveMonth = activity[i] > activity[MostActiveMonth] ? i : MostActiveMonth;
+        }
+        MostActiveMonth++; // 月份从1开始
         ActiveMonthSeries = new ISeries[]
         {
             new LineSeries<double>
             {
-                Values = new double[] { 5, 8, 10, 12, 15, 18, 20, 22, 25, 28, 30, 32 },
+                Values = activity,
                 Name = "月度活跃度",
                 Fill = null,
                 GeometrySize = 10,
@@ -146,11 +113,22 @@ public partial class ReportSubPage1ViewModel : ObservableObject, INavigationAwar
         };
 
         // 游戏时长分布条形图
+        List<double> playedTimeRange = [];
+        List<string> playedTimeRangeLabels = [];
+        for(var i = 0; i < AnnualReportData.PlayedTimeRange.Length; i++)
+            if (AnnualReportData.PlayedTimeRangeCnt[i] > 0)
+            {
+                playedTimeRange.Add(AnnualReportData.PlayedTimeRangeCnt[i]);
+                var label = i == AnnualReportData.PlayedTimeRange.Length - 1
+                    ? $"{AnnualReportData.PlayedTimeRange[i]}h+"
+                    : $"{AnnualReportData.PlayedTimeRange[i]}-{AnnualReportData.PlayedTimeRange[i + 1]}h";
+                playedTimeRangeLabels.Add(label);
+            }
         AverageHoursSeries = new ISeries[]
         {
             new ColumnSeries<double>
             {
-                Values = new double[] { 3, 4, 2, 1 },
+                Values = playedTimeRange.ToArray(),
                 Name = "游戏数量",
                 Fill = new SolidColorPaint(SKColor.Parse("#266489"))
             }
@@ -160,7 +138,7 @@ public partial class ReportSubPage1ViewModel : ObservableObject, INavigationAwar
         {
             new Axis
             {
-                Labels = new[] { "0-10h", "10-20h", "20-30h", "30h+" },
+                Labels = playedTimeRangeLabels.ToArray(),
                 LabelsRotation = 0
             }
         };
@@ -168,7 +146,11 @@ public partial class ReportSubPage1ViewModel : ObservableObject, INavigationAwar
 
     public void OnNavigatedTo(object parameter)
     {
-        Game = _galgameCollectionService.Galgames[0];
+        Debug.Assert(parameter is AnnualReportData);
+        AnnualReportData = (AnnualReportData)parameter;
+        AveragePlayHours = AnnualReportData.PlayedTime / 12;
+        // 初始化图表数据
+        InitializeCharts();
     }
 
     public void OnNavigatedFrom()

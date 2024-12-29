@@ -2088,4 +2088,7 @@
   <data name="GalgameSourcePage_GamesTable_Edit.Text" xml:space="preserve">
     <value>编辑</value>
   </data>
+  <data name="AnnualReportPage_Calculating.Text" xml:space="preserve">
+    <value>正在计算年度数据，请稍后</value>
+  </data>
 </root>
