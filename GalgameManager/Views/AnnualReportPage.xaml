@@ -21,6 +21,7 @@
                                   Grid.Row="0">
                 <controls:SelectorBarItem Text="Page1" IsSelected="True"/>
                 <controls:SelectorBarItem Text="Page2"/>
+                <controls:SelectorBarItem Text="Page3"/>
             </controls:SelectorBar>
 
             <Frame x:Name="ContentFrame" Grid.Row="1"
@@ -30,10 +31,10 @@
                         Orientation="Horizontal"
                         HorizontalAlignment="Center"
                         Margin="10">
-                <Button Content="Previous Page"
+                <Button Content="上一页"
                         Command="{x:Bind ViewModel.PreviousPageCommand}"
                         Margin="5"/>
-                <Button Content="Next Page"
+                <Button Content="下一页"
                         Command="{x:Bind ViewModel.NextPageCommand}"
                         Margin="5"/>
             </StackPanel>
