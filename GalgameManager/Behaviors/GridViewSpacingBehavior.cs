@@ -60,9 +60,7 @@ public partial class GridViewSpacingBehavior : UserControl
         // 有时也会选择为所有子项设置左右对称的 spacing/2，但可能需要根据实际需求调试。
         UIElementCollection? containers = GridView.ItemsPanelRoot?.Children;
         if (containers is null || containers.Count == 0) return;
-        foreach (FrameworkElement itemContainer in containers
-                     .OfType<FrameworkElement>()
-                     .Where(e => e.ActualOffset is { X: >= 0, Y: >= 0, Z: >= 0 })) 
+        foreach (FrameworkElement itemContainer in containers.OfType<FrameworkElement>())
             itemContainer.Margin = new Thickness(0, 0, spacing, 0);
     }
 
