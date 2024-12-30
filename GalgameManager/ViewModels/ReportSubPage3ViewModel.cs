@@ -21,41 +21,19 @@ using GalgameManager.Contracts.ViewModels;
 
 namespace GalgameManager.ViewModels
 {
-    public partial class ReportSubPage3ViewModel : ObservableObject, INavigationAware
+    public partial class ReportSubPage3ViewModel (INavigationService navigationService) : ObservableObject, INavigationAware
     {
-
-
-        [ObservableProperty]
-        private Category _category;
-
-        [ObservableProperty]
-        private int _playedGamesCount;
-
-        private readonly IGalgameCollectionService _galgameCollectionService;
-        [ObservableProperty] private Galgame _game = null!;
+        [ObservableProperty] private Category _category = new();
+        [ObservableProperty] private int _playedGamesCount;
         [ObservableProperty] private ObservableCollection<Galgame> _games = new();
-
-        private readonly INavigationService _navigationService;
-
-        public ReportSubPage3ViewModel(IGalgameCollectionService galgameCollectionService, 
-                                     INavigationService navigationService)
-        {
-            _category = new Category("游戏会社");
-            _category.ImagePath = "ms-appx:///Assets/Pictures/Potato.png";
-            _playedGamesCount = 5;
-
-            _galgameCollectionService = galgameCollectionService;
-            _navigationService = navigationService;
-
-            Games = new ObservableCollection<Galgame>(_galgameCollectionService.Galgames);
-            Game = _galgameCollectionService.Galgames[0];
-        }
-
-       
         
         public void OnNavigatedTo(object parameter)
         {
-            
+            Debug.Assert(parameter is AnnualReportData);
+            AnnualReportData data = (AnnualReportData)parameter;
+            Category = data.FavouriteDeveloper;
+            PlayedGamesCount = data.GamesInFavouriteDeveloper.Count;
+            Games.SyncCollection(data.GamesInFavouriteDeveloper);
         }
 
         public void OnNavigatedFrom()
@@ -67,8 +45,7 @@ namespace GalgameManager.ViewModels
         {
             if (clickedItem is Galgame galgame)
             {
-                _navigationService.NavigateTo(typeof(GalgameViewModel).FullName!,
-                    new GalgamePageParameter { Galgame = galgame });
+                NavigationHelper.NavigateToGalgamePage(navigationService, new GalgamePageParameter {Galgame = galgame});
             }
         }
     }

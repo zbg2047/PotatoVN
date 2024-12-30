@@ -17,6 +17,7 @@ namespace GalgameManager.Views
         public AnnualReportSubPage3()
         {
             ViewModel = App.GetService<ReportSubPage3ViewModel>();
+            DataContext = ViewModel;
             this.InitializeComponent();
         }
 

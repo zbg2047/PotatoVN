@@ -12,7 +12,8 @@ using System.Text.RegularExpressions;
 
 namespace GalgameManager.ViewModels;
 
-public partial class AnnualReportViewModel (IGalgameCollectionService gameService) : ObservableRecipient, INavigationAware
+public partial class AnnualReportViewModel(IGalgameCollectionService gameService, ICategoryService categoryService)
+    : ObservableRecipient, INavigationAware
 {
     [ObservableProperty] private Frame? _contentFrame;
     [ObservableProperty] private Visibility _calculating = Visibility.Visible;
@@ -28,6 +29,7 @@ public partial class AnnualReportViewModel (IGalgameCollectionService gameServic
         // 计算年度报告数据
         Task.Run(async () =>
         {
+            List<Galgame> gamesPlayThisYear = [];
             // 第一页数据
             foreach (Galgame game in gameService.Galgames)
             {
@@ -53,6 +55,7 @@ public partial class AnnualReportViewModel (IGalgameCollectionService gameServic
                 if (playInYearMin > 0)
                 {
                     _annualReportData.TotalGamesPlayed++;
+                    gamesPlayThisYear.Add(game);
                     // 计算其属于哪个游戏时长区间
                     var found = false;
                     for (var i = 1; i < AnnualReportData.PlayedTimeRange.Length; i++)
@@ -89,7 +92,23 @@ public partial class AnnualReportViewModel (IGalgameCollectionService gameServic
                             !YearPattern.IsMatch(g.Key))
                 .Take(AnnualReportData.TagFrequencyMax)
                 .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
-            
+            // 第三页数据
+            // 以下部分效率很低，但是数据量不大，应该问题不大
+            Dictionary<Category, int> developers = new();
+            CategoryGroup devGroup = categoryService.DeveloperGroup;
+            foreach (Galgame game in gamesPlayThisYear)
+            {
+                foreach (Category category in game.Categories.Where(c => devGroup.Categories.Contains(c)))
+                {
+                    if (!developers.TryAdd(category, 1))
+                        developers[category]++;
+                }
+            }
+            _annualReportData.FavouriteDeveloper = developers
+                .OrderByDescending(p => p.Value)
+                .FirstOrDefault().Key ?? new Category();
+            _annualReportData.GamesInFavouriteDeveloper.AddRange(gamesPlayThisYear.Where(game =>
+                game.Categories.Contains(_annualReportData.FavouriteDeveloper)));
             await UiThreadInvokeHelper.InvokeAsync(() =>
             {
                 Calculating = Visibility.Collapsed;
@@ -187,4 +206,6 @@ public partial class AnnualReportData : ObservableObject
     public int[] PlayedTimeRangeCnt = new int[PlayedTimeRange.Length];
     public Dictionary<PlayType, int> PlayTypeCnt = new(); //玩过的游戏状态统计
     public Dictionary<string, int> TagFrequencies = new(); //Tag词频统计
+    [ObservableProperty] private Category _favouriteDeveloper = new(); //最喜欢的开发商
+    public List<Galgame> GamesInFavouriteDeveloper = new(); //今年玩过的最喜欢的开发商的游戏
 }

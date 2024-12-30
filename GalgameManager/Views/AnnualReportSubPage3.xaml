@@ -4,15 +4,12 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:control="using:GalgameManager.Views.Control"
-    xmlns:local="using:GalgameManager.Views"
-    xmlns:core="using:Microsoft.Xaml.Interactions.Core"
-    xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
     xmlns:prefab="using:GalgameManager.Views.Prefab"
     xmlns:models="using:GalgameManager.Models"
     xmlns:converter="using:GalgameManager.Helpers.Converter"
     xmlns:cmtkAnimations="using:CommunityToolkit.WinUI.Animations"
-    mc:Ignorable="d">
+    mc:Ignorable="d"
+    x:Name="Page">
 
     <Page.Resources>
         <converter:ImagePathConverter x:Key="ImagePathConverter" />
@@ -92,7 +89,7 @@
                     <DataTemplate x:DataType="models:Galgame">
                         <Button Style="{ThemeResource TransparentButtonWithHover}"
                                 DataContext="{x:Bind}"
-                                Command="{Binding ElementName=Page, Path=ViewModel.NavigateTo}"
+                                Command="{Binding ElementName=Page, Path=ViewModel.NavigateToCommand}"
                                 CommandParameter="{x:Bind}">
                             <prefab:GalgamePrefab
                                 Galgame="{x:Bind}"
