@@ -70,8 +70,8 @@ public partial class ReportSubPage2ViewModel : ObservableObject, INavigationAwar
             var wordCloud = new WordCloudInput(
                 wordFrequencies.Select(p => new WordCloudEntry(p.Key, p.Value)))
             {
-                Width = 800,
-                Height = 400,
+                Width = 1200,
+                Height = 600,
                 MinFontSize = 16,
                 MaxFontSize = 64
             };
@@ -99,7 +99,7 @@ public partial class ReportSubPage2ViewModel : ObservableObject, INavigationAwar
                 textBlock.PointerEntered += (s, args) =>
                 {
                     tipCloseTimer.Stop();
-                    WordTipContent.Text = $"词语：{item.Entry.Word}\n频率：{item.Entry.Count}";
+                    WordTipContent.Text = $"关键词：{item.Entry.Word}\n相关游戏数量：{item.Entry.Count}";
                     WordTipTarget = textBlock;
                     IsWordTipOpen = true;
                 };

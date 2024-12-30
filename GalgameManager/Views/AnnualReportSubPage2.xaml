@@ -12,11 +12,29 @@
     mc:Ignorable="d">
 
      <Grid x:Name="Root">
-        <Canvas x:Name="CloudCanvas" Width="800" Height="400" />
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        
+        <TextBlock Grid.Row="0"
+                   Text="最常游玩的TAG"
+                   HorizontalAlignment="Center"
+                   FontSize="24"
+                   FontWeight="Bold"
+                   Margin="0,0,0,-200"/>
+        
+        <Canvas Grid.Row="1"
+                x:Name="CloudCanvas" 
+                Width="1200" 
+                Height="600"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"/>
+        
         <TeachingTip x:Name="WordTip"
                      IsOpen="{x:Bind ViewModel.IsWordTipOpen, Mode=TwoWay}"
                      Target="{x:Bind ViewModel.WordTipTarget, Mode=OneWay}"
-                     Title="词频信息"
+                     Title="游戏信息"
                      ShouldConstrainToRootBounds="True"
                      PlacementMargin="20">
             <TeachingTip.Content>

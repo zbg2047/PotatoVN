@@ -8,6 +8,7 @@ using GalgameManager.Models;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Animation;
+using System.Text.RegularExpressions;
 
 namespace GalgameManager.ViewModels;
 
@@ -19,6 +20,8 @@ public partial class AnnualReportViewModel (IGalgameCollectionService gameServic
     private int _currentPageIndex = -1;
     private int _previousPageIndex = -1;
     private readonly AnnualReportData _annualReportData = new();
+    
+    private static readonly Regex YearPattern = new(@"(19|20)\d{2}(-\d{1,2})?");
     
     public void OnNavigatedTo(object parameter)
     {
@@ -82,7 +85,8 @@ public partial class AnnualReportViewModel (IGalgameCollectionService gameServic
             // 可以优化成nlogn的，但应该不会造成太大的性能问题（应该不会有几十万个tag吧？）
             _annualReportData.TagFrequencies = tags
                 .OrderByDescending(p => p.Value)
-                .Where(g => !AnnualReportData.BannedTags.Contains(g.Key))
+                .Where(g => !AnnualReportData.BannedTags.Contains(g.Key) && 
+                            !YearPattern.IsMatch(g.Key))
                 .Take(AnnualReportData.TagFrequencyMax)
                 .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
             
@@ -108,7 +112,7 @@ public partial class AnnualReportViewModel (IGalgameCollectionService gameServic
     private void NextPage()
     {
         if (ContentFrame == null) return;
-        NavigateToPage(Math.Min(_currentPageIndex + 1, 1));
+        NavigateToPage(Math.Min(_currentPageIndex + 1, 2));
         UpdateSelectorBarSelection();
     }
 
@@ -140,6 +144,7 @@ public partial class AnnualReportViewModel (IGalgameCollectionService gameServic
         {
             0 => typeof(Views.AnnualReportSubPage1),
             1 => typeof(Views.AnnualReportSubPage2),
+            2 => typeof(Views.AnnualReportSubPage3),
             _ => typeof(Views.AnnualReportSubPage1)
         };
 
@@ -166,7 +171,7 @@ public partial class AnnualReportData : ObservableObject
     public const int Year = 2024;
     public const int TagFrequencyMax = 30;
     public static readonly int[] PlayedTimeRange = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60];
-    public static readonly string[] BannedTags = ["PC", "汉化", "GAL", "galgame", "Galgame", "ADV", "R18", "AVG"];
+    public static readonly string[] BannedTags = ["PC", "汉化", "GAL", "galgame", "Galgame", "ADV", "R18", "AVG","游戏","生肉","硬盘已存"];
     
     [ObservableProperty] private Galgame _favoriteGame = new();
     [ObservableProperty] private double _favoriteGamePlayedTime; //最喜欢的游戏的时间，小时

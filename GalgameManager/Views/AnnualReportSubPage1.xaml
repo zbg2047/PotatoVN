@@ -40,7 +40,7 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
-               
+
                 <!-- 游戏时长 & 各月游戏时长 -->
                 <Grid Grid.Row="1"
                       Grid.Column="1"
@@ -66,7 +66,7 @@
                                    FontSize="32"/>
                         <TextBlock Text="小时" 
                                    Style="{StaticResource CaptionTextBlockStyle}"/>
-                                  
+
                     </StackPanel>
                     <TeachingTip x:Name="PlayHoursTeachingTip"
                                 Target="{x:Bind TotalPlayHoursCard}"
@@ -82,7 +82,7 @@
                             />
                     </TeachingTip>
                 </Grid>
-                
+
                 <!-- 游戏完成数 & 游戏完成度分析 -->
                 <Grid Grid.Row="1"
                       Grid.Column="2"
@@ -121,7 +121,7 @@
                             Width="300"/>
                     </TeachingTip>
                 </Grid>
-                
+
                 <!-- 最活跃的月份 && 月度活跃度分析 -->
                 <Grid Grid.Row="2"
                       Grid.Column="1"
@@ -161,7 +161,7 @@
                             />
                     </TeachingTip>
                 </Grid>
-                
+
                 <!-- 平均游戏时长 & 游玩时长分布 -->
                 <Grid Grid.Row="2"
                       Grid.Column="2"
@@ -202,7 +202,7 @@
                             />
                     </TeachingTip>
                 </Grid>
-                
+
                 <!-- 最喜欢游戏 -->
                 <Grid x:Name="SourceElement"
                       Grid.Row="1"
