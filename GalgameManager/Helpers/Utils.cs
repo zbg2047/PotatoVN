@@ -152,9 +152,9 @@ public static class Utils
     /// <returns></returns>
     public static bool IsPathContained(string parentPath, string childPath)
     {
-        Uri parentUri = new(Path.GetFullPath(parentPath) + Path.DirectorySeparatorChar);
-        Uri childUri = new(Path.GetFullPath(childPath) + Path.DirectorySeparatorChar);
-        return parentUri.IsBaseOf(childUri);
+        var parent = Path.GetFullPath(parentPath);
+        var child = Path.GetFullPath(childPath);
+        return child.StartsWith(parent);
     }
 
     /// <summary>
