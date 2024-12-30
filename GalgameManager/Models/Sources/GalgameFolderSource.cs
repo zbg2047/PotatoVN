@@ -48,10 +48,12 @@ public class GalgameFolderSource : GalgameSourceBase
             if (!HasPermission(currentPath))
             {
                 yield return (null, "Has No Permission\n");
+                continue;
             }
             if (IsGameFolder(currentPath, fileMustContain, fileShouldContain))
             {
                 yield return (currentPath, "");
+                continue;
             }
         
             if (currentDepth == maxDepth) continue;

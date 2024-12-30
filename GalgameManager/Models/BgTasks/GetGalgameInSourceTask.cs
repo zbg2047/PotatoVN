@@ -46,7 +46,7 @@ public class GetGalgameInSourceTask : BgTaskBase
             {
                 if (path == null)
                 {
-                    log += l;
+                    log += $"{path}: {l}\n";
                     continue;
                 }
                 if (_galgameFolderSource.Galgames.FirstOrDefault(g => Utils.ArePathsEqual(g.Path, path)) is { } game) 
