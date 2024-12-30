@@ -2091,4 +2091,7 @@
   <data name="AnnualReportPage_Calculating.Text" xml:space="preserve">
     <value>正在计算年度数据，请稍后</value>
   </data>
+  <data name="Shell_GalgamePage.Content" xml:space="preserve">
+    <value>游戏详情</value>
+  </data>
 </root>

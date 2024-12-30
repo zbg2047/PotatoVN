@@ -24,6 +24,7 @@ public partial class LibraryViewModel : ObservableObject, INavigationAware
     [ObservableProperty, NotifyPropertyChangedFor(nameof(IsBackEnabled))]
     private GalgameSourceBase? _currentSource;
     private GalgameSourceBase? _lastBackSource;
+    private static GalgameSourceBase? _beforeNavigateFromSource; //用于从该页跳转到Galgame详情界面后返回时直接回到某个库的界面
     
     [ObservableProperty]
     private AdvancedCollectionView _source = null!;
@@ -71,7 +72,9 @@ public partial class LibraryViewModel : ObservableObject, INavigationAware
                 return SearchKey.IsNullOrEmpty() || game.ApplySearchKey(SearchKey);
             return false;
         };
+        if (_beforeNavigateFromSource is not null) parameter = _beforeNavigateFromSource;
         NavigateTo(parameter as GalgameSourceBase); //显示根库 / 指定库
+        _beforeNavigateFromSource = null;
         _galSourceCollectionService.OnSourceChanged += HandleSourceCollectionChanged;
     }
 
@@ -105,6 +108,7 @@ public partial class LibraryViewModel : ObservableObject, INavigationAware
 
         if (clickedItem is Galgame galgame)
         {
+            _beforeNavigateFromSource = CurrentSource;
             _navigationService.NavigateTo(typeof(GalgameViewModel).FullName!,
                 new GalgamePageParameter { Galgame = galgame });
         }
