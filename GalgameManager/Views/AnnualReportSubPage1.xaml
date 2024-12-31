@@ -42,166 +42,182 @@
                 </Grid.RowDefinitions>
 
                 <!-- 游戏时长 & 各月游戏时长 -->
-                <Grid Grid.Row="1"
-                      Grid.Column="1"
-                      MinHeight="{StaticResource TileHeight}"
-                      Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-                      BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                      BorderThickness="1"
-                      CornerRadius="8"
-                      Padding="16"
-                      Margin="6"
-                      x:Name="TotalPlayHoursCard">
-                    <interactivity:Interaction.Behaviors>
-                        <core:EventTriggerBehavior EventName="Tapped">
-                            <core:InvokeCommandAction Command="{x:Bind ViewModel.TogglePlayHoursDetailCommand}"/>
-                        </core:EventTriggerBehavior>
-                    </interactivity:Interaction.Behaviors>
-                    <StackPanel>
+                <Button Grid.Row="1"
+                        Grid.Column="1"
+                        MinHeight="{StaticResource TileHeight}"
+                        Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        Padding="16"
+                        Margin="6"
+                        Command="{x:Bind ViewModel.TogglePlayHoursDetailCommand}"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch"
+                        HorizontalContentAlignment="Left"
+                        VerticalContentAlignment="Top"
+                        x:Name="TotalPlayHoursCard">
+                    <StackPanel HorizontalAlignment="Left"
+                                VerticalAlignment="Top">
                         <TextBlock Text="过去一年总游玩时长" 
-                                   Style="{StaticResource SubtitleTextBlockStyle}"/>
+                                  Style="{StaticResource SubtitleTextBlockStyle}"
+                                  HorizontalAlignment="Left"/>
                         <TextBlock Text="{x:Bind ViewModel.AnnualReportData.PlayedTime, Mode=OneWay, 
-                                    Converter={StaticResource StrFmt}, ConverterParameter='{}{0:0.##}'}"
-                                   Style="{StaticResource DisplayTextBlockStyle}"
-                                   FontSize="32"/>
+                                   Converter={StaticResource StrFmt}, ConverterParameter='{}{0:0.##}'}"
+                                  Style="{StaticResource DisplayTextBlockStyle}"
+                                  FontSize="32"
+                                  HorizontalAlignment="Left"/>
                         <TextBlock Text="小时" 
-                                   Style="{StaticResource CaptionTextBlockStyle}"/>
-
+                                  Style="{StaticResource CaptionTextBlockStyle}"
+                                  HorizontalAlignment="Left"/>
                     </StackPanel>
-                    <TeachingTip x:Name="PlayHoursTeachingTip"
-                                Target="{x:Bind TotalPlayHoursCard}"
-                                Title="游玩时长分析"
-                                PreferredPlacement="Left"
-                                IsOpen="{x:Bind ViewModel.IsPlayHoursDetailVisible, Mode=TwoWay}"
-                                ShouldConstrainToRootBounds="True">
-                        <lvc:CartesianChart
-                            Series="{x:Bind ViewModel.PlayHoursSeries, Mode=OneWay}"
-                            XAxes="{x:Bind ViewModel.PlayHoursXAxes, Mode=OneWay}"
-                            TooltipPosition="Top"
-                            Height="300"
-                            />
-                    </TeachingTip>
-                </Grid>
+                </Button>
+
+                <TeachingTip x:Name="PlayHoursTeachingTip"
+                            Target="{x:Bind TotalPlayHoursCard}"
+                            Title="游玩时长分析"
+                            PreferredPlacement="Left"
+                            IsOpen="{x:Bind ViewModel.IsPlayHoursDetailVisible, Mode=TwoWay}"
+                            ShouldConstrainToRootBounds="True">
+                    <lvc:CartesianChart
+                        Series="{x:Bind ViewModel.PlayHoursSeries, Mode=OneWay}"
+                        XAxes="{x:Bind ViewModel.PlayHoursXAxes, Mode=OneWay}"
+                        TooltipPosition="Top"
+                        Height="300"/>
+                </TeachingTip>
 
                 <!-- 游戏完成数 & 游戏完成度分析 -->
-                <Grid Grid.Row="1"
-                      Grid.Column="2"
-                      x:Name="TotalGamesPlayedCard"
-                      MinHeight="{StaticResource TileHeight}"
-                      Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-                      BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                      BorderThickness="1"
-                      CornerRadius="8"
-                      Padding="16"
-                      Margin="6">
-                    <interactivity:Interaction.Behaviors>
-                        <core:EventTriggerBehavior EventName="Tapped">
-                            <core:InvokeCommandAction Command="{x:Bind ViewModel.ToggleGamesPlayedDetailCommand}"/>
-                        </core:EventTriggerBehavior>
-                    </interactivity:Interaction.Behaviors>
-                    <StackPanel>
+                <Button Grid.Row="1"
+                        Grid.Column="2"
+                        x:Name="TotalGamesPlayedCard"
+                        MinHeight="{StaticResource TileHeight}"
+                        Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        Padding="16"
+                        Margin="6"
+                        Command="{x:Bind ViewModel.ToggleGamesPlayedDetailCommand}"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch"
+                        HorizontalContentAlignment="Left"
+                        VerticalContentAlignment="Top">
+                    <StackPanel HorizontalAlignment="Left"
+                                VerticalAlignment="Top">
                         <TextBlock Text="游玩游戏数" 
-                                   Style="{StaticResource SubtitleTextBlockStyle}"/>
+                                  Style="{StaticResource SubtitleTextBlockStyle}"
+                                  HorizontalAlignment="Left"/>
                         <TextBlock Text="{x:Bind ViewModel.AnnualReportData.TotalGamesPlayed, Mode=OneWay}"
-                                   Style="{StaticResource DisplayTextBlockStyle}"
-                                   FontSize="32"/>
+                                  Style="{StaticResource DisplayTextBlockStyle}"
+                                  FontSize="32"
+                                  HorizontalAlignment="Left"/>
                         <TextBlock Text="部作品" 
-                                   Style="{StaticResource CaptionTextBlockStyle}"/>
+                                  Style="{StaticResource CaptionTextBlockStyle}"
+                                  HorizontalAlignment="Left"/>
                     </StackPanel>
-                    <TeachingTip x:Name="GamesPlayedTeachingTip"
-                                Target="{x:Bind TotalGamesPlayedCard}"
-                                Title="游戏完成度分析"
-                                PreferredPlacement="Left"
-                                IsOpen="{x:Bind ViewModel.IsGamesPlayedDetailVisible, Mode=TwoWay}"
-                                ShouldConstrainToRootBounds="True">
-                        <lvc:PieChart
-                            Series="{x:Bind ViewModel.GamesPlayedSeries, Mode=OneWay}"
-                            TooltipPosition="Top"
-                            Height="300"
-                            Width="300"/>
-                    </TeachingTip>
-                </Grid>
+                </Button>
+
+                <TeachingTip x:Name="GamesPlayedTeachingTip"
+                            Target="{x:Bind TotalGamesPlayedCard}"
+                            Title="游戏完成度分析"
+                            PreferredPlacement="Left"
+                            IsOpen="{x:Bind ViewModel.IsGamesPlayedDetailVisible, Mode=TwoWay}"
+                            ShouldConstrainToRootBounds="True">
+                    <lvc:PieChart
+                        Series="{x:Bind ViewModel.GamesPlayedSeries, Mode=OneWay}"
+                        TooltipPosition="Top"
+                        Height="300"
+                        Width="300"/>
+                </TeachingTip>
 
                 <!-- 最活跃的月份 && 月度活跃度分析 -->
-                <Grid Grid.Row="2"
-                      Grid.Column="1"
-                      x:Name="MostActiveMonthCard"
-                      MinHeight="{StaticResource TileHeight}"
-                      Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-                      BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                      BorderThickness="1"
-                      CornerRadius="8"
-                      Padding="16"
-                      Margin="6">
-                    <interactivity:Interaction.Behaviors>
-                        <core:EventTriggerBehavior EventName="Tapped">
-                            <core:InvokeCommandAction Command="{x:Bind ViewModel.ToggleActiveMonthDetailCommand}"/>
-                        </core:EventTriggerBehavior>
-                    </interactivity:Interaction.Behaviors>
-                    <StackPanel>
+                <Button Grid.Row="2"
+                        Grid.Column="1"
+                        x:Name="MostActiveMonthCard"
+                        MinHeight="{StaticResource TileHeight}"
+                        Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        Padding="16"
+                        Margin="6"
+                        Command="{x:Bind ViewModel.ToggleActiveMonthDetailCommand}"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch"
+                        HorizontalContentAlignment="Left"
+                        VerticalContentAlignment="Top">
+                    <StackPanel HorizontalAlignment="Left"
+                                VerticalAlignment="Top">
                         <TextBlock Text="游戏最活跃的月份" 
-                                   Style="{StaticResource SubtitleTextBlockStyle}"/>
+                                  Style="{StaticResource SubtitleTextBlockStyle}"
+                                  HorizontalAlignment="Left"/>
                         <TextBlock Text="{x:Bind ViewModel.MostActiveMonth, Mode=OneWay}"
-                                   Style="{StaticResource DisplayTextBlockStyle}"
-                                   FontSize="32"/>
+                                  Style="{StaticResource DisplayTextBlockStyle}"
+                                  FontSize="32"
+                                  HorizontalAlignment="Left"/>
                         <TextBlock Text="月" 
-                                   Style="{StaticResource CaptionTextBlockStyle}"/>
+                                  Style="{StaticResource CaptionTextBlockStyle}"
+                                  HorizontalAlignment="Left"/>
                     </StackPanel>
-                    <TeachingTip x:Name="ActiveMonthTeachingTip"
-                                Target="{x:Bind MostActiveMonthCard}"
-                                Title="月度活跃度分析"
-                                PreferredPlacement="Left"
-                                IsOpen="{x:Bind ViewModel.IsActiveMonthDetailVisible, Mode=TwoWay}"
-                                ShouldConstrainToRootBounds="True">
-                        <lvc:CartesianChart
-                            Series="{x:Bind ViewModel.ActiveMonthSeries, Mode=OneWay}"
-                            XAxes="{x:Bind ViewModel.MonthXAxes, Mode=OneWay}"
-                            TooltipPosition="Top"
-                            Height="300"
-                            />
-                    </TeachingTip>
-                </Grid>
+                </Button>
+
+                <TeachingTip x:Name="ActiveMonthTeachingTip"
+                            Target="{x:Bind MostActiveMonthCard}"
+                            Title="月度活跃度分析"
+                            PreferredPlacement="Left"
+                            IsOpen="{x:Bind ViewModel.IsActiveMonthDetailVisible, Mode=TwoWay}"
+                            ShouldConstrainToRootBounds="True">
+                    <lvc:CartesianChart
+                        Series="{x:Bind ViewModel.ActiveMonthSeries, Mode=OneWay}"
+                        XAxes="{x:Bind ViewModel.MonthXAxes, Mode=OneWay}"
+                        TooltipPosition="Top"
+                        Height="300"/>
+                </TeachingTip>
 
                 <!-- 平均游戏时长 & 游玩时长分布 -->
-                <Grid Grid.Row="2"
-                      Grid.Column="2"
-                      x:Name="AveragePlayHoursCard"
-                      MinHeight="{StaticResource TileHeight}"
-                      Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-                      BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                      BorderThickness="1"
-                      CornerRadius="8"
-                      Padding="16"
-                      Margin="6">
-                    <interactivity:Interaction.Behaviors>
-                        <core:EventTriggerBehavior EventName="Tapped">
-                            <core:InvokeCommandAction Command="{x:Bind ViewModel.ToggleAverageHoursDetailCommand}"/>
-                        </core:EventTriggerBehavior>
-                    </interactivity:Interaction.Behaviors>
-                    <StackPanel>
+                <Button Grid.Row="2"
+                        Grid.Column="2"
+                        x:Name="AveragePlayHoursCard"
+                        MinHeight="{StaticResource TileHeight}"
+                        Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        Padding="16"
+                        Margin="6"
+                        Command="{x:Bind ViewModel.ToggleAverageHoursDetailCommand}"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch"
+                        HorizontalContentAlignment="Left"
+                        VerticalContentAlignment="Top">
+                    <StackPanel HorizontalAlignment="Left"
+                                VerticalAlignment="Top">
                         <TextBlock Text="平均每部游玩时长" 
-                                   Style="{StaticResource SubtitleTextBlockStyle}"/>
+                                  Style="{StaticResource SubtitleTextBlockStyle}"
+                                  HorizontalAlignment="Left"/>
                         <TextBlock Text="{x:Bind ViewModel.AveragePlayHours, Mode=OneWay, 
                                     Converter={StaticResource StrFmt}, ConverterParameter='{}{0:0.##}'}"
-                                   Style="{StaticResource DisplayTextBlockStyle}"
-                                   FontSize="32"/>
+                                  Style="{StaticResource DisplayTextBlockStyle}"
+                                  FontSize="32"
+                                  HorizontalAlignment="Left"/>
                         <TextBlock Text="小时" 
-                                   Style="{StaticResource CaptionTextBlockStyle}"/>
+                                  Style="{StaticResource CaptionTextBlockStyle}"
+                                  HorizontalAlignment="Left"/>
                     </StackPanel>
-                    <TeachingTip x:Name="AverageHoursTeachingTip"
-                                Target="{x:Bind AveragePlayHoursCard}"
-                                Title="游戏时长分布"
-                                PreferredPlacement="Left"
-                                IsOpen="{x:Bind ViewModel.IsAverageHoursDetailVisible, Mode=TwoWay}"
-                                ShouldConstrainToRootBounds="True">
-                        <lvc:CartesianChart
-                            Series="{x:Bind ViewModel.AverageHoursSeries, Mode=OneWay}"
-                            XAxes="{x:Bind ViewModel.AverageHoursXAxes, Mode=OneWay}"
-                            TooltipPosition="Top"
-                            Height="300"
-                            />
-                    </TeachingTip>
-                </Grid>
+                </Button>
+
+                <TeachingTip x:Name="AverageHoursTeachingTip"
+                            Target="{x:Bind AveragePlayHoursCard}"
+                            Title="游戏时长分布"
+                            PreferredPlacement="Left"
+                            IsOpen="{x:Bind ViewModel.IsAverageHoursDetailVisible, Mode=TwoWay}"
+                            ShouldConstrainToRootBounds="True">
+                    <lvc:CartesianChart
+                        Series="{x:Bind ViewModel.AverageHoursSeries, Mode=OneWay}"
+                        XAxes="{x:Bind ViewModel.AverageHoursXAxes, Mode=OneWay}"
+                        TooltipPosition="Top"
+                        Height="300"/>
+                </TeachingTip>
 
                 <!-- 最喜欢游戏 -->
                 <Grid x:Name="SourceElement"
