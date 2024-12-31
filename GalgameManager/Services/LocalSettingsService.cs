@@ -232,6 +232,9 @@ public class LocalSettingsService : ILocalSettingsService
                 return (T?)(object)true;
             case KeyValues.MixedPhraserOrder:
                 return (T?)(object)new MixedPhraserOrder().SetToDefault();
+            case KeyValues.DisplayVirtualGame:
+            case KeyValues.SpecialDisplayVirtualGame:
+                return (T?)(object)true;
             default:
                 return default;
         }
