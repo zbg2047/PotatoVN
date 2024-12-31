@@ -8,9 +8,6 @@
     xmlns:control="using:GalgameManager.Views.Control"
     xmlns:prefab="using:GalgameManager.Views.Prefab"
     xmlns:models="using:GalgameManager.Models"
-    xmlns:dataTemplateSelector="using:GalgameManager.Helpers.DataTemplateSelector"
-    xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
-    xmlns:core="using:Microsoft.Xaml.Interactions.Core"
     xmlns:behaviors="using:GalgameManager.Behaviors"
     mc:Ignorable="d"
     x:Name="Page">
@@ -77,48 +74,53 @@
         </CommandBar>
         
         <ScrollViewer Grid.Row="1">
-            <GridView x:Name="GridView" 
-                      ItemsSource="{x:Bind ViewModel.Source, Mode=OneWay}"
-                      PointerPressed="UIElement_OnPointerPressed"
-                      SelectionMode="None">
-                <interactivity:Interaction.Behaviors>
-                    <core:EventTriggerBehavior EventName="SizeChanged">
-                        <core:InvokeCommandAction Command="{x:Bind ViewModel.GridViewSizeChangedCommand}"/>
-                    </core:EventTriggerBehavior>
-                </interactivity:Interaction.Behaviors>
-                <behaviors:GridViewSpacingBehavior GridView="{x:Bind GridView}"
-                                                   TargetWidth="175"
-                                                   ItemSource="{x:Bind ViewModel.Source, Mode=OneWay}"
-                                                   Calc="{x:Bind ViewModel.UpdateGridSpacing, Mode=OneWay}"/>
-                <GridView.ItemTemplateSelector>
-                    <dataTemplateSelector:DisplayableGameObjectTemplateSelector>
-                        <!-- 游戏模板 -->
-                        <dataTemplateSelector:DisplayableGameObjectTemplateSelector.GalgameTemplate>
-                            <DataTemplate x:DataType="models:Galgame">
-                                <Button Style="{StaticResource TransparentButtonWithHover}"
-                                        DataContext="{x:Bind}"
-                                        Command="{Binding ElementName=Page, Path=ViewModel.NavigateToCommand}"
-                                        CommandParameter="{x:Bind}">
-                                    <prefab:GalgamePrefab Galgame="{x:Bind}" />
-                                </Button>
-                            </DataTemplate>
-                        </dataTemplateSelector:DisplayableGameObjectTemplateSelector.GalgameTemplate>
-                        <!-- 游戏库模板 -->
-                        <dataTemplateSelector:DisplayableGameObjectTemplateSelector.SourceTemplate>
-                            <DataTemplate x:DataType="sources:GalgameSourceBase">
-                                <Button Style="{StaticResource TransparentButtonWithHover}"
-                                        DataContext="{x:Bind}"
-                                        Command="{Binding ElementName=Page, Path=ViewModel.NavigateToCommand}"
-                                        CommandParameter="{x:Bind}"
-                                        Width="175"
-                                        ContextFlyout="{StaticResource Flyout}">
-                                    <prefab:SourcePrefab Source="{x:Bind}"/>
-                                </Button>
-                            </DataTemplate>
-                        </dataTemplateSelector:DisplayableGameObjectTemplateSelector.SourceTemplate>
-                    </dataTemplateSelector:DisplayableGameObjectTemplateSelector>
-                </GridView.ItemTemplateSelector>
-            </GridView>
+            <StackPanel>
+                <!-- 游戏库列表 -->
+                <GridView x:Name="GridView"
+                          ItemsSource="{x:Bind ViewModel.Source, Mode=OneWay}"
+                          PointerPressed="UIElement_OnPointerPressed"
+                          SelectionMode="None"
+                          Visibility="{x:Bind ViewModel.SourceVisible, Mode=OneWay}">
+                    <behaviors:GridViewSpacingBehavior GridView="{x:Bind GridView}"
+                                                       TargetWidth="175"
+                                                       ItemSource="{x:Bind ViewModel.Source, Mode=OneWay}"
+                                                       Calc="{x:Bind ViewModel.UpdateGridSpacing, Mode=OneWay}" />
+                    <GridView.ItemTemplate>
+                        <DataTemplate x:DataType="sources:GalgameSourceBase">
+                            <Button Style="{StaticResource TransparentButtonWithHover}"
+                                    DataContext="{x:Bind}"
+                                    Command="{Binding ElementName=Page, Path=ViewModel.NavigateToCommand}"
+                                    CommandParameter="{x:Bind}"
+                                    Width="175"
+                                    ContextFlyout="{StaticResource Flyout}">
+                                <prefab:SourcePrefab Source="{x:Bind}" />
+                            </Button>
+                        </DataTemplate>
+                    </GridView.ItemTemplate>
+                </GridView>
+
+                <!-- 游戏列表 -->
+                <GridView x:Name="GridView2"
+                          ItemsSource="{x:Bind ViewModel.Galgames, Mode=OneWay}"
+                          PointerPressed="UIElement_OnPointerPressed"
+                          SelectionMode="None"
+                          Visibility="{x:Bind ViewModel.GalgamesVisible,Mode=OneWay}">
+                    <behaviors:GridViewSpacingBehavior GridView="{x:Bind GridView2}"
+                                                       TargetWidth="175"
+                                                       ItemSource="{x:Bind ViewModel.Source, Mode=OneWay}"
+                                                       Calc="{x:Bind ViewModel.UpdateGridSpacing, Mode=OneWay}" />
+                    <GridView.ItemTemplate>
+                        <DataTemplate x:DataType="models:Galgame">
+                            <Button Style="{StaticResource TransparentButtonWithHover}"
+                                    DataContext="{x:Bind}"
+                                    Command="{Binding ElementName=Page, Path=ViewModel.NavigateToCommand}"
+                                    CommandParameter="{x:Bind}">
+                                <prefab:GalgamePrefab Galgame="{x:Bind}" />
+                            </Button>
+                        </DataTemplate>
+                    </GridView.ItemTemplate>
+                </GridView>
+            </StackPanel>
         </ScrollViewer>
     </Grid>
 </Page>

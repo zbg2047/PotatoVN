@@ -10,17 +10,17 @@ using GalgameManager.Models;
 using GalgameManager.Models.Sources;
 using GalgameManager.Services;
 using GalgameManager.Views.Dialog;
-using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
 namespace GalgameManager.ViewModels;
 
-public partial class LibraryViewModel : ObservableObject, INavigationAware
+public partial class LibraryViewModel(
+    INavigationService navigationService,
+    IGalgameSourceCollectionService galSourceService,
+    IInfoService infoService)
+    : ObservableObject, INavigationAware
 {
-    private readonly INavigationService _navigationService;
-    private readonly GalgameSourceCollectionService _galSourceCollectionService;
-    private readonly IInfoService _infoService;
-    private readonly IFilterService _filterService;
+    private readonly GalgameSourceCollectionService _galSourceCollectionService = (GalgameSourceCollectionService) galSourceService;
     [ObservableProperty, NotifyPropertyChangedFor(nameof(IsBackEnabled))]
     private GalgameSourceBase? _currentSource;
     private GalgameSourceBase? _lastBackSource;
@@ -28,11 +28,14 @@ public partial class LibraryViewModel : ObservableObject, INavigationAware
     
     [ObservableProperty]
     private AdvancedCollectionView _source = null!;
+    public AdvancedCollectionView Galgames = new(new ObservableCollection<Galgame>());
     
     #region UI
 
     public readonly string UiSearch = "Search".GetLocalized();
     public bool IsBackEnabled => CurrentSource != null;
+    [ObservableProperty] private bool _sourceVisible;
+    [ObservableProperty] private bool _galgamesVisible;
 
     #endregion
 
@@ -51,15 +54,6 @@ public partial class LibraryViewModel : ObservableObject, INavigationAware
     }
     
     #endregion
-
-    public LibraryViewModel(INavigationService navigationService, IGalgameSourceCollectionService galFolderService,
-        IInfoService infoService, IFilterService filterService)
-    {
-        _navigationService = navigationService;
-        _galSourceCollectionService = (GalgameSourceCollectionService) galFolderService;
-        _infoService = infoService;
-        _filterService = filterService;
-    }
 
     public void OnNavigatedTo(object parameter)
     {
@@ -99,6 +93,7 @@ public partial class LibraryViewModel : ObservableObject, INavigationAware
     {
         UpdateGridSpacing = false;
         Source.Clear();
+        Galgames.Clear();
         if (clickedItem == null)
         {
             foreach (GalgameSourceBase src in _galSourceCollectionService.GetGalgameSources()
@@ -109,7 +104,7 @@ public partial class LibraryViewModel : ObservableObject, INavigationAware
         if (clickedItem is Galgame galgame)
         {
             _beforeNavigateFromSource = CurrentSource;
-            _navigationService.NavigateTo(typeof(GalgameViewModel).FullName!,
+            navigationService.NavigateTo(typeof(GalgameViewModel).FullName!,
                 new GalgamePageParameter { Galgame = galgame });
         }
         else if (clickedItem is GalgameSourceBase source)
@@ -120,7 +115,7 @@ public partial class LibraryViewModel : ObservableObject, INavigationAware
                              .Where(s => s.ParentSource == clickedItem))
                     Source.Add(src);
                 foreach (GalgameAndPath game in source.Galgames)
-                    Source.Add(game.Galgame);
+                    Galgames.Add(game.Galgame);
             }
             else
             {
@@ -128,7 +123,7 @@ public partial class LibraryViewModel : ObservableObject, INavigationAware
                 // _filterService.AddFilter(new SourceFilter(source));
                 // _navigationService.NavigateTo(typeof(HomeViewModel).FullName!);
                 foreach (GalgameAndPath game in source.Galgames)
-                    Source.Add(game.Galgame);
+                    Galgames.Add(game.Galgame);
             }
 
             CurrentSource = source;
@@ -136,6 +131,8 @@ public partial class LibraryViewModel : ObservableObject, INavigationAware
         else if (clickedItem is null)
             CurrentSource = null;
         UpdateGridSpacing = true;
+        SourceVisible = Source.Count > 0;
+        GalgamesVisible = Galgames.Count > 0;
     }
 
     [RelayCommand]
@@ -177,7 +174,7 @@ public partial class LibraryViewModel : ObservableObject, INavigationAware
         }
         catch (Exception e)
         {
-            _infoService.Info(InfoBarSeverity.Error, msg:e.Message);
+            infoService.Info(InfoBarSeverity.Error, msg:e.Message);
         }
     }
 
@@ -185,7 +182,7 @@ public partial class LibraryViewModel : ObservableObject, INavigationAware
     private void EditLibrary(GalgameSourceBase? source)
     {
         if (source is null) return;
-        _navigationService.NavigateTo(typeof(GalgameSourceViewModel).FullName!, source.Url);
+        navigationService.NavigateTo(typeof(GalgameSourceViewModel).FullName!, source.Url);
     }
 
     [RelayCommand]
@@ -199,12 +196,6 @@ public partial class LibraryViewModel : ObservableObject, INavigationAware
     private void ScanAll()
     {
         _galSourceCollectionService.ScanAll();
-        _infoService.Info(InfoBarSeverity.Success, msg: "LibraryPage_ScanAll_Success".GetLocalized(Source.Count));
-    }
-
-    [RelayCommand]
-    private void GridViewSizeChanged(SizeChangedEventArgs e)
-    {
-        
+        infoService.Info(InfoBarSeverity.Success, msg: "LibraryPage_ScanAll_Success".GetLocalized(Source.Count));
     }
 }
