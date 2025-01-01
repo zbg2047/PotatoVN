@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - flight-released
-      - released
+      - relased
   workflow_dispatch:
 
 jobs:
