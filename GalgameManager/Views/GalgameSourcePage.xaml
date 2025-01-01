@@ -165,8 +165,9 @@
                                              IsExpanded="{x:Bind ViewModel.GameListExpend, Mode=TwoWay}">
                         <control:SettingExpander.SettingContent>
                             <ListView ItemsSource="{x:Bind ViewModel.Galgames}" 
-                                      Height="{x:Bind ViewModel.GameListHeight, Mode=OneWay}"
-                                      SelectionMode="Extended">
+                                      SelectionMode="Extended"
+                                      ScrollViewer.VerticalScrollMode="Disabled"
+                                      ScrollViewer.VerticalScrollBarVisibility="Disabled">
                                 <ListView.Header>
                                     <Grid Padding="16,12"
                                           Background="{ThemeResource SolidBackgroundFillColorTertiaryBrush}"
