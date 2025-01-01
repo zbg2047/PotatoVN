@@ -48,10 +48,10 @@ public interface IGalgameCollectionService
     public ObservableCollection<Galgame> Galgames { get; }
     
     /// <summary>
-    /// 获取UID相似度最高的游戏，若全为0则返回null<br/>
-    /// Uid比较规则见：<see cref="GalgameUid"/>
+    /// 获取UID获取游戏，若没有则返回null<br/>
+    /// Uid比较规则见：<see cref="GalgameUid.IsSame"/>
     /// </summary>
-    public Galgame? GetGalgameFromUid(GalgameUid? uid);
+    public Galgame? GetGalgameFromUid(GalgameUid? uid, GalgameUidFetchMode mode = GalgameUidFetchMode.Same);
     
     /// <summary>
     /// 获取某个uuid对应的游戏，若找不到则返回null

@@ -8,13 +8,13 @@ namespace GalgameManager.Models.BgTasks;
 
 public class GetGalgameCharactersFromRssTask : BgTaskBase
 {
-    public GalgameUid GalgameUid
+    public Guid GalgameUid
     {
-        get => _galgame?.Uid ?? new();
+        get => _galgame?.Uuid ?? Guid.Empty;
         set =>
             _galgame =
                 (App.GetService<IGalgameCollectionService>() as GalgameCollectionService)
-                ?.GetGalgameFromUid(value);
+                ?.GetGalgameFromUuid(value);
     }
 
     private Galgame? _galgame;
@@ -73,7 +73,7 @@ public class GetGalgameCharactersFromRssTask : BgTaskBase
     public override bool OnSearch(string key)
     {
         if (_galgame is null) return false;
-        return _galgame.Uid.ToString() == key;
+        return _galgame.Uuid.ToString() == key;
     }
 
     public override string Title { get; } = "GetCharacterInfoTask_Title".GetLocalized();

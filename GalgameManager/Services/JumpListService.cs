@@ -1,7 +1,6 @@
 ﻿using Windows.UI.StartScreen;
 
 using GalgameManager.Contracts.Services;
-using GalgameManager.Core.Helpers;
 using GalgameManager.Enums;
 using GalgameManager.Models;
 using Microsoft.UI.Xaml.Controls;
@@ -28,7 +27,7 @@ public class JumpListService (IInfoService infoService)  : IJumpListService
         try
         {
             if (_jumpList == null) await Init();
-            List<JumpListItem> toRemove = _jumpList!.Items.Where(item => galgames.All(gal => $"/j \"{gal.Uid.ToJson()}\"" != item.Arguments)).ToList();
+            List<JumpListItem> toRemove = _jumpList!.Items.Where(item => galgames.All(gal => $"/j \"{gal.Uuid}\"" != item.Arguments)).ToList();
             foreach (JumpListItem item in toRemove)
             {
                 _jumpList.Items.Remove(item);
@@ -47,10 +46,10 @@ public class JumpListService (IInfoService infoService)  : IJumpListService
         {
             if (_jumpList == null) await Init();
             IList<JumpListItem>? items = _jumpList!.Items;
-            JumpListItem? item = items.FirstOrDefault(i => i.Arguments == $"/j \"{galgame.Uid.ToJson()}\"");
+            JumpListItem? item = items.FirstOrDefault(i => i.Arguments == $"/j \"{galgame.Uuid}\"");
             if (item == null)
             {
-                item = JumpListItem.CreateWithArguments($"/j \"{galgame.Uid.ToJson()}\"", galgame.Name);
+                item = JumpListItem.CreateWithArguments($"/j \"{galgame.Uuid}\"", galgame.Name);
                 item.Logo = new Uri("ms-appx:///Assets/heart.png");
             }
             else
@@ -72,7 +71,7 @@ public class JumpListService (IInfoService infoService)  : IJumpListService
         {
             if (_jumpList == null) await Init();
             IList<JumpListItem>? items = _jumpList!.Items;
-            JumpListItem? item = items.FirstOrDefault(i => i.Arguments == $"/j \"{galgame.Uid.ToJson()}\"");
+            JumpListItem? item = items.FirstOrDefault(i => i.Arguments == $"/j \"{galgame.Uuid}\"");
             if (item != null)
             {
                 items.Remove(item);

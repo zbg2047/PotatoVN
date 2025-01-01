@@ -14,7 +14,7 @@ public class RecordPlayTimeTask : BgTaskBase
     private const int ManuallySelectProcessSec = 15; //认定为需要手动选择游戏进程的时间阈值
     
     public string ProcessName { get; set; } = string.Empty;
-    public GalgameUid GalgameUid { get; set; } = null!;
+    public Guid GalgameUid { get; set; } = Guid.Empty;
     public DateTime StartTime { get; set; }= DateTime.Now;
     public int CurrentPlayTime { get; set; } //本次游玩时间
     
@@ -30,7 +30,7 @@ public class RecordPlayTimeTask : BgTaskBase
         Debug.Assert(game.CheckExistLocal());
         if (process.HasExited) return;
         ProcessName = process.ProcessName;
-        GalgameUid = game.Uid;
+        GalgameUid = game.Uuid;
         _galgame = game;
         _process = process;
     }
@@ -39,7 +39,7 @@ public class RecordPlayTimeTask : BgTaskBase
     {
         _process = Process.GetProcessesByName(ProcessName).FirstOrDefault();
         _galgame = (App.GetService<IGalgameCollectionService>() as GalgameCollectionService)?.
-            GetGalgameFromUid(GalgameUid);
+            GetGalgameFromUuid(GalgameUid);
         return Task.CompletedTask;
     }
 

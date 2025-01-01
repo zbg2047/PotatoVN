@@ -44,7 +44,7 @@ public partial class GalgameCollectionService
 
         // 添加游戏并移入对应的源
         _galgames.Add(meta);
-        _galgameMap[meta.Uid] = meta;
+        _galgameMap[meta.Uuid] = meta;
         GalgameAddedEvent?.Invoke(meta);
         GalgameChangedEvent?.Invoke(meta);
         meta.ErrorOccurred += e =>

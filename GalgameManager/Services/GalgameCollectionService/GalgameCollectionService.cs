@@ -20,7 +20,7 @@ public partial class GalgameCollectionService : IGalgameCollectionService
 {
     // _galgames 无序, _displayGalgames有序
     private ObservableCollection<Galgame> _galgames = new();
-    private readonly Dictionary<GalgameUid, Galgame> _galgameMap = new(); // Uid->Galgame
+    private readonly Dictionary<Guid, Galgame> _galgameMap = new(); // Uid->Galgame
     private static ILocalSettingsService LocalSettingsService { get; set; } = null!;
     private readonly IJumpListService _jumpListService;
     private readonly IFilterService _filterService;
@@ -101,7 +101,7 @@ public partial class GalgameCollectionService : IGalgameCollectionService
         await ImportAsync();
         foreach (Galgame g in _galgames)
         {
-            _galgameMap[g.Uid] = g;
+            _galgameMap[g.Uuid] = g;
             g.ErrorOccurred += e =>
                 _infoService.Event(EventType.GalgameEvent, InfoBarSeverity.Warning, "GalgameEvent", e);
             // 数目增加
@@ -385,18 +385,24 @@ public partial class GalgameCollectionService : IGalgameCollectionService
         return tmp.Where((t, i) => i == 0 || t.CompareX(tmp[i - 1]) !=0).ToList();
     }
     
-    public Galgame? GetGalgameFromUid(GalgameUid? uid)
+    public Galgame? GetGalgameFromUid(GalgameUid? uid, GalgameUidFetchMode mode = GalgameUidFetchMode.Same)
     {
         if (uid is null) return null;
-        var max = 0;
-        Galgame? result = null;
-        foreach(Galgame g in _galgames)
-            if (g.Uid.Similarity(uid) > max)
-            {
-                result = g;
-                max = g.Uid.Similarity(uid);
-            }
-        return result;
+        if (mode == GalgameUidFetchMode.Same)
+            return _galgames.FirstOrDefault(g => g.Uid.IsSame(uid));
+        if (mode == GalgameUidFetchMode.MaxSimilarity)
+        {
+            var max = 0;
+            Galgame? result = null;
+            foreach(Galgame g in _galgames)
+                if (g.Uid.Similarity(uid) > max)
+                {
+                    result = g;
+                    max = g.Uid.Similarity(uid);
+                }
+            return result;
+        }
+        return null;
     }
 
     public Galgame? GetGalgameFromUuid(Guid? uuid)
