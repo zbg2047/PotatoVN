@@ -194,7 +194,7 @@ public class MixedPhraserOrder
     public MixedPhraserOrder SetToDefault()
     {
         NameOrder = new() { RssType.Bangumi, RssType.Vndb, RssType.Ymgal };
-        DescriptionOrder = new() { RssType.Ymgal, RssType.Bangumi, RssType.Vndb };
+        DescriptionOrder = new() { RssType.Bangumi, RssType.Vndb, RssType.Ymgal };
         ExpectedPlayTimeOrder = new() { RssType.Vndb};
         RatingOrder = new() { RssType.Bangumi, RssType.Vndb };
         ImageUrlOrder = new() { RssType.Vndb, RssType.Bangumi, RssType.Ymgal };
