@@ -1,6 +1,7 @@
 ﻿using GalgameManager.Contracts.Services;
 using GalgameManager.Enums;
 using GalgameManager.Helpers;
+using GalgameManager.Helpers.API;
 using GalgameManager.Services;
 using H.NotifyIcon.Core;
 
@@ -47,7 +48,22 @@ public class GetGalgameCharactersFromRssTask : BgTaskBase
                     "Galgame_GetCharacterInfo_GettingInfo".GetLocalized(character.Name, _galgame.Name.Value??""));
                 await UiThreadInvokeHelper.InvokeAsync(async Task() =>
                 {
-                    character = await galgameService.PhraseGalCharacterAsync(character, _galgame.RssType);
+                    for (var retry = 0; retry < 3; retry++)
+                    {
+                        try
+                        {
+                            character = await galgameService.PhraseGalCharacterAsync(character, _galgame.RssType);
+                        }
+                        catch (ThrottledException)
+                        {
+                            //等待1分钟
+                            for (var wait = 60; wait > 0; wait -= 10)
+                            {
+                                ChangeProgress(i, total, "Galgame_GetCharacterInfo_Waiting".GetLocalized(wait));
+                                await Task.Delay(1000 * 10);
+                            }
+                        }
+                    }
                 });
                 log += $"{_galgame.Name.Value}->{character.Name} Done\n";
                 ChangeProgress(i+1, total, 

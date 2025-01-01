@@ -30,7 +30,7 @@
                                        Converter={StaticResource InverseVisibilityConverter}}">
                             <ItemsRepeater.ItemTemplate>
                                 <DataTemplate x:DataType="viewModels:BgTaskViewModel">
-                                    <control:Panel>
+                                    <control:Panel Margin="{StaticResource SmallBottomMargin}" >
                                         <StackPanel>
                                             <TextBlock Text="{x:Bind Title, Mode=OneWay}"
                                                        Style="{ThemeResource BodyTextBlockStyle}" />

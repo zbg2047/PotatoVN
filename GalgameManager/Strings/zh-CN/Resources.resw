@@ -2094,4 +2094,7 @@
   <data name="Shell_GalgamePage.Content" xml:space="preserve">
     <value>游戏详情</value>
   </data>
+  <data name="Galgame_GetCharacterInfo_Waiting" xml:space="preserve">
+    <value>目标搜刮源拥塞控制，排队等待中，{0} 秒后重试</value>
+  </data>
 </root>
