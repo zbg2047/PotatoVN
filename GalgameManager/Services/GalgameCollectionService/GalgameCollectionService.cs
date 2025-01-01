@@ -398,7 +398,13 @@ public partial class GalgameCollectionService : IGalgameCollectionService
             }
         return result;
     }
-    
+
+    public Galgame? GetGalgameFromUuid(Guid? uuid)
+    {
+        if (uuid is null) return null;
+        return _galgames.FirstOrDefault(g => g.Uuid == uuid);
+    }
+
     public Galgame? GetGalgameFromId(string? id, RssType rssType)
     {
         if (id is null) return null;

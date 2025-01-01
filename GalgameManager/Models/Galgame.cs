@@ -26,7 +26,8 @@ public partial class Galgame : ObservableObject, IDisplayableGameObject
         VndbId = Ids[(int)RssType.Vndb],
         PvnId = Ids[(int)RssType.PotatoVn],
     };
-
+    public Guid Uuid  = Guid.NewGuid();
+    
     [ObservableProperty] private LockableProperty<string> _imagePath = DefaultImagePath;
 
     [JsonIgnore] public string? ImageUrl;

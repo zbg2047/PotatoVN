@@ -52,6 +52,13 @@ public interface IGalgameCollectionService
     /// Uid比较规则见：<see cref="GalgameUid"/>
     /// </summary>
     public Galgame? GetGalgameFromUid(GalgameUid? uid);
+    
+    /// <summary>
+    /// 获取某个uuid对应的游戏，若找不到则返回null
+    /// </summary>
+    /// <param name="uuid"></param>
+    /// <returns></returns>
+    public Galgame? GetGalgameFromUuid(Guid? uuid);
 
     /// <summary>
     /// 从id获取galgame
