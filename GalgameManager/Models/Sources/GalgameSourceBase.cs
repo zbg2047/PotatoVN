@@ -105,7 +105,7 @@ public partial class GalgameSourceBase : ObservableObject, IDisplayableGameObjec
     /// </summary>
     public virtual string GetLogPath() => StdPath.Combine("Logs", GetLogName());
     
-    public virtual string GetLogName() => $"Galgame_{Url.ToBase64().Replace("/", "").Replace("=", "")}.txt";
+    public virtual string GetLogName() => $"Source_{Name.RemoveInvalidChars()}.txt";
 
     public async virtual IAsyncEnumerable<(string? path, string msg)> ScanAllGalgames()
     {
