@@ -157,9 +157,6 @@ public partial class CategorySettingViewModel : ObservableObject, INavigationAwa
     {
         if(groupChecker is null) return;
         
-        if (groupChecker.Group.Type == CategoryGroupType.Status && groupChecker.IsSelect)
-            _ = DisplayMsgAsync(InfoBarSeverity.Error, "CategorySettingPage_StatusGroupCannotSelect".GetLocalized());
-        
         var cnt = CategoryGroups.Count(checker => checker.IsSelect);
         if (cnt == 0)
             _ = DisplayMsgAsync(InfoBarSeverity.Error, "CategorySettingPage_AtLeastOnCategoryGroup".GetLocalized());
