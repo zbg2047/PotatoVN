@@ -215,10 +215,10 @@
                                                                Style="{StaticResource DescriptionTextStyle}" />
                                                     <StackPanel Orientation="Horizontal" Spacing="20">
                                                         <control:ComboBoxWithoutNull
-                                                            SelectedItem="{x:Bind Galgame.RssType, Mode=TwoWay}"
+                                                            SelectedItem="{x:Bind Galgame.RssType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                                             ItemsSource="{x:Bind RssTypes}" />
                                                         <TextBox MinWidth="350"
-                                                                 Text="{x:Bind Galgame.Id, Mode=TwoWay}" />
+                                                                 Text="{x:Bind Galgame.Id, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                                     </StackPanel>
                                                 </StackPanel>
                                             </Grid>
