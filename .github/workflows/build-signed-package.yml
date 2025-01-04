@@ -29,6 +29,31 @@ jobs:
       - name: Setup MSBuild.exe
         uses: microsoft/setup-msbuild@v2
         
+      - name: Add WindowsAppSDKSelfContained
+        shell: pwsh
+        run: |
+          $csprojPath = "GalgameManager/GalgameManager.csproj"
+          # 读取 csproj 文件
+          [xml]$xml = Get-Content $csprojPath
+          # 筛选出包含 <TargetFramework> 的 PropertyGroup（主 PropertyGroup）
+          $propertyGroup = $xml.Project.PropertyGroup | Where-Object { $_.TargetFramework }
+          if (!$propertyGroup) {
+            Write-Host "未找到包含 <TargetFramework> 的 PropertyGroup，改为使用第一个 PropertyGroup。"
+            $propertyGroup = $xml.Project.PropertyGroup | Select-Object -First 1
+            if (!$propertyGroup) {
+              Write-Error "没有可用的 PropertyGroup。"
+              exit 1
+            }
+          }
+          # 如果当前没有 WindowsAppSDKSelfContained，则创建该节点并追加
+          if (!$propertyGroup.WindowsAppSDKSelfContained) {
+            $newElement = $xml.CreateElement("WindowsAppSDKSelfContained")
+            $newElement.InnerText = "true"
+            $propertyGroup.AppendChild($newElement) | Out-Null
+          }
+          # 保存
+          $xml.Save($csprojPath)
+
       - name: Set PUBLISHER
         run: |
           $manifestPath = "GalgameManager\Package.appxmanifest"
@@ -37,6 +62,7 @@ jobs:
             exit 1
           }
           [xml]$xml = Get-Content $manifestPath
+          $xml.Package.Identity.Name = "37126GoldenPotato137.PotatoVN.sideload"
           $xml.Package.Identity.Publisher = "${{ vars.PUBLISHER }}"
           $xml.Save($manifestPath)
 

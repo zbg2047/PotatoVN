@@ -196,10 +196,4 @@
   <ItemGroup>
     <Compile Remove="Helpers\GalgameSourceCustomConverter.cs" />
   </ItemGroup>
-  
-  <ItemGroup>
-    <Reference Include="CommunityToolkit.WinUI.UI.Controls.Primitives">
-      <HintPath>C:\Users\mingdongxie\.nuget\packages\communitytoolkit.winui.ui.controls.primitives\7.1.2\lib\net5.0-windows10.0.18362\CommunityToolkit.WinUI.UI.Controls.Primitives.dll</HintPath>
-    </Reference>
-  </ItemGroup>
 </Project>
