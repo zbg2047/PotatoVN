@@ -13,7 +13,7 @@ public partial class Galgame : ObservableObject, IDisplayableGameObject
     public const string DefaultImagePath = "ms-appx:///Assets/WindowIcon.ico";
     public const string DefaultString = "——";
     public const string MetaPath = ".PotatoVN";
-    public static readonly int PhraserNumber = 6;
+    public static readonly int PhraserNumber = 7;
     
     public event Action<Galgame, string, object>? GalPropertyChanged;
     public event Action<Exception>? ErrorOccurred; //非致命异常产生时触发
