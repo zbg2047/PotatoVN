@@ -182,6 +182,7 @@ public partial class LibraryViewModel(
     private void EditLibrary(GalgameSourceBase? source)
     {
         if (source is null) return;
+        _beforeNavigateFromSource = CurrentSource;
         navigationService.NavigateTo(typeof(GalgameSourceViewModel).FullName!, source.Url);
     }
 

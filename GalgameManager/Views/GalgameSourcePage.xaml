@@ -165,8 +165,9 @@
                                              IsExpanded="{x:Bind ViewModel.GameListExpend, Mode=TwoWay}">
                         <control:SettingExpander.SettingContent>
                             <ListView ItemsSource="{x:Bind ViewModel.Galgames}" 
-                                      Height="{x:Bind ViewModel.GameListHeight, Mode=OneWay}"
-                                      SelectionMode="Extended">
+                                      SelectionMode="Extended"
+                                      ScrollViewer.VerticalScrollMode="Disabled"
+                                      ScrollViewer.VerticalScrollBarVisibility="Disabled">
                                 <ListView.Header>
                                     <Grid Padding="16,12"
                                           Background="{ThemeResource SolidBackgroundFillColorTertiaryBrush}"
@@ -214,10 +215,10 @@
                                                                Style="{StaticResource DescriptionTextStyle}" />
                                                     <StackPanel Orientation="Horizontal" Spacing="20">
                                                         <control:ComboBoxWithoutNull
-                                                            SelectedItem="{x:Bind Galgame.RssType, Mode=TwoWay}"
+                                                            SelectedItem="{x:Bind Galgame.RssType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                                             ItemsSource="{x:Bind RssTypes}" />
                                                         <TextBox MinWidth="350"
-                                                                 Text="{x:Bind Galgame.Id, Mode=TwoWay}" />
+                                                                 Text="{x:Bind Galgame.Id, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                                     </StackPanel>
                                                 </StackPanel>
                                             </Grid>
@@ -226,6 +227,18 @@
                                                         <MenuFlyoutItem x:Uid="GalgameSourcePage_GamesTable_Edit"
                                                                         Command="{x:Bind EditCommand}"
                                                                         CommandParameter="{x:Bind}" />
+                                                        <MenuFlyoutItem x:Uid="GalgameSourcePage_GamesTable_CopyName"
+                                                                        Command="{x:Bind CopyNameCommand}"
+                                                                        CommandParameter="{x:Bind}">
+                                                        </MenuFlyoutItem>
+                                                        <MenuFlyoutItem x:Uid="GalgameSourcePage_GamesTable_CopyPath"
+                                                                        Command="{x:Bind CopyPathCommand}"
+                                                                        CommandParameter="{x:Bind}">
+                                                        </MenuFlyoutItem>
+                                                        <MenuFlyoutItem x:Uid="GalgameSourcePage_GamesTable_OpenInExplorer"
+                                                                        Command="{x:Bind OpenInExplorerCommand}"
+                                                                        CommandParameter="{x:Bind}">
+                                                        </MenuFlyoutItem>
                                                     </MenuFlyout>
                                                 </Grid.ContextFlyout>
                                         </Grid>
