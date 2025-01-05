@@ -328,34 +328,36 @@ public class CategoryService : ICategoryService
             _statusGroup = new CategoryGroup(ResourceExtensions.GetLocalized("CategoryService_Status"),
                 CategoryGroupType.Status);
             _categoryGroups.Add(_statusGroup);
-            _statusGroup.Categories.Add(new Category(PlayType.None.GetLocalized())
-                { Id = new Guid("00000000-0000-0000-0000-000000000001") });
-            _statusGroup.Categories.Add(new Category(PlayType.Played.GetLocalized())
-                { Id = new Guid("00000000-0000-0000-0000-000000000002") });
-            _statusGroup.Categories.Add(new Category(PlayType.Playing.GetLocalized())
-                { Id = new Guid("00000000-0000-0000-0000-000000000003") });
-            _statusGroup.Categories.Add(new Category(PlayType.Shelved.GetLocalized())
-                { Id = new Guid("00000000-0000-0000-0000-000000000004") });
-            _statusGroup.Categories.Add(new Category(PlayType.Abandoned.GetLocalized())
-                { Id = new Guid("00000000-0000-0000-0000-000000000005") });
-            _statusGroup.Categories.Add(new Category(PlayType.WantToPlay.GetLocalized())
-                { Id = new Guid("00000000-0000-0000-0000-000000000006") });
             SetStatusCategory();
             foreach(Galgame game in _galgameService.Galgames.Where(g => GetStatusCategory(g) is null)) 
                 _statusCategory[(int)game.PlayType].Add(game);
         }
         else
             SetStatusCategory();
+
         return;
 
         void SetStatusCategory()
         {
-            _statusCategory[(int)PlayType.None] = _statusGroup.Categories[0];
-            _statusCategory[(int)PlayType.Played] = _statusGroup.Categories[1];
-            _statusCategory[(int)PlayType.Playing] = _statusGroup.Categories[2];
-            _statusCategory[(int)PlayType.Shelved] = _statusGroup.Categories[3];
-            _statusCategory[(int)PlayType.Abandoned] = _statusGroup.Categories[4];
-            _statusCategory[(int)PlayType.WantToPlay] = _statusGroup.Categories[5];
+            (Guid, PlayType)[] statusGuids =
+            [
+                (new Guid("00000000-0000-0000-0000-000000000001"), PlayType.None),
+                (new Guid("00000000-0000-0000-0000-000000000002"), PlayType.Played),
+                (new Guid("00000000-0000-0000-0000-000000000003"), PlayType.Playing),
+                (new Guid("00000000-0000-0000-0000-000000000004"), PlayType.Shelved),
+                (new Guid("00000000-0000-0000-0000-000000000005"), PlayType.Abandoned),
+                (new Guid("00000000-0000-0000-0000-000000000006"), PlayType.WantToPlay),
+            ];
+            foreach ((Guid guid, PlayType type) in statusGuids)
+            {
+                Category? category = _statusGroup!.Categories.FirstOrDefault(c => c.Id == guid);
+                if (category is null)
+                {
+                    category = new Category(type.GetLocalized()) { Id = guid };
+                    _statusGroup.Categories.Add(category);
+                }
+                _statusCategory[(int)type] = category;
+            }
         }
     }
 
