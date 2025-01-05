@@ -19,6 +19,8 @@ using GalgameManager.Views.Dialog;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System.Text.RegularExpressions;
+using Microsoft.Win32;
+using System.ComponentModel;
 
 namespace GalgameManager.ViewModels;
 
@@ -48,6 +50,7 @@ public partial class GalgameViewModel : ObservableObject, INavigationAware
     [NotifyCanExecuteChangedFor(nameof(ResetPathCommand))]
     [ObservableProperty] private bool _isLocalGame; //是否是本地游戏（而非云端同步过来/本地已删除的虚拟游戏）
     [ObservableProperty] private bool _isPhrasing;
+
     [ObservableProperty] private Visibility _isTagVisible = Visibility.Collapsed;
     [ObservableProperty] private Visibility _isDescriptionVisible = Visibility.Collapsed;
     [ObservableProperty] private Visibility _isCharacterVisible = Visibility.Collapsed;
@@ -433,6 +436,59 @@ public partial class GalgameViewModel : ObservableObject, INavigationAware
     }
 
     [RelayCommand]
+    private async Task ChangeHighDpi()
+    {
+        if (Item is null || string.IsNullOrEmpty(Item.ExePath)) return;
+        
+        try 
+        {
+            // 构建 PowerShell 命令
+            var regPath = @"HKCU:\Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers";
+            var command = Item.HighDpi
+                ? $"Remove-ItemProperty -Path '{regPath}' -Name '{Item.ExePath.Replace("'", "''")}'"
+                : $"Set-ItemProperty -Path '{regPath}' -Name '{Item.ExePath.Replace("'", "''")}' -Value '~ PERPROCESSSYSTEMDPIFORCEOFF HIGHDPIAWARE'";
+
+            // 创建启动管理员权限的 PowerShell 进程
+            var startInfo = new ProcessStartInfo
+            {
+                FileName = "powershell.exe",
+                Arguments = $"-Command \"{command}\"",
+                UseShellExecute = true,
+                Verb = "runas",
+                CreateNoWindow = true,
+                WindowStyle = ProcessWindowStyle.Hidden
+            };
+
+            try
+            {
+                var process = Process.Start(startInfo);
+                if (process != null)
+                {
+                    await process.WaitForExitAsync();
+                    if (process.ExitCode == 0)
+                    {
+                        Item.HighDpi = !Item.HighDpi;
+                        await SaveAsync();
+                    }
+                    else
+                    {
+                        _infoService.Info(InfoBarSeverity.Error, "修改DPI设置失败");
+                    }
+                }
+            }
+            catch (Win32Exception)
+            {
+                // 用户取消了UAC提示
+                _infoService.Info(InfoBarSeverity.Warning, "需要管理员权限来修改DPI设置");
+            }
+        }
+        catch (Exception ex)
+        {
+            _infoService.Info(InfoBarSeverity.Error, $"修改DPI设置失败: {ex.Message}");
+        }
+    }
+
+    [RelayCommand]
     private async Task ChangePlayStatus()
     {
         //Idea: 加一个检测是否有对应源的ID
@@ -601,7 +657,10 @@ public partial class GalgameViewModel : ObservableObject, INavigationAware
     {
         if (Item is null || !Item.IsLocalGame) return;
         Item!.ExePath = null;
+        if (Item.HighDpi)
+            await ChangeHighDpi();
         await ClearText();
+        
     }
 }
 

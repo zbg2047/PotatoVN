@@ -1809,6 +1809,9 @@
   <data name="GalgamePage_RunInLocaleEmulator.Label" xml:space="preserve">
     <value>转区运行游戏</value>
   </data>
+  <data name="GalgamePage_HighDpi.Label" xml:space="preserve">
+    <value>高DPI替代缩放</value>
+  </data>
   <data name="GalgamePage_InvalidLocaleEmulatorPath" xml:space="preserve">
     <value>LocaleEmulator 路径未设置或路径不存在，请在 设置-&gt;游戏 处设置LocaleEmulator路径</value>
   </data>

@@ -152,6 +152,15 @@
                                         Command="{x:Bind ViewModel.ChangeRunInLocaleEmulatorCommand}"
                                         IsChecked="{x:Bind ViewModel.Item.RunInLocaleEmulator, Mode=TwoWay, FallbackValue=False}" 
                                         IsEnabled="{x:Bind ViewModel.IsLocalGame, Mode=OneWay}"/>
+                    <!-- 高DPI替代缩放 -->
+                    <AppBarToggleButton x:Uid="GalgamePage_HighDpi" 
+                                        Command="{x:Bind ViewModel.ChangeHighDpiCommand}"
+                                        IsChecked="{x:Bind ViewModel.Item.HighDpi, Mode=OneWay, FallbackValue=False}" 
+                                        IsEnabled="{x:Bind ViewModel.IsLocalGame, Mode=OneWay}">
+                        <AppBarToggleButton.Icon>
+                            <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE7F4;" />
+                        </AppBarToggleButton.Icon>
+                    </AppBarToggleButton>
                     <AppBarSeparator/>
                     <!-- 下载游玩状态 -->
                     <AppBarButton x:Uid="GalgamePage_SyncFromBgm" Command="{x:Bind ViewModel.SyncFromBgmCommand}" 
