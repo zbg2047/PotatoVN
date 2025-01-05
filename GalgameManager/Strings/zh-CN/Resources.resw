@@ -2115,4 +2115,25 @@
   <data name="Galgame_GetCharacterInfo_Waiting" xml:space="preserve">
     <value>目标搜刮源拥塞控制，排队等待中，{0} 秒后重试</value>
   </data>
+  <data name="SortKeys_Name" xml:space="preserve">
+    <value>游戏名</value>
+  </data>
+  <data name="SortKeys_Developer" xml:space="preserve">
+      <value>开发商</value>
+  </data>
+  <data name="SortKeys_Rating" xml:space="preserve">
+      <value>评分</value>
+  </data>
+  <data name="SortKeys_LastPlay" xml:space="preserve">
+      <value>最后游玩时间</value>
+  </data>
+  <data name="SortKeys_ReleaseDate" xml:space="preserve">
+      <value>发售日期</value>
+  </data>
+  <data name="SortKeys_LastFetchInfoTime" xml:space="preserve">
+      <value>最后更新信息时间</value>
+  </data>
+  <data name="SortKeys_AddTime" xml:space="preserve">
+      <value>添加时间</value>
+  </data>
 </root>

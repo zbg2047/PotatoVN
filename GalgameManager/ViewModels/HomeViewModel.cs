@@ -351,9 +351,9 @@ public partial class HomeViewModel : ObservableObject, INavigationAware
         {
             Header = "第一关键字",
             HorizontalAlignment = HorizontalAlignment.Stretch,
-            ItemsSource = sortKeysList,
+            ItemsSource = sortKeysList.Select(s => s.GetLocalized()),
             Margin = new Thickness(0, 0, 5, 0),
-            SelectedItem = SortKeysList[0]
+            SelectedItem = SortKeysList[0].GetLocalized()
         };
         ToggleSwitch toggleSwitch1 = new()
         {
@@ -373,9 +373,9 @@ public partial class HomeViewModel : ObservableObject, INavigationAware
         {
             Header = "第二关键字",
             HorizontalAlignment = HorizontalAlignment.Stretch,
-            ItemsSource = sortKeysList,
+            ItemsSource = sortKeysList.Select(s => s.GetLocalized()),
             Margin = new Thickness(0, 0, 5, 0),
-            SelectedItem = SortKeysList[1]
+            SelectedItem = SortKeysList[1].GetLocalized()
         };
         ToggleSwitch toggleSwitch2 = new()
         {

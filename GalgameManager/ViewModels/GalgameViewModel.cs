@@ -599,8 +599,9 @@ public partial class GalgameViewModel : ObservableObject, INavigationAware
     [RelayCommand]
     private async Task ResetPath()
     {
-        ResetExePath(null);
-        ClearText();
+        if (Item is null || !Item.IsLocalGame) return;
+        Item!.ExePath = null;
+        await ClearText();
     }
 }
 
