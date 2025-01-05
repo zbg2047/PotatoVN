@@ -45,6 +45,7 @@ public partial class GalgameViewModel : ObservableObject, INavigationAware
     [NotifyCanExecuteChangedFor(nameof(SelectProcessCommand))]
     [NotifyCanExecuteChangedFor(nameof(SelectTextCommand))]
     [NotifyCanExecuteChangedFor(nameof(ClearTextCommand))]
+    [NotifyCanExecuteChangedFor(nameof(ResetPathCommand))]
     [ObservableProperty] private bool _isLocalGame; //是否是本地游戏（而非云端同步过来/本地已删除的虚拟游戏）
     [ObservableProperty] private bool _isPhrasing;
     [ObservableProperty] private Visibility _isTagVisible = Visibility.Collapsed;
@@ -52,6 +53,7 @@ public partial class GalgameViewModel : ObservableObject, INavigationAware
     [ObservableProperty] private Visibility _isCharacterVisible = Visibility.Collapsed;
     [ObservableProperty] private Visibility _isRemoveSelectedThreadVisible = Visibility.Collapsed;
     [ObservableProperty] private Visibility _isSelectProcessVisible = Visibility.Collapsed;
+    [ObservableProperty] private Visibility _isResetPathVisible = Visibility.Collapsed;
     [ObservableProperty] private bool _canOpenInBgm;
     [ObservableProperty] private bool _canOpenInVndb;
     [ObservableProperty] private bool _canOpenInYmgal;
@@ -155,6 +157,7 @@ public partial class GalgameViewModel : ObservableObject, INavigationAware
         }
         IsRemoveSelectedThreadVisible = Item?.ProcessName is not null ? Visibility.Visible : Visibility.Collapsed;
         IsSelectProcessVisible = Item?.ProcessName is null ? Visibility.Visible : Visibility.Collapsed;
+        IsResetPathVisible = Item?.ExePath is not null || Item?.TextPath is not null ? Visibility.Visible : Visibility.Collapsed;
 
         var tagChanged = game.Tags.Value?.Count != Tags.Count;
         try
@@ -591,6 +594,13 @@ public partial class GalgameViewModel : ObservableObject, INavigationAware
         if (Item?.ExePath is null) return null;
         var name = Path.GetFileNameWithoutExtension(Item.ExePath);
         return Process.GetProcesses().FirstOrDefault(p => p.ProcessName == name);
+    }
+
+    [RelayCommand]
+    private async Task ResetPath()
+    {
+        ResetExePath(null);
+        ClearText();
     }
 }
 

@@ -186,6 +186,15 @@
                             <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE840;" />
                         </AppBarButton.Icon>
                     </AppBarButton>
+                    <!-- 重置exe和文本路径 -->
+                    <AppBarButton 
+                        x:Uid="GalgamePage_ResetPath"
+                        Command="{x:Bind ViewModel.ResetPathCommand}"
+                        Visibility="{x:Bind ViewModel.IsResetPathVisible, Mode=OneWay}">
+                        <AppBarButton.Icon>
+                            <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE74E;" />
+                        </AppBarButton.Icon>
+                    </AppBarButton>
                     <!-- 移除进程指定 -->
                     <AppBarButton 
                         x:Uid="GalgamePage_RemoveSelectedThread"

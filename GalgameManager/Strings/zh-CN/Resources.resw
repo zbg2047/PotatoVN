@@ -1136,6 +1136,9 @@
   <data name="GalgamePage_SelectThread.Label" xml:space="preserve">
     <value>手动指定游戏进程</value>
   </data>
+  <data name="GalgamePage_ResetPath.Label" xml:space="preserve">
+    <value>重置exe和文本路径</value>
+  </data>
   <data name="VirtualGameFilter" xml:space="preserve">
     <value>本地游戏</value>
   </data>
