@@ -43,6 +43,7 @@ public partial class Galgame : ObservableObject, IDisplayableGameObject
     [ObservableProperty] private LockableProperty<float> _rating = 0;
     [ObservableProperty] private LockableProperty<DateTime> _releaseDate = DateTime.MinValue;
     [ObservableProperty] private DateTime _lastFetchInfoTime = DateTime.MinValue; //上次搜刮信息时间(i.e.当前信息是什么时候搜刮产生的)
+    [ObservableProperty] private DateTime _addTime = DateTime.MinValue; //游戏添加时间
     [ObservableProperty] private ObservableCollection<GalgameCharacter> _characters = new();
     [JsonIgnore][ObservableProperty] private string _savePosition = string.Empty;
     [ObservableProperty] private string? _exePath;
@@ -299,4 +300,5 @@ public enum SortKeys
     Rating,
     ReleaseDate,
     LastFetchInfoTime,
+    AddTime,
 }

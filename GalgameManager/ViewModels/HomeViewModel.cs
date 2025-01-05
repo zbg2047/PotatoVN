@@ -310,6 +310,11 @@ public partial class HomeViewModel : ObservableObject, INavigationAware
                         SortKeysAscending[i]?SortDirection.Ascending:SortDirection.Descending
                     ));
                     break;
+                case SortKeys.AddTime:
+                    Source.SortDescriptions.Add(new SortDescription(nameof(Galgame.AddTime), 
+                        SortKeysAscending[i]?SortDirection.Ascending:SortDirection.Descending
+                    ));
+                    break;
             }
             
         }
@@ -332,6 +337,7 @@ public partial class HomeViewModel : ObservableObject, INavigationAware
             SortKeys.LastPlay,
             SortKeys.ReleaseDate,
             SortKeys.LastFetchInfoTime,
+            SortKeys.AddTime,
         };
         ContentDialog dialog = new()
         {
