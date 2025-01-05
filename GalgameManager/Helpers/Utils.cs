@@ -152,9 +152,18 @@ public static class Utils
     /// <returns></returns>
     public static bool IsPathContained(string parentPath, string childPath)
     {
-        var parent = Path.GetFullPath(parentPath);
-        var child = Path.GetFullPath(childPath);
-        return child.StartsWith(parent);
+        try
+        {
+            var parent = Path.GetFullPath(parentPath).TrimEnd(Path.DirectorySeparatorChar);
+            var child = Path.GetFullPath(childPath).TrimEnd(Path.DirectorySeparatorChar);
+            
+            return child.Equals(parent, StringComparison.OrdinalIgnoreCase) || 
+                   (child + Path.DirectorySeparatorChar).StartsWith(parent + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase);
+        }
+        catch
+        {
+            return false;
+        }
     }
 
     /// <summary>
