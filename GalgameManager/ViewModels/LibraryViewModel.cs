@@ -7,6 +7,7 @@ using GalgameManager.Contracts.Services;
 using GalgameManager.Contracts.ViewModels;
 using GalgameManager.Helpers;
 using GalgameManager.Models;
+using GalgameManager.Models.BgTasks;
 using GalgameManager.Models.Sources;
 using GalgameManager.Services;
 using GalgameManager.Views.Dialog;
@@ -17,19 +18,21 @@ namespace GalgameManager.ViewModels;
 public partial class LibraryViewModel(
     INavigationService navigationService,
     IGalgameSourceCollectionService galSourceService,
-    IInfoService infoService)
+    IInfoService infoService,
+    IBgTaskService bgTaskService)
     : ObservableObject, INavigationAware
 {
-    private readonly GalgameSourceCollectionService _galSourceCollectionService = (GalgameSourceCollectionService) galSourceService;
+    private readonly GalgameSourceCollectionService _galSourceCollectionService = (GalgameSourceCollectionService)galSourceService;
+    private readonly IBgTaskService _bgTaskService = bgTaskService;
     [ObservableProperty, NotifyPropertyChangedFor(nameof(IsBackEnabled))]
     private GalgameSourceBase? _currentSource;
     private GalgameSourceBase? _lastBackSource;
     private static GalgameSourceBase? _beforeNavigateFromSource; //用于从该页跳转到Galgame详情界面后返回时直接回到某个库的界面
-    
+
     [ObservableProperty]
     private AdvancedCollectionView _source = null!;
     public AdvancedCollectionView Galgames = new(new ObservableCollection<Galgame>());
-    
+
     #region UI
 
     public readonly string UiSearch = "Search".GetLocalized();
@@ -45,14 +48,14 @@ public partial class LibraryViewModel(
     [ObservableProperty] private string _searchKey = "";
     [ObservableProperty] private ObservableCollection<string> _searchSuggestions = new();
     [ObservableProperty] private bool _updateGridSpacing;
-    
+
     [RelayCommand]
     private void Search(string searchKey)
     {
         SearchTitle = searchKey == string.Empty ? UiSearch : UiSearch + " ●";
         Source.RefreshFilter();
     }
-    
+
     #endregion
 
     public void OnNavigatedTo(object parameter)
@@ -151,6 +154,48 @@ public partial class LibraryViewModel(
     }
 
     [RelayCommand]
+    private void GetInfoFromRss()
+    {
+        List<GalgameSourceBase> sources = new();
+        if (CurrentSource is null)
+        {
+            // 获取所有根库
+            sources.AddRange(_galSourceCollectionService.GetGalgameSources());
+        }
+        else
+        {
+            // 获取当前库及其所有子库
+            sources.Add(CurrentSource);
+            var allSources = _galSourceCollectionService.GetGalgameSources();
+            void AddSubSources(GalgameSourceBase parent)
+            {
+                foreach (var source in allSources.Where(s => s.ParentSource == parent))
+                {
+                    sources.Add(source);
+                    AddSubSources(source);
+                }
+            }
+            AddSubSources(CurrentSource);
+        }
+
+        // 对于这个列表，每个库都创建一个GetGalgameInfoFromRssTask，并加入到BgTaskService中
+        foreach (GalgameSourceBase source in sources)
+        {
+            var getGalgameInfoFromRss = new GetGalgameInfoFromRssTask(source);
+            getGalgameInfoFromRss.OnProgress += progress =>
+            {
+                infoService.Info(progress.ToSeverity(), msg: progress.Message,
+                    displayTimeMs: progress.ToSeverity() switch
+                    {
+                        InfoBarSeverity.Informational => 300000,
+                        _ => 3000
+                    });
+            };
+            _ = _bgTaskService.AddBgTask(getGalgameInfoFromRss);
+        }
+    }
+
+    [RelayCommand]
     private async Task AddLibrary()
     {
         try
@@ -174,7 +219,7 @@ public partial class LibraryViewModel(
         }
         catch (Exception e)
         {
-            infoService.Info(InfoBarSeverity.Error, msg:e.Message);
+            infoService.Info(InfoBarSeverity.Error, msg: e.Message);
         }
     }
 
@@ -192,7 +237,7 @@ public partial class LibraryViewModel(
         if (galgameFolder is null) return;
         await _galSourceCollectionService.DeleteGalgameFolderAsync(galgameFolder);
     }
-    
+
     [RelayCommand]
     private void ScanAll()
     {
