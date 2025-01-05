@@ -1760,6 +1760,12 @@
   <data name="GalgameSettingPage_Startup_parameters.Text" xml:space="preserve">
     <value>启动参数设置</value>
   </data>
+  <data name="GalgameSettingPage_GalgamePath.Text" xml:space="preserve">
+    <value>游戏路径</value>
+  </data>
+  <data name="GalgameSettingPage_GalgameReleaseDate.Title" xml:space="preserve">
+    <value>发行日期</value>
+  </data>
   <data name="GalgameSourcePage_NotInSource" xml:space="preserve">
     <value>该游戏不属于这个库（游戏必须在库文件夹里面）</value>
   </data>
