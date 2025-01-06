@@ -4,6 +4,8 @@ public enum CommitType
 {
     /// 添加游戏
     Add,
+
+    // test
     
     /// 游玩游戏
     Play,
