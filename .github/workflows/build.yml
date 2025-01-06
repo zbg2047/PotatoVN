@@ -34,6 +34,17 @@ jobs:
 
     - name: Setup MSBuild.exe
       uses: microsoft/setup-msbuild@v2
+      
+    - name: Update version number
+      shell: pwsh
+      run: |
+        $manifestPath = "GalgameManager\Package.appxmanifest"
+        $manifestXml = [xml](Get-Content $manifestPath)
+        $version = $manifestXml.Package.Identity.Version
+        $parts = $version.Split('.')
+        $newVersion = "$($parts[0]).$($parts[1]).$($parts[2]).$(Get-Date -Format 'yyMMddHHmm')"
+        $manifestXml.Package.Identity.Version = $newVersion
+        $manifestXml.Save($manifestPath)
 
     - name: Create the app package
       run: msbuild GalgameManager\GalgameManager.csproj /restore "/p:Platform=${{ matrix.platform }};Configuration=Release;UapAppxPackageBuildMode=SideloadOnly;AppxPackageDir=..\publish\;GenerateAppxPackageOnBuild=true;AppxPackageSigningEnabled=true;PackageCertificateKeyFile=GalgameManager_TemporaryKey.pfx"
