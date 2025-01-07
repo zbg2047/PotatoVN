@@ -472,7 +472,7 @@ public partial class GalgameViewModel : ObservableObject, INavigationAware
                     }
                     else
                     {
-                        _infoService.Info(InfoBarSeverity.Error, "修改DPI设置失败");
+                        _infoService.Info(InfoBarSeverity.Error, $"修改DPI设置失败: {process.ExitCode}");
                     }
                 }
             }
@@ -656,9 +656,11 @@ public partial class GalgameViewModel : ObservableObject, INavigationAware
     private async Task ResetPath()
     {
         if (Item is null || !Item.IsLocalGame) return;
-        Item!.ExePath = null;
         if (Item.HighDpi)
             await ChangeHighDpi();
+        if (Item.HighDpi)
+            Item.HighDpi = false;
+        Item!.ExePath = null;
         await ClearText();
         
     }
