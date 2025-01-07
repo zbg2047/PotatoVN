@@ -87,6 +87,18 @@ public partial class GalgameSettingViewModel : ObservableObject, INavigationAwar
         await _galService.PhraseGalInfoAsync(Gal);
     }
 
+    [RelayCommand]
+    private async Task OnGetInfoFromRssWithName()
+    {
+        IsPhrasing = true;
+        // 清除目前存储的id信息
+        for (var i = 0; i < Galgame.PhraserNumber; i++)
+        {
+            Gal.Ids[i] = null;
+        }
+        await _galService.PhraseGalInfoAsync(Gal);
+    }
+
     private void Update()
     {
         IsPhrasing = _galService.IsPhrasing;

@@ -33,6 +33,7 @@ public partial class GalgameSourceViewModel : ObservableObject, INavigationAware
     private readonly List<Galgame> _selectedGalgames = new();
     private BgTaskBase? _getGalTask;
     private GetGalgameInfoFromRssTask? _getGalgameInfoFromRss;
+    private GetGalgameInfoFromRssTask? _getGalgameInfoFromRssWithName;
     private UnpackGameTask? _unpackGameTask;
     
     [ObservableProperty] private bool _isUnpacking;
@@ -41,6 +42,7 @@ public partial class GalgameSourceViewModel : ObservableObject, INavigationAware
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(AddGalgameCommand))] 
     [NotifyCanExecuteChangedFor(nameof(GetInfoFromRssCommand))]
+    [NotifyCanExecuteChangedFor(nameof(GetInfoFromRssWithNameCommand))]
     [NotifyCanExecuteChangedFor(nameof(GetGalInFolderCommand))]
     private bool _canExecute; //是否正在运行命令
     [ObservableProperty] private bool _logExists; //是否存在日志文件
@@ -54,6 +56,8 @@ public partial class GalgameSourceViewModel : ObservableObject, INavigationAware
     #region UI_STRING
 
     [ObservableProperty] private string _uiDownloadInfo = "GalgameFolderPage_DownloadInfo".GetLocalized();
+    [ObservableProperty] private bool _isDownloadFromNameVisible;
+
     public string ImagePathDes => Item?.ImagePath ?? "GalgameSourcePage_Setting_NoImage".GetLocalized();
 
     #endregion
@@ -154,6 +158,12 @@ public partial class GalgameSourceViewModel : ObservableObject, INavigationAware
             _getGalgameInfoFromRss.OnProgress += UpdateNotifyGetInfoFromRss;
             UpdateNotifyGetGal(_getGalgameInfoFromRss.CurrentProgress);
         }
+        _getGalgameInfoFromRssWithName = _bgTaskService.GetBgTask<GetGalgameInfoFromRssTask>(Item.Url);
+        if (_getGalgameInfoFromRssWithName != null)
+        {
+            _getGalgameInfoFromRssWithName.OnProgress += UpdateNotifyGetInfoFromRss;
+            UpdateNotifyGetGal(_getGalgameInfoFromRssWithName.CurrentProgress);
+        }
         Update();
     }
 
@@ -161,6 +171,7 @@ public partial class GalgameSourceViewModel : ObservableObject, INavigationAware
     {
         if (_getGalTask != null) _getGalTask.OnProgress -= UpdateNotifyGetGal;
         if (_getGalgameInfoFromRss != null) _getGalgameInfoFromRss.OnProgress -= UpdateNotifyGetInfoFromRss;
+        if (_getGalgameInfoFromRssWithName != null) _getGalgameInfoFromRssWithName.OnProgress -= UpdateNotifyGetInfoFromRss;
         if (_unpackGameTask != null)
         {
             _unpackGameTask.OnProgress -= UpdateNotifyGetGal;
@@ -197,6 +208,17 @@ public partial class GalgameSourceViewModel : ObservableObject, INavigationAware
     }
     
     private void UpdateNotifyGetInfoFromRss(Progress progress)
+    {
+        if(Item == null) return;
+        Update();
+        _infoService.Info(progress.ToSeverity(), msg: progress.Message, displayTimeMs: progress.ToSeverity() switch
+        {
+            InfoBarSeverity.Informational => 300000,
+            _ => 3000
+        });
+    }
+
+    private void UpdateNotifyGetInfoFromRssWithName(Progress progress)
     {
         if(Item == null) return;
         Update();
@@ -264,6 +286,30 @@ public partial class GalgameSourceViewModel : ObservableObject, INavigationAware
             _getGalgameInfoFromRss = new GetGalgameInfoFromRssTask(_item, _selectedGalgames);
             _getGalgameInfoFromRss.OnProgress += UpdateNotifyGetInfoFromRss;
             _ = _bgTaskService.AddBgTask(_getGalgameInfoFromRss);
+        }
+    }
+
+    [RelayCommand(CanExecute = nameof(CanExecute))]
+    private void GetInfoFromRssWithName()
+    {
+        if (_item == null) return;
+        // 清除选择游戏的id信息
+        foreach (var galgame in _selectedGalgames)
+        {
+            for (var i = 0; i < Galgame.PhraserNumber; i++)
+                galgame.Ids[i] = null;
+        }
+        if (_selectedGalgames.Count == 0)
+        {
+            _getGalgameInfoFromRssWithName = new GetGalgameInfoFromRssTask(_item);
+            _getGalgameInfoFromRssWithName.OnProgress += UpdateNotifyGetInfoFromRssWithName;
+            _ = _bgTaskService.AddBgTask(_getGalgameInfoFromRssWithName);
+        }
+        else
+        {
+            _getGalgameInfoFromRssWithName = new GetGalgameInfoFromRssTask(_item, _selectedGalgames);
+            _getGalgameInfoFromRssWithName.OnProgress += UpdateNotifyGetInfoFromRssWithName;
+            _ = _bgTaskService.AddBgTask(_getGalgameInfoFromRssWithName);
         }
     }
 
@@ -338,6 +384,10 @@ public partial class GalgameSourceViewModel : ObservableObject, INavigationAware
         UiDownloadInfo = _selectedGalgames.Count == 0
             ? "GalgameFolderPage_DownloadInfo".GetLocalized()
             : "GalgameFolderPage_DownloadSelectedInfo".GetLocalized();
+        if (_selectedGalgames.Count != 0)
+            IsDownloadFromNameVisible = true;
+        else
+            IsDownloadFromNameVisible = false;
     }
 
     private void UpdateTitleMaxWidth()

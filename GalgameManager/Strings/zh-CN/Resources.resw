@@ -452,7 +452,10 @@
     <value>下载游戏数据</value>
   </data>
   <data name="GalgameFolderPage_DownloadSelectedInfo" xml:space="preserve">
-    <value>下载选定游戏数据</value>
+    <value>使用游戏ID下载选定游戏数据</value>
+  </data>
+    <data name="GalgameFolderPage_DownloadSelectedInfoFromName.Label" xml:space="preserve">
+    <value>使用游戏名下载选定游戏数据</value>
   </data>
   <data name="Search" xml:space="preserve">
     <value>搜索</value>
@@ -818,7 +821,7 @@
   <data name="CategorySettingPage_AtLeastOnCategoryGroup" xml:space="preserve">
     <value>至少选择一个分类组，否则你就再也找不到它啦</value>
   </data>
-  <data name="CategorySettingPage_StatusGroupCannotSelect" xml:space="preserve">
+  <data name="CategorySettingPage_StatusGroupCannotSelect" xml:spTextBoxace="preserve">
     <value>游玩状态组是动态生成的，这个设置将在重启软件后失效</value>
   </data>
   <data name="CategorySettingPage_HavePutInQueue" xml:space="preserve">
@@ -828,7 +831,10 @@
     <value>下载开发商图</value>
   </data>
   <data name="GalgameSettingPage_GetInfoFromRss.Label" xml:space="preserve">
-    <value>从数据源更新数据</value>
+    <value>使用游戏ID从数据源更新数据</value>
+  </data>
+  <data name="GalgameSettingPage_GetInfoFromRssWithName.Label" xml:space="preserve">
+    <value>使用游戏名从数据源更新数据</value>
   </data>
   <data name="GalgameSettingPage_GalgameName.Title" xml:space="preserve">
     <value>游戏名</value>

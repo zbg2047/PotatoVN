@@ -38,12 +38,17 @@
                             <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE896;"/>
                         </AppBarButton.Icon>
                     </AppBarButton>
+                    <AppBarButton x:Uid="GalgameSettingPage_GetInfoFromRssWithName" Command="{x:Bind ViewModel.GetInfoFromRssWithNameCommand}">
+                        <AppBarButton.Icon>
+                            <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE896;"/>
+                        </AppBarButton.Icon>
+                    </AppBarButton>
                 </CommandBar>
 
                 <StackPanel Grid.Row="1" Spacing="25" Margin="{StaticResource MediumTopMargin}">
                     <control:LockableTextBox
                         x:Uid="GalgameSettingPage_GalgameName"
-                        Value="{x:Bind ViewModel.Gal.Name.Value, Mode=TwoWay}"
+                        Value="{x:Bind ViewModel.Gal.Name.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                         IsLock="{x:Bind ViewModel.Gal.Name.IsLock, Mode=TwoWay}" 
                         AcceptsReturn="False"/>
 
