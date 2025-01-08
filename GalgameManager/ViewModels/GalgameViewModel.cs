@@ -55,6 +55,7 @@ public partial class GalgameViewModel : ObservableObject, INavigationAware
     [ObservableProperty] private bool _canOpenInBgm;
     [ObservableProperty] private bool _canOpenInVndb;
     [ObservableProperty] private bool _canOpenInYmgal;
+    [ObservableProperty] private bool _canOpenInCngal;
 
     [ObservableProperty] private bool _infoBarOpen;
     [ObservableProperty] private string _infoBarMsg = string.Empty;
@@ -145,6 +146,7 @@ public partial class GalgameViewModel : ObservableObject, INavigationAware
             CanOpenInBgm = !string.IsNullOrEmpty(Item?.Ids[(int)RssType.Bangumi]);
             CanOpenInVndb = !string.IsNullOrEmpty(Item?.Ids[(int)RssType.Vndb]);
             CanOpenInYmgal = !string.IsNullOrEmpty(Item?.Ids[(int)RssType.Ymgal]);
+            CanOpenInCngal = !string.IsNullOrEmpty(Item?.Ids[(int)RssType.Cngal]);
         }
         catch (Exception ex)
         {
@@ -216,6 +218,13 @@ public partial class GalgameViewModel : ObservableObject, INavigationAware
     {
         if(string.IsNullOrEmpty(Item!.Ids[(int)RssType.Ymgal])) return;
         await Launcher.LaunchUriAsync(new Uri("https://www.ymgal.games/ga"+Item!.Ids[(int)RssType.Ymgal]));
+    }
+
+    [RelayCommand]
+    private async Task OpenInCngal()
+    {
+        if(string.IsNullOrEmpty(Item!.Ids[(int)RssType.Cngal])) return;
+        await Launcher.LaunchUriAsync(new Uri("https://www.cngal.org/entries/index/"+Item!.Ids[(int)RssType.Cngal]));
     }
     
     [RelayCommand(CanExecute = nameof(IsLocalGame))]

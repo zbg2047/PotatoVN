@@ -268,7 +268,7 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
 
     [ObservableProperty] private RssType _rssType;
     // ReSharper disable once CollectionNeverQueried.Global
-    public readonly RssType[] RssTypes = { RssType.Mixed , RssType.Bangumi, RssType.Vndb};
+    public readonly RssType[] RssTypes = { RssType.Mixed , RssType.Bangumi, RssType.Vndb, RssType.Ymgal, RssType.Cngal};
     
     partial void OnRssTypeChanged(RssType value)
     {

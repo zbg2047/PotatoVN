@@ -57,12 +57,13 @@ public partial class GalgameCollectionService : IGalgameCollectionService
         BgmPhraser bgmPhraser = new(GetBgmData().Result);
         VndbPhraser vndbPhraser = new(GetVndbData().Result);
         YmgalPhraser ymgalPhraser = new();
+        CngalPhraser cngalPhraser = new();
         MixedPhraser mixedPhraser = new(bgmPhraser, vndbPhraser, ymgalPhraser, GetMixData());
         PhraserList[(int)RssType.Bangumi] = bgmPhraser;
         PhraserList[(int)RssType.Vndb] = vndbPhraser;
         PhraserList[(int)RssType.Ymgal] = ymgalPhraser;
+        PhraserList[(int)RssType.Cngal] = cngalPhraser;
         PhraserList[(int)RssType.Mixed] = mixedPhraser;
-        
         
         App.OnAppClosing += async () =>
         {

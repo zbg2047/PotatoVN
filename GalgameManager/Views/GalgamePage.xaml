@@ -136,6 +136,13 @@
                             <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE8AD;" />
                         </AppBarButton.Icon>
                     </AppBarButton>
+                    <AppBarButton x:Uid="GalgamePage_OpenInCngal" Command="{x:Bind ViewModel.OpenInCngalCommand}" 
+                                  Visibility="{x:Bind ViewModel.CanOpenInCngal, 
+                                  Mode=OneWay}">
+                        <AppBarButton.Icon>
+                            <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE8AD;" />
+                        </AppBarButton.Icon>
+                    </AppBarButton>
                     <!-- 以管理员权限运行游戏 -->
                     <AppBarToggleButton Icon="Admin" x:Uid="GalgamePage_RunAsAdmin" Command="{x:Bind ViewModel.SaveCommand}"
                                         IsChecked="{x:Bind ViewModel.Item.RunAsAdmin, Mode=TwoWay, FallbackValue=False}" 

@@ -380,5 +380,5 @@ public partial class GalgameSourcePageCustomGalgameViewModel : ObservableObject
     public ICommand CopyNameCommand = null!;
     public ICommand CopyPathCommand = null!;
     public ICommand OpenInExplorerCommand = null!;
-    public RssType[] RssTypes { get; } = [RssType.Bangumi, RssType.Vndb, RssType.Ymgal, RssType.Mixed, RssType.None];
+    public RssType[] RssTypes { get; } = [RssType.Bangumi, RssType.Vndb, RssType.Ymgal, RssType.Cngal, RssType.Mixed, RssType.None];
 }
