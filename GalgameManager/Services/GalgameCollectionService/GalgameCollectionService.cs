@@ -164,30 +164,37 @@ public partial class GalgameCollectionService : IGalgameCollectionService
         bool requireConfirm = false)
     {
         IsPhrasing = true;
-        RssType selectedRss = rssType;
-        if(selectedRss == RssType.None)
-            selectedRss = galgame.RssType == RssType.None ? await LocalSettingsService.ReadSettingAsync<RssType>(KeyValues.RssType) : galgame.RssType;
-        Galgame result = await PhraserAsync(galgame, PhraserList[(int)selectedRss]);
-        if (requireConfirm)
+        try
         {
-            ConfirmGalInfoDialog dialog = new(galgame, result, this);
-            ContentDialogResult tmp = await dialog.ShowAsync();
-            if (tmp == ContentDialogResult.Secondary)
-                throw new PvnException("Canceled".GetLocalized());
-        }
+            RssType selectedRss = rssType;
+            if(selectedRss == RssType.None)
+                selectedRss = galgame.RssType == RssType.None ? await LocalSettingsService.ReadSettingAsync<RssType>(KeyValues.RssType) : galgame.RssType;
+            Galgame result = await PhraserAsync(galgame, PhraserList[(int)selectedRss]);
+            if (requireConfirm)
+            {
+                ConfirmGalInfoDialog dialog = new(galgame, result, this);
+                ContentDialogResult tmp = await dialog.ShowAsync();
+                if (tmp == ContentDialogResult.Secondary)
+                    throw new PvnException("Canceled".GetLocalized());
+            }
         
-        if (await LocalSettingsService.ReadSettingAsync<bool>(KeyValues.SyncPlayStatusWhenPhrasing))
-        {
-            // 优先Bgm
-            await DownLoadPlayStatusAsync(galgame, RssType.Vndb);
-            await DownLoadPlayStatusAsync(galgame, RssType.Bangumi);
+            if (await LocalSettingsService.ReadSettingAsync<bool>(KeyValues.SyncPlayStatusWhenPhrasing))
+            {
+                // 优先Bgm
+                await DownLoadPlayStatusAsync(galgame, RssType.Vndb);
+                await DownLoadPlayStatusAsync(galgame, RssType.Bangumi);
+            }
+            await LocalSettingsService.SaveSettingAsync(KeyValues.Galgames, _galgames, true);
+            IsPhrasing = false;
+            PhrasedEvent?.Invoke();
+            PhrasedEvent2?.Invoke(galgame);
+            _ = _bgTaskService.AddBgTask(new GetGalgameCharactersFromRssTask(galgame));
+            return result;
         }
-        await LocalSettingsService.SaveSettingAsync(KeyValues.Galgames, _galgames, true);
-        IsPhrasing = false;
-        PhrasedEvent?.Invoke();
-        PhrasedEvent2?.Invoke(galgame);
-        _ = _bgTaskService.AddBgTask(new GetGalgameCharactersFromRssTask(galgame));
-        return result;
+        finally
+        {
+            IsPhrasing = false;
+        }
     }
 
     public Task<Galgame> PhraseGalInfoOnlyAsync(Galgame galgame, RssType rssType = RssType.None)

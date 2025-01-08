@@ -154,6 +154,10 @@ public static class Utils
     {
         var parent = Path.GetFullPath(parentPath);
         var child = Path.GetFullPath(childPath);
+        if (parent.EndsWith(Path.DirectorySeparatorChar) == false)
+            parent += Path.DirectorySeparatorChar;
+        if (child.EndsWith(Path.DirectorySeparatorChar) == false)
+            child += Path.DirectorySeparatorChar;
         return child.StartsWith(parent);
     }
 

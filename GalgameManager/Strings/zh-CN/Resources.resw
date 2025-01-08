@@ -2106,4 +2106,7 @@
   <data name="Galgame_GetCharacterInfo_Waiting" xml:space="preserve">
     <value>目标搜刮源拥塞控制，排队等待中，{0} 秒后重试</value>
   </data>
+  <data name="GalgameSettingPage_GetInfoFromRssFailed" xml:space="preserve">
+    <value>从数据源获取数据失败</value>
+  </data>
 </root>

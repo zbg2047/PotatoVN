@@ -9,6 +9,7 @@ using GalgameManager.Helpers;
 using GalgameManager.Helpers.Converter;
 using GalgameManager.Models;
 using GalgameManager.Services;
+using Microsoft.UI.Xaml.Controls;
 
 namespace GalgameManager.ViewModels;
 
@@ -22,6 +23,7 @@ public partial class GalgameSettingViewModel : ObservableObject, INavigationAwar
     private readonly GalgameCollectionService _galService;
     private readonly INavigationService _navigationService;
     private readonly IPvnService _pvnService;
+    private readonly IInfoService _infoService;
     private readonly string[] _searchUrlList = new string[Galgame.PhraserNumber];
     [ObservableProperty] private string _searchUri = "";
     [ObservableProperty] private bool _isPhrasing;
@@ -29,12 +31,13 @@ public partial class GalgameSettingViewModel : ObservableObject, INavigationAwar
     [ObservableProperty] private string _lastFetchInfoStr = string.Empty;
 
     public GalgameSettingViewModel(IGalgameCollectionService galCollectionService, INavigationService navigationService,
-        IPvnService pvnService)
+        IPvnService pvnService, IInfoService infoService)
     {
         Gal = new Galgame();
         _galService = (GalgameCollectionService)galCollectionService;
         _navigationService = navigationService;
         _pvnService = pvnService;
+        _infoService = infoService;
         _searchUrlList[(int)RssType.Bangumi] = "https://bgm.tv/subject_search/";
         _searchUrlList[(int)RssType.Vndb] = "https://vndb.org/v/all?sq=";
         _searchUrlList[(int)RssType.Mixed] = "https://bgm.tv/subject_search/";
@@ -83,7 +86,17 @@ public partial class GalgameSettingViewModel : ObservableObject, INavigationAwar
     private async Task OnGetInfoFromRss()
     {
         IsPhrasing = true;
-        await _galService.PhraseGalInfoAsync(Gal);
+        try
+        {
+            await _galService.PhraseGalInfoAsync(Gal);
+        }
+        catch (Exception e)
+        {
+            _infoService.Info(InfoBarSeverity.Error, "GalgameSettingPage_GetInfoFromRssFailed".GetLocalized(),
+                e.Message);
+            _infoService.Log(InfoBarSeverity.Error, $"{e.Message}\n{e.StackTrace}");
+            Update(); // 处理IsPhrasing
+        }
     }
 
     private void Update()
