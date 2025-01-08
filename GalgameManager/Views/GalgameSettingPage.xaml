@@ -97,7 +97,7 @@
                             </Grid.ColumnDefinitions>
                             <TextBlock x:Uid="GalgameSettingPage_GalgameRssType" VerticalAlignment="Center" 
                                        Margin="0 0 15 0" HorizontalAlignment="Stretch"/>
-                            <ComboBox 
+                            <control:ComboBoxWithoutNull 
                                 Grid.Column="1" 
                                 ItemsSource="{x:Bind ViewModel.RssTypes}"
                                 SelectedItem="{x:Bind ViewModel.SelectedRss, Mode=TwoWay}" 
