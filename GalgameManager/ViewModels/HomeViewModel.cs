@@ -285,7 +285,7 @@ public partial class HomeViewModel : ObservableObject, INavigationAware
                     ));
                     break;
                 case SortKeys.Name:
-                    Source.SortDescriptions.Add(new SortDescription(nameof(Galgame.Developer), 
+                    Source.SortDescriptions.Add(new SortDescription(nameof(Galgame.Name), 
                         SortKeysAscending[i]?SortDirection.Descending:SortDirection.Ascending, 
                         StringComparer.CurrentCultureIgnoreCase
                     ));
