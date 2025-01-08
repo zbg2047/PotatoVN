@@ -231,7 +231,15 @@ public class CategoryService : ICategoryService
                 developer.Add(galgame);
             }
         }
-        
+        // 更新游玩状态分类
+        if (await _localSettings.ReadSettingAsync<bool>(KeyValues.AutoCategory))
+        {
+            Category? playType = GetStatusCategory(galgame);
+            if (playType == _statusCategory[(int)galgame.PlayType]) return;
+            playType?.Remove(galgame);
+            _statusCategory[(int)galgame.PlayType].Add(galgame);
+        }
+
     }
 
     private async void Worker()
