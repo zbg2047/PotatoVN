@@ -13,6 +13,7 @@
     xmlns:viewModels="using:GalgameManager.ViewModels"
     xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
     xmlns:core="using:Microsoft.Xaml.Interactions.Core"
+    xmlns:control="using:GalgameManager.Views.Control"
     mc:Ignorable="d"
     x:Name="Page">
 
@@ -158,7 +159,7 @@
                                         IsChecked="{x:Bind ViewModel.Item.HighDpi, Mode=OneWay, FallbackValue=False}" 
                                         IsEnabled="{x:Bind ViewModel.IsLocalGame, Mode=OneWay}">
                         <AppBarToggleButton.Icon>
-                            <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE7F4;" />
+                            <control:ConditionalFontIcon Symbol="GoToStart" FluentGlyph="&#xE7F4;"/>
                         </AppBarToggleButton.Icon>
                     </AppBarToggleButton>
                     <AppBarSeparator/>

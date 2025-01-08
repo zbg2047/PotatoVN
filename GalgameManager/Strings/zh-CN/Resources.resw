@@ -821,7 +821,7 @@
   <data name="CategorySettingPage_AtLeastOnCategoryGroup" xml:space="preserve">
     <value>至少选择一个分类组，否则你就再也找不到它啦</value>
   </data>
-  <data name="CategorySettingPage_StatusGroupCannotSelect" xml:spTextBoxace="preserve">
+  <data name="CategorySettingPage_StatusGroupCannotSelect" xml:space="preserve">
     <value>游玩状态组是动态生成的，这个设置将在重启软件后失效</value>
   </data>
   <data name="CategorySettingPage_HavePutInQueue" xml:space="preserve">
@@ -1156,6 +1156,24 @@
   </data>
   <data name="HomePage_KeepFilters.Label" xml:space="preserve">
     <value>保留过滤器</value>
+  </data>
+  <data name="HomePage_Sort_Title" xml:space="preserve">
+    <value>排序</value>
+  </data>
+  <data name="HomePage_Sort_FirstKey" xml:space="preserve">
+    <value>第一关键字</value>
+  </data>
+  <data name="HomePage_Sort_SecondKey" xml:space="preserve">
+    <value>第二关键字</value>
+  </data>
+  <data name="HomePage_Sort_DescendOrAscend" xml:space="preserve">
+    <value>降序/升序</value>
+  </data> 
+  <data name="HomePage_Sort_Descend" xml:space="preserve">
+    <value>降序</value>
+  </data>
+  <data name="HomePage_Sort_Ascend" xml:space="preserve">
+    <value>升序</value>
   </data>
   <data name="GalgameCollectionService_PhraseFileFailed" xml:space="preserve">
     <value>解析.PotatoVN备份文件失败，请手动删除游戏目录下.PotatoVN文件夹或修改meta.json为合法的json文件后重试。</value>
@@ -1826,6 +1844,18 @@
   </data>
   <data name="GalgamePage_InvalidLocaleEmulatorPath" xml:space="preserve">
     <value>LocaleEmulator 路径未设置或路径不存在，请在 设置-&gt;游戏 处设置LocaleEmulator路径</value>
+  </data>
+  <data name="GalgamePage_HighDpi_Success" xml:space="preserve">
+    <value>成功修改高DPI替代缩放</value>
+  </data>
+  <data name="GalgamePage_HighDpi_Fail" xml:space="preserve">
+    <value>修改高DPI替代缩放失败</value>
+  </data>
+  <data name="GalgamePage_HighDpi_NeedAdmin" xml:space="preserve">
+    <value>需要管理员权限来修改DPI设置</value>
+  </data>
+  <data name="GalgamePage_HighDpi_ExePathIsEmpty" xml:space="preserve">
+    <value>未指定游戏exe路径，请先设置游戏路径</value>
   </data>
   <data name="Shell_MultiStream.Content" xml:space="preserve">
     <value>主页</value>

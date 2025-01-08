@@ -438,7 +438,11 @@ public partial class GalgameViewModel : ObservableObject, INavigationAware
     [RelayCommand]
     private async Task ChangeHighDpi()
     {
-        if (Item is null || string.IsNullOrEmpty(Item.ExePath)) return;
+        if (Item is null || string.IsNullOrEmpty(Item.ExePath)) 
+        {
+            _infoService.Info(InfoBarSeverity.Error, "GalgamePage_HighDpi_ExePathIsEmpty".GetLocalized());
+            return;
+        }
         
         try 
         {
@@ -469,22 +473,23 @@ public partial class GalgameViewModel : ObservableObject, INavigationAware
                     {
                         Item.HighDpi = !Item.HighDpi;
                         await SaveAsync();
+                        _ = DisplayMsg(InfoBarSeverity.Success, "GalgamePage_HighDpi_Success".GetLocalized());
                     }
                     else
                     {
-                        _infoService.Info(InfoBarSeverity.Error, $"修改DPI设置失败: {process.ExitCode}");
+                        _infoService.Info(InfoBarSeverity.Error, "GalgamePage_HighDpi_Fail".GetLocalized() + $" {process.ExitCode}");
                     }
                 }
             }
             catch (Win32Exception)
             {
                 // 用户取消了UAC提示
-                _infoService.Info(InfoBarSeverity.Warning, "需要管理员权限来修改DPI设置");
+                _infoService.Info(InfoBarSeverity.Warning, "GalgamePage_HighDpi_NeedAdmin".GetLocalized());
             }
         }
         catch (Exception ex)
         {
-            _infoService.Info(InfoBarSeverity.Error, $"修改DPI设置失败: {ex.Message}");
+            _infoService.Info(InfoBarSeverity.Error, "GalgamePage_HighDpi_Fail".GetLocalized() + $" {ex.Message}");
         }
     }
 

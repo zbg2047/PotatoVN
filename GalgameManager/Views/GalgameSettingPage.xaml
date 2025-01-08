@@ -35,12 +35,14 @@
                     </AppBarButton>
                     <AppBarButton x:Uid="GalgameSettingPage_GetInfoFromRss" Command="{x:Bind ViewModel.GetInfoFromRssCommand}">
                         <AppBarButton.Icon>
-                            <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE896;"/>
+                            <control:ConditionalFontIcon Symbol="Download" FluentGlyph="&#xE896;"/>
                         </AppBarButton.Icon>
                     </AppBarButton>
-                    <AppBarButton x:Uid="GalgameSettingPage_GetInfoFromRssWithName" Command="{x:Bind ViewModel.GetInfoFromRssWithNameCommand}">
+                    <AppBarButton x:Uid="GalgameSettingPage_GetInfoFromRssWithName" 
+                        Command="{x:Bind ViewModel.GetInfoFromRssCommand}"
+                        CommandParameter="True">
                         <AppBarButton.Icon>
-                            <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE896;"/>
+                            <control:ConditionalFontIcon Symbol="Download" FluentGlyph="&#xE896;"/>
                         </AppBarButton.Icon>
                     </AppBarButton>
                 </CommandBar>

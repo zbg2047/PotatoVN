@@ -344,14 +344,14 @@ public partial class HomeViewModel : ObservableObject, INavigationAware
         ContentDialog dialog = new()
         {
             XamlRoot = App.MainWindow!.Content.XamlRoot,
-            Title = "排序",
+            Title = "HomePage_Sort_Title".GetLocalized(),
             PrimaryButtonText = "Yes".GetLocalized(),
             SecondaryButtonText = "Cancel".GetLocalized(),
         };
         
         ComboBox comboBox1 = new()
         {
-            Header = "第一关键字",
+            Header = "HomePage_Sort_FirstKey".GetLocalized(),
             HorizontalAlignment = HorizontalAlignment.Stretch,
             ItemsSource = sortKeysList,
             Margin = new Thickness(0, 0, 5, 0),
@@ -359,11 +359,11 @@ public partial class HomeViewModel : ObservableObject, INavigationAware
         };
         ToggleSwitch toggleSwitch1 = new()
         {
-            Header = "降序/升序",
+            Header = "HomePage_Sort_DescendOrAscend".GetLocalized(),
             HorizontalAlignment = HorizontalAlignment.Stretch,
             Margin = new Thickness(5, 0, 0, 0),
-            OnContent = "升序",
-            OffContent = "降序",
+            OnContent = "HomePage_Sort_Ascend".GetLocalized(),
+            OffContent = "HomePage_Sort_Descend".GetLocalized(),
             IsOn = SortKeysAscending[0]
         };
         StackPanel panel1 = new ();
@@ -373,7 +373,7 @@ public partial class HomeViewModel : ObservableObject, INavigationAware
         
         ComboBox comboBox2 = new()
         {
-            Header = "第二关键字",
+            Header = "HomePage_Sort_SecondKey".GetLocalized(),
             HorizontalAlignment = HorizontalAlignment.Stretch,
             ItemsSource = sortKeysList,
             Margin = new Thickness(0, 0, 5, 0),
@@ -381,11 +381,11 @@ public partial class HomeViewModel : ObservableObject, INavigationAware
         };
         ToggleSwitch toggleSwitch2 = new()
         {
-            Header = "降序/升序",
+            Header = "HomePage_Sort_DescendOrAscend".GetLocalized(),
             HorizontalAlignment = HorizontalAlignment.Stretch,
             Margin = new Thickness(5, 0, 0, 0),
-            OnContent = "升序",
-            OffContent = "降序",
+            OnContent = "HomePage_Sort_Ascend".GetLocalized(),
+            OffContent = "HomePage_Sort_Descend".GetLocalized(),
             IsOn = SortKeysAscending[1]
         };
         StackPanel panel2 = new ();

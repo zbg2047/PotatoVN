@@ -33,7 +33,6 @@ public partial class GalgameSourceViewModel : ObservableObject, INavigationAware
     private readonly List<Galgame> _selectedGalgames = new();
     private BgTaskBase? _getGalTask;
     private GetGalgameInfoFromRssTask? _getGalgameInfoFromRss;
-    private GetGalgameInfoFromRssTask? _getGalgameInfoFromRssWithName;
     private UnpackGameTask? _unpackGameTask;
     
     [ObservableProperty] private bool _isUnpacking;
@@ -42,7 +41,6 @@ public partial class GalgameSourceViewModel : ObservableObject, INavigationAware
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(AddGalgameCommand))] 
     [NotifyCanExecuteChangedFor(nameof(GetInfoFromRssCommand))]
-    [NotifyCanExecuteChangedFor(nameof(GetInfoFromRssWithNameCommand))]
     [NotifyCanExecuteChangedFor(nameof(GetGalInFolderCommand))]
     private bool _canExecute; //是否正在运行命令
     [ObservableProperty] private bool _logExists; //是否存在日志文件
@@ -158,12 +156,6 @@ public partial class GalgameSourceViewModel : ObservableObject, INavigationAware
             _getGalgameInfoFromRss.OnProgress += UpdateNotifyGetInfoFromRss;
             UpdateNotifyGetGal(_getGalgameInfoFromRss.CurrentProgress);
         }
-        _getGalgameInfoFromRssWithName = _bgTaskService.GetBgTask<GetGalgameInfoFromRssTask>(Item.Url);
-        if (_getGalgameInfoFromRssWithName != null)
-        {
-            _getGalgameInfoFromRssWithName.OnProgress += UpdateNotifyGetInfoFromRss;
-            UpdateNotifyGetGal(_getGalgameInfoFromRssWithName.CurrentProgress);
-        }
         Update();
     }
 
@@ -171,7 +163,6 @@ public partial class GalgameSourceViewModel : ObservableObject, INavigationAware
     {
         if (_getGalTask != null) _getGalTask.OnProgress -= UpdateNotifyGetGal;
         if (_getGalgameInfoFromRss != null) _getGalgameInfoFromRss.OnProgress -= UpdateNotifyGetInfoFromRss;
-        if (_getGalgameInfoFromRssWithName != null) _getGalgameInfoFromRssWithName.OnProgress -= UpdateNotifyGetInfoFromRss;
         if (_unpackGameTask != null)
         {
             _unpackGameTask.OnProgress -= UpdateNotifyGetGal;
@@ -218,18 +209,6 @@ public partial class GalgameSourceViewModel : ObservableObject, INavigationAware
         });
     }
 
-    private void UpdateNotifyGetInfoFromRssWithName(Progress progress)
-    {
-        if(Item == null) return;
-        Update();
-        _infoService.Info(progress.ToSeverity(), msg: progress.Message, displayTimeMs: progress.ToSeverity() switch
-        {
-            InfoBarSeverity.Informational => 300000,
-            _ => 3000
-        });
-    }
-    
-
     [RelayCommand(CanExecute = nameof(CanExecute))]
     private async Task AddGalgame()
     {
@@ -272,9 +251,26 @@ public partial class GalgameSourceViewModel : ObservableObject, INavigationAware
     }
 
     [RelayCommand(CanExecute = nameof(CanExecute))]
-    private void GetInfoFromRss()
+    private void GetInfoFromRss(object parameter)
     {
         if (_item == null) return;
+
+        // 检查是否是 isNameOnly 模式
+        if (parameter is string isNameOnly && isNameOnly == "True")
+        {
+            // 清除目前存储的id信息
+            foreach (var galgame in _selectedGalgames)
+            {
+                for (var i = 0; i < Galgame.PhraserNumber; i++)
+                {
+                    // 跳过potato
+                    if (i == (int)RssType.PotatoVn)
+                        continue;
+                    galgame.Ids[i] = null;
+                }
+            }
+        }
+        
         if (_selectedGalgames.Count == 0)
         {
             _getGalgameInfoFromRss = new GetGalgameInfoFromRssTask(_item);
@@ -286,30 +282,6 @@ public partial class GalgameSourceViewModel : ObservableObject, INavigationAware
             _getGalgameInfoFromRss = new GetGalgameInfoFromRssTask(_item, _selectedGalgames);
             _getGalgameInfoFromRss.OnProgress += UpdateNotifyGetInfoFromRss;
             _ = _bgTaskService.AddBgTask(_getGalgameInfoFromRss);
-        }
-    }
-
-    [RelayCommand(CanExecute = nameof(CanExecute))]
-    private void GetInfoFromRssWithName()
-    {
-        if (_item == null) return;
-        // 清除选择游戏的id信息
-        foreach (var galgame in _selectedGalgames)
-        {
-            for (var i = 0; i < Galgame.PhraserNumber; i++)
-                galgame.Ids[i] = null;
-        }
-        if (_selectedGalgames.Count == 0)
-        {
-            _getGalgameInfoFromRssWithName = new GetGalgameInfoFromRssTask(_item);
-            _getGalgameInfoFromRssWithName.OnProgress += UpdateNotifyGetInfoFromRssWithName;
-            _ = _bgTaskService.AddBgTask(_getGalgameInfoFromRssWithName);
-        }
-        else
-        {
-            _getGalgameInfoFromRssWithName = new GetGalgameInfoFromRssTask(_item, _selectedGalgames);
-            _getGalgameInfoFromRssWithName.OnProgress += UpdateNotifyGetInfoFromRssWithName;
-            _ = _bgTaskService.AddBgTask(_getGalgameInfoFromRssWithName);
         }
     }
 

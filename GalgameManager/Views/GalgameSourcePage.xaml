@@ -69,7 +69,8 @@
                     <!-- 从游戏名下载游戏数据 -->
                     <AppBarButton Icon="Download" x:Uid="GalgameFolderPage_DownloadSelectedInfoFromName"
                                 Visibility="{x:Bind ViewModel.IsDownloadFromNameVisible, Mode=OneWay}"
-                                  Command="{x:Bind ViewModel.GetInfoFromRssWithNameCommand}" />
+                                  Command="{x:Bind ViewModel.GetInfoFromRssCommand}" 
+                                  CommandParameter="True"/>
                     <CommandBar.SecondaryCommands>
                         <!-- 打开Log文件 -->
                         <AppBarButton x:Uid="GalgameFolderPage_Log" 
