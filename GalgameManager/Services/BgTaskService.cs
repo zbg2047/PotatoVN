@@ -17,6 +17,7 @@ public class BgTaskService : IBgTaskService
     private readonly List<BgTaskBase> _bgTasks = new();
     private readonly Dictionary<Type,string> _bgTasksString = new();
     private readonly IInfoService _infoService;
+    private readonly List<JsonConverter> _converters = new();
 
     public BgTaskService(IInfoService infoService)
     {
@@ -27,6 +28,8 @@ public class BgTaskService : IBgTaskService
         _bgTasksString[typeof(UnpackGameTask)] = "-unpack";
         _bgTasksString[typeof(SourceMoveTask)] = "-sourceMove";
         _bgTasksString[typeof(GetGalgameCharactersFromRssTask)] = "-getGalChar";
+        
+        _converters.Add(new GalgameAndUidConverter());
     }
     
     public void SaveBgTasksString()
@@ -36,7 +39,7 @@ public class BgTaskService : IBgTaskService
         {
             //转换为json，再转换为base64（避免参数解析困难），再加上前缀
             if (_bgTasksString.TryGetValue(bgTask.GetType(), out var str))
-                result += str + $" {JsonConvert.SerializeObject(bgTask).ToBase64()} ";
+                result += str + $" {JsonConvert.SerializeObject(bgTask, _converters.ToArray()).ToBase64()} ";
         }
         FileHelper.Save(FileName, result);
     }
@@ -49,7 +52,7 @@ public class BgTaskService : IBgTaskService
             if(argStrings[i].StartsWith("-") == false) continue;
             Type? bgTaskType = _bgTasksString.FirstOrDefault(x => x.Value == argStrings[i]).Key;
             if (bgTaskType == null) continue;
-            if (JsonConvert.DeserializeObject(Utils.FromBase64(argStrings[++i]), bgTaskType) is not BgTaskBase bgTask)
+            if (JsonConvert.DeserializeObject(Utils.FromBase64(argStrings[++i]), bgTaskType, _converters.ToArray()) is not BgTaskBase bgTask)
                 continue;
             await bgTask.RecoverFromJson();
             _ = AddTaskInternal(bgTask);
