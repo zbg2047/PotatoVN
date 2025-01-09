@@ -54,6 +54,8 @@ public partial class GalgameSourceViewModel : ObservableObject, INavigationAware
     #region UI_STRING
 
     [ObservableProperty] private string _uiDownloadInfo = "GalgameFolderPage_DownloadInfo".GetLocalized();
+    [ObservableProperty] private bool _isDownloadFromNameVisible;
+
     public string ImagePathDes => Item?.ImagePath ?? "GalgameSourcePage_Setting_NoImage".GetLocalized();
 
     #endregion
@@ -206,7 +208,6 @@ public partial class GalgameSourceViewModel : ObservableObject, INavigationAware
             _ => 3000
         });
     }
-    
 
     [RelayCommand(CanExecute = nameof(CanExecute))]
     private async Task AddGalgame()
@@ -250,9 +251,26 @@ public partial class GalgameSourceViewModel : ObservableObject, INavigationAware
     }
 
     [RelayCommand(CanExecute = nameof(CanExecute))]
-    private void GetInfoFromRss()
+    private void GetInfoFromRss(object parameter)
     {
         if (_item == null) return;
+
+        // 检查是否是 isNameOnly 模式
+        if (parameter is string isNameOnly && isNameOnly == "True")
+        {
+            // 清除目前存储的id信息
+            foreach (var galgame in _selectedGalgames)
+            {
+                for (var i = 0; i < Galgame.PhraserNumber; i++)
+                {
+                    // 跳过potato
+                    if (i == (int)RssType.PotatoVn)
+                        continue;
+                    galgame.Ids[i] = null;
+                }
+            }
+        }
+        
         if (_selectedGalgames.Count == 0)
         {
             _getGalgameInfoFromRss = new GetGalgameInfoFromRssTask(_item);
@@ -338,6 +356,10 @@ public partial class GalgameSourceViewModel : ObservableObject, INavigationAware
         UiDownloadInfo = _selectedGalgames.Count == 0
             ? "GalgameFolderPage_DownloadInfo".GetLocalized()
             : "GalgameFolderPage_DownloadSelectedInfo".GetLocalized();
+        if (_selectedGalgames.Count != 0)
+            IsDownloadFromNameVisible = true;
+        else
+            IsDownloadFromNameVisible = false;
     }
 
     private void UpdateTitleMaxWidth()

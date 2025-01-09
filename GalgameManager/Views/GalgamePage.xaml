@@ -13,6 +13,7 @@
     xmlns:viewModels="using:GalgameManager.ViewModels"
     xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
     xmlns:core="using:Microsoft.Xaml.Interactions.Core"
+    xmlns:control="using:GalgameManager.Views.Control"
     mc:Ignorable="d"
     x:Name="Page">
 
@@ -152,6 +153,15 @@
                                         Command="{x:Bind ViewModel.ChangeRunInLocaleEmulatorCommand}"
                                         IsChecked="{x:Bind ViewModel.Item.RunInLocaleEmulator, Mode=TwoWay, FallbackValue=False}" 
                                         IsEnabled="{x:Bind ViewModel.IsLocalGame, Mode=OneWay}"/>
+                    <!-- 高DPI替代缩放 -->
+                    <AppBarToggleButton x:Uid="GalgamePage_HighDpi" 
+                                        Command="{x:Bind ViewModel.ChangeHighDpiCommand}"
+                                        IsChecked="{x:Bind ViewModel.Item.HighDpi, Mode=OneWay, FallbackValue=False}" 
+                                        IsEnabled="{x:Bind ViewModel.IsLocalGame, Mode=OneWay}">
+                        <AppBarToggleButton.Icon>
+                            <control:ConditionalFontIcon Symbol="GoToStart" FluentGlyph="&#xE7F4;"/>
+                        </AppBarToggleButton.Icon>
+                    </AppBarToggleButton>
                     <AppBarSeparator/>
                     <!-- 下载游玩状态 -->
                     <AppBarButton x:Uid="GalgamePage_SyncFromBgm" Command="{x:Bind ViewModel.SyncFromBgmCommand}" 
@@ -184,6 +194,15 @@
                         Visibility="{x:Bind ViewModel.IsSelectProcessVisible, Mode=OneWay}">
                         <AppBarButton.Icon>
                             <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE840;" />
+                        </AppBarButton.Icon>
+                    </AppBarButton>
+                    <!-- 重置exe和文本路径 -->
+                    <AppBarButton 
+                        x:Uid="GalgamePage_ResetPath"
+                        Command="{x:Bind ViewModel.ResetPathCommand}"
+                        Visibility="{x:Bind ViewModel.IsResetPathVisible, Mode=OneWay}">
+                        <AppBarButton.Icon>
+                            <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE74E;" />
                         </AppBarButton.Icon>
                     </AppBarButton>
                     <!-- 移除进程指定 -->

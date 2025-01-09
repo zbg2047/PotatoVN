@@ -84,9 +84,22 @@ public partial class GalgameSettingViewModel : ObservableObject, INavigationAwar
     }
 
     [RelayCommand]
-    private async Task OnGetInfoFromRss()
+    private async Task OnGetInfoFromRss(object parameter)
     {
         IsPhrasing = true;
+        // 检查是否是 isNameOnly 模式
+        if (parameter is string isNameOnly && isNameOnly == "True")
+        {
+            // 清除目前存储的id信息
+            for (var i = 0; i < Galgame.PhraserNumber; i++)
+            {
+                // 跳过PotatoVn
+                if (i == (int)RssType.PotatoVn)
+                    continue;
+                Gal.Ids[i] = null;
+            }
+        }
+        
         try
         {
             await _galService.PhraseGalInfoAsync(Gal);

@@ -43,6 +43,7 @@ public partial class GalgameCollectionService
             throw new PvnException("AddGalgameResult_NotFoundInRss".GetLocalized());
 
         // 添加游戏并移入对应的源
+        meta.AddTime = DateTime.Now; // 游戏添加时间
         _galgames.Add(meta);
         _galgameMap[meta.Uuid] = meta;
         GalgameAddedEvent?.Invoke(meta);

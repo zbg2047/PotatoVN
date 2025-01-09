@@ -452,7 +452,10 @@
     <value>下载游戏数据</value>
   </data>
   <data name="GalgameFolderPage_DownloadSelectedInfo" xml:space="preserve">
-    <value>下载选定游戏数据</value>
+    <value>使用游戏ID下载选定游戏数据</value>
+  </data>
+    <data name="GalgameFolderPage_DownloadSelectedInfoFromName.Label" xml:space="preserve">
+    <value>使用游戏名下载选定游戏数据</value>
   </data>
   <data name="Search" xml:space="preserve">
     <value>搜索</value>
@@ -828,7 +831,10 @@
     <value>下载开发商图</value>
   </data>
   <data name="GalgameSettingPage_GetInfoFromRss.Label" xml:space="preserve">
-    <value>从数据源更新数据</value>
+    <value>使用游戏ID从数据源更新数据</value>
+  </data>
+  <data name="GalgameSettingPage_GetInfoFromRssWithName.Label" xml:space="preserve">
+    <value>使用游戏名从数据源更新数据</value>
   </data>
   <data name="GalgameSettingPage_GalgameName.Title" xml:space="preserve">
     <value>游戏名</value>
@@ -1136,6 +1142,9 @@
   <data name="GalgamePage_SelectThread.Label" xml:space="preserve">
     <value>手动指定游戏进程</value>
   </data>
+  <data name="GalgamePage_ResetPath.Label" xml:space="preserve">
+    <value>重置exe和文本路径</value>
+  </data>
   <data name="VirtualGameFilter" xml:space="preserve">
     <value>本地游戏</value>
   </data>
@@ -1147,6 +1156,24 @@
   </data>
   <data name="HomePage_KeepFilters.Label" xml:space="preserve">
     <value>保留过滤器</value>
+  </data>
+  <data name="HomePage_Sort_Title" xml:space="preserve">
+    <value>排序</value>
+  </data>
+  <data name="HomePage_Sort_FirstKey" xml:space="preserve">
+    <value>第一关键字</value>
+  </data>
+  <data name="HomePage_Sort_SecondKey" xml:space="preserve">
+    <value>第二关键字</value>
+  </data>
+  <data name="HomePage_Sort_DescendOrAscend" xml:space="preserve">
+    <value>降序/升序</value>
+  </data> 
+  <data name="HomePage_Sort_Descend" xml:space="preserve">
+    <value>降序</value>
+  </data>
+  <data name="HomePage_Sort_Ascend" xml:space="preserve">
+    <value>升序</value>
   </data>
   <data name="GalgameCollectionService_PhraseFileFailed" xml:space="preserve">
     <value>解析.PotatoVN备份文件失败，请手动删除游戏目录下.PotatoVN文件夹或修改meta.json为合法的json文件后重试。</value>
@@ -1730,6 +1757,9 @@
   <data name="LibraryPage_Back.Label" xml:space="preserve">
     <value>回到上个库</value>
   </data>
+  <data name="LibraryPage_DownloadAllData.Label" xml:space="preserve">
+    <value>下载所有游戏数据</value>
+  </data>
   <data name="GalgameCollectionService_LoadMetaFailed" xml:space="preserve">
     <value>加载本地Meta失败</value>
   </data>
@@ -1753,6 +1783,12 @@
   </data>
   <data name="GalgameSettingPage_Startup_parameters.Text" xml:space="preserve">
     <value>启动参数设置</value>
+  </data>
+  <data name="GalgameSettingPage_GalgamePath.Text" xml:space="preserve">
+    <value>游戏路径</value>
+  </data>
+  <data name="GalgameSettingPage_GalgameReleaseDate.Title" xml:space="preserve">
+    <value>发行日期</value>
   </data>
   <data name="GalgameSourcePage_NotInSource" xml:space="preserve">
     <value>该游戏不属于这个库（游戏必须在库文件夹里面）</value>
@@ -1803,8 +1839,23 @@
   <data name="GalgamePage_RunInLocaleEmulator.Label" xml:space="preserve">
     <value>转区运行游戏</value>
   </data>
+  <data name="GalgamePage_HighDpi.Label" xml:space="preserve">
+    <value>高DPI替代缩放</value>
+  </data>
   <data name="GalgamePage_InvalidLocaleEmulatorPath" xml:space="preserve">
     <value>LocaleEmulator 路径未设置或路径不存在，请在 设置-&gt;游戏 处设置LocaleEmulator路径</value>
+  </data>
+  <data name="GalgamePage_HighDpi_Success" xml:space="preserve">
+    <value>成功修改高DPI替代缩放</value>
+  </data>
+  <data name="GalgamePage_HighDpi_Fail" xml:space="preserve">
+    <value>修改高DPI替代缩放失败</value>
+  </data>
+  <data name="GalgamePage_HighDpi_NeedAdmin" xml:space="preserve">
+    <value>需要管理员权限来修改DPI设置</value>
+  </data>
+  <data name="GalgamePage_HighDpi_ExePathIsEmpty" xml:space="preserve">
+    <value>未指定游戏exe路径，请先设置游戏路径</value>
   </data>
   <data name="Shell_MultiStream.Content" xml:space="preserve">
     <value>主页</value>
@@ -2109,6 +2160,26 @@
   <data name="Galgame_GetCharacterInfo_Waiting" xml:space="preserve">
     <value>目标搜刮源拥塞控制，排队等待中，{0} 秒后重试</value>
   </data>
+  <data name="SortKeys_Name" xml:space="preserve">
+    <value>游戏名</value>
+  </data>
+  <data name="SortKeys_Developer" xml:space="preserve">
+      <value>开发商</value>
+  </data>
+  <data name="SortKeys_Rating" xml:space="preserve">
+      <value>评分</value>
+  </data>
+  <data name="SortKeys_LastPlay" xml:space="preserve">
+      <value>最后游玩时间</value>
+  </data>
+  <data name="SortKeys_ReleaseDate" xml:space="preserve">
+      <value>发售日期</value>
+  </data>
+  <data name="SortKeys_LastFetchInfoTime" xml:space="preserve">
+      <value>最后更新信息时间</value>
+  </data>
+  <data name="SortKeys_AddTime" xml:space="preserve">
+      <value>添加时间</value>
   <data name="GalgameSettingPage_GetInfoFromRssFailed" xml:space="preserve">
     <value>从数据源获取数据失败</value>
   </data>

@@ -310,6 +310,11 @@ public partial class HomeViewModel : ObservableObject, INavigationAware
                         SortKeysAscending[i]?SortDirection.Ascending:SortDirection.Descending
                     ));
                     break;
+                case SortKeys.AddTime:
+                    Source.SortDescriptions.Add(new SortDescription(nameof(Galgame.AddTime), 
+                        SortKeysAscending[i]?SortDirection.Ascending:SortDirection.Descending
+                    ));
+                    break;
             }
             
         }
@@ -321,41 +326,44 @@ public partial class HomeViewModel : ObservableObject, INavigationAware
     /// </summary>
     [RelayCommand]
     private async Task Sort()
-    
     {
-        // Move to homepage
-        List<SortKeys> sortKeysList = new()
+        // 创建一个字典来映射本地化字符串和枚举值
+        Dictionary<string, SortKeys> sortKeysMap = new()
         {
-            SortKeys.Name,
-            SortKeys.Developer,
-            SortKeys.Rating,
-            SortKeys.LastPlay,
-            SortKeys.ReleaseDate,
-            SortKeys.LastFetchInfoTime,
+            { SortKeys.Name.GetLocalized(), SortKeys.Name },
+            { SortKeys.Developer.GetLocalized(), SortKeys.Developer },
+            { SortKeys.Rating.GetLocalized(), SortKeys.Rating },
+            { SortKeys.LastPlay.GetLocalized(), SortKeys.LastPlay },
+            { SortKeys.ReleaseDate.GetLocalized(), SortKeys.ReleaseDate },
+            { SortKeys.LastFetchInfoTime.GetLocalized(), SortKeys.LastFetchInfoTime },
+            { SortKeys.AddTime.GetLocalized(), SortKeys.AddTime },
         };
+
+        List<string> sortKeysList = sortKeysMap.Keys.ToList();
+
         ContentDialog dialog = new()
         {
             XamlRoot = App.MainWindow!.Content.XamlRoot,
-            Title = "排序",
+            Title = "HomePage_Sort_Title".GetLocalized(),
             PrimaryButtonText = "Yes".GetLocalized(),
             SecondaryButtonText = "Cancel".GetLocalized(),
         };
         
         ComboBox comboBox1 = new()
         {
-            Header = "第一关键字",
+            Header = "HomePage_Sort_FirstKey".GetLocalized(),
             HorizontalAlignment = HorizontalAlignment.Stretch,
             ItemsSource = sortKeysList,
             Margin = new Thickness(0, 0, 5, 0),
-            SelectedItem = SortKeysList[0]
+            SelectedItem = SortKeysList[0].GetLocalized()
         };
         ToggleSwitch toggleSwitch1 = new()
         {
-            Header = "降序/升序",
+            Header = "HomePage_Sort_DescendOrAscend".GetLocalized(),
             HorizontalAlignment = HorizontalAlignment.Stretch,
             Margin = new Thickness(5, 0, 0, 0),
-            OnContent = "升序",
-            OffContent = "降序",
+            OnContent = "HomePage_Sort_Ascend".GetLocalized(),
+            OffContent = "HomePage_Sort_Descend".GetLocalized(),
             IsOn = SortKeysAscending[0]
         };
         StackPanel panel1 = new ();
@@ -365,19 +373,19 @@ public partial class HomeViewModel : ObservableObject, INavigationAware
         
         ComboBox comboBox2 = new()
         {
-            Header = "第二关键字",
+            Header = "HomePage_Sort_SecondKey".GetLocalized(),
             HorizontalAlignment = HorizontalAlignment.Stretch,
             ItemsSource = sortKeysList,
             Margin = new Thickness(0, 0, 5, 0),
-            SelectedItem = SortKeysList[1]
+            SelectedItem = SortKeysList[1].GetLocalized()
         };
         ToggleSwitch toggleSwitch2 = new()
         {
-            Header = "降序/升序",
+            Header = "HomePage_Sort_DescendOrAscend".GetLocalized(),
             HorizontalAlignment = HorizontalAlignment.Stretch,
             Margin = new Thickness(5, 0, 0, 0),
-            OnContent = "升序",
-            OffContent = "降序",
+            OnContent = "HomePage_Sort_Ascend".GetLocalized(),
+            OffContent = "HomePage_Sort_Descend".GetLocalized(),
             IsOn = SortKeysAscending[1]
         };
         StackPanel panel2 = new ();
@@ -389,9 +397,13 @@ public partial class HomeViewModel : ObservableObject, INavigationAware
 
         dialog.PrimaryButtonClick += async (_, _) =>
         {
+            // 将本地化字符串转换回枚举值
+            var selectedKey1 = sortKeysMap[(string)comboBox1.SelectedItem];
+            var selectedKey2 = sortKeysMap[(string)comboBox2.SelectedItem];
+
             UpdateSortKeys(
-                new[] { (SortKeys)comboBox1.SelectedItem, (SortKeys)comboBox2.SelectedItem },
-                new []{toggleSwitch1.IsOn, toggleSwitch2.IsOn});
+                new[] { selectedKey1, selectedKey2 },
+                new[] { toggleSwitch1.IsOn, toggleSwitch2.IsOn });
             await _localSettingsService.SaveSettingAsync(KeyValues.SortKeys, SortKeysList);
             await _localSettingsService.SaveSettingAsync(KeyValues.SortKeysAscending, SortKeysAscending);
         };
