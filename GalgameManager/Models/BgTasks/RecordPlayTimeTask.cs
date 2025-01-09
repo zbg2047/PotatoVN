@@ -17,7 +17,8 @@ public class RecordPlayTimeTask : BgTaskBase
     public Guid GalgameUid { get; set; } = Guid.Empty;
     public DateTime StartTime { get; set; }= DateTime.Now;
     public int CurrentPlayTime { get; set; } //本次游玩时间
-    
+    public override bool ProgressOnTrayIcon => true;
+
     private Galgame? _galgame;
     private Process? _process;
 

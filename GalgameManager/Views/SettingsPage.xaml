@@ -231,6 +231,11 @@
                                     </control:Setting>
                                 </StackPanel>
                             </control:Panel>
+                            <!-- 下载游戏角色信息 -->
+                            <control:Panel>
+                                <local:SettingToggleSwitch x:Uid="SettingsPage_Download_Character"
+                                                           IsOn="{x:Bind ViewModel.DownloadCharacters, Mode=TwoWay}"/>
+                            </control:Panel>
                         </StackPanel>
                     </control:SettingExpander.SettingContent>
                 </control:SettingExpander>

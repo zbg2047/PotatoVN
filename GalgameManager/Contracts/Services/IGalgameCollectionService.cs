@@ -77,7 +77,8 @@ public interface IGalgameCollectionService
 
     /// <summary>
     /// 从信息源中搜刮游戏信息，会直接修改传入的galgame <br/>
-    /// 会执行完整搜刮流程，包括从rss获取信息，用户确认，获取游玩状态等
+    /// 会执行完整搜刮流程，包括从rss获取信息，用户确认，获取游玩状态等 <br/>
+    /// 注意捕获异常
     /// </summary>
     /// <param name="galgame">待搜刮游戏</param>
     /// <param name="rssType">指定信息源，若为None则使用设置中的默认值</param>

@@ -66,7 +66,20 @@ public class MixedPhraser : IGalInfoPhraser, IGalCharacterPhraser
                 phraserTasks[phraserType] = phraser.GetGalgameInfo(game);
             }
         }
-        await Task.WhenAll(phraserTasks.Values.Where(t=>t != null)!); //这几个源可以并行搜刮
+
+        foreach (var (rssType, task) in phraserTasks)
+        {
+            try
+            {
+                if (task != null)
+                    await task;
+            }
+            catch (Exception)
+            {
+                phraserTasks[rssType] = null;
+            }
+        }
+        
         Dictionary<RssType, Galgame> metas = new();
         Galgame result = new();
         foreach (var (rssType, task) in phraserTasks)

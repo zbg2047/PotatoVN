@@ -214,7 +214,7 @@ public class LocalFolderSourceService : IGalgameSourceService
             try
             {
                 IGalgameCollectionService gameService = App.GetService<IGalgameCollectionService>();
-                await gameService.AddGameAsync(GalgameSourceType.LocalFolder, e.FullPath, true);
+                await gameService.AddGameAsync(GalgameSourceType.LocalFolder, e.FullPath, true, false);
                 _infoService.Event(EventType.GalgameEvent, InfoBarSeverity.Success,
                     "LocalFolderSourceService_OnFolderCreated".GetLocalized(), msg: e.FullPath);
             }
