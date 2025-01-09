@@ -189,7 +189,8 @@ public partial class GalgameCollectionService : IGalgameCollectionService
             IsPhrasing = false;
             PhrasedEvent?.Invoke();
             PhrasedEvent2?.Invoke(galgame);
-            _ = _bgTaskService.AddBgTask(new GetGalgameCharactersFromRssTask(galgame));
+            if (await LocalSettingsService.ReadSettingAsync<bool>(KeyValues.DownloadCharacters))
+                _ = _bgTaskService.AddBgTask(new GetGalgameCharactersFromRssTask(galgame));
             return result;
         }
         finally

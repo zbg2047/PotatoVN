@@ -219,6 +219,7 @@ public class LocalSettingsService : ILocalSettingsService
             case KeyValues.LastNoticeUpdateVersion:
                 return (T?)(object)"";
             case KeyValues.AutoCategory:
+            case KeyValues.DownloadCharacters:
                 return (T?)(object)true;
             case KeyValues.OverrideLocalNameWithChinese:
                 return (T?)(object)false;

@@ -3,10 +3,6 @@
 public static class KeyValues
 {
     //设置与杂项
-    public const string RssType = "rssType";
-    public const string OverrideLocalName = "overrideLocalName";
-    public const string OverrideLocalNameWithChinese = "overrideLocalNameWithChinese";
-    public const string SyncPlayStatusWhenPhrasing = "syncPlayStatusWhenPhrasing"; //bool, 是否在获取游戏信息时同步游玩状态
     public const string RemoteFolder = "remoteFolder";
     public const string SortKeys = "sortKeys";
     public const string SortKeysAscending = "sortKeysAscending";
@@ -64,6 +60,11 @@ public static class KeyValues
     public const string MultiStreamPageList = "multiStreamPageList"; //List<IGalgameManager.MultiStreamPage.Lists.IList>, 主页列表
     
     //搜刮设置
+    public const string RssType = "rssType";
+    public const string OverrideLocalName = "overrideLocalName";
+    public const string OverrideLocalNameWithChinese = "overrideLocalNameWithChinese";
+    public const string SyncPlayStatusWhenPhrasing = "syncPlayStatusWhenPhrasing"; //bool, 是否在获取游戏信息时同步游玩状态
+    public const string DownloadCharacters = "fetchCharacters"; //bool, 搜刮时是否获取角色信息
     public const string MixedPhraserOrder = "mixedPhraserOrder"; //MixedPhraserOrder,混合搜刮器的顺序
     
     //显示相关

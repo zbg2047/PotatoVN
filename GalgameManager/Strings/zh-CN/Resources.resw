@@ -2112,4 +2112,10 @@
   <data name="GalgameSettingPage_GetInfoFromRssFailed" xml:space="preserve">
     <value>从数据源获取数据失败</value>
   </data>
+  <data name="SettingsPage_Download_Character.Title" xml:space="preserve">
+    <value>获取游戏角色信息</value>
+  </data>
+  <data name="SettingsPage_Download_Character.Description" xml:space="preserve">
+    <value>是否在获取游戏信息时下载对应游戏的游戏角色信息</value>
+  </data>
 </root>
