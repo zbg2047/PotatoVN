@@ -2180,6 +2180,7 @@
   </data>
   <data name="SortKeys_AddTime" xml:space="preserve">
       <value>添加时间</value>
+  </data>    
   <data name="GalgameSettingPage_GetInfoFromRssFailed" xml:space="preserve">
     <value>从数据源获取数据失败</value>
   </data>
