@@ -273,7 +273,7 @@ public partial class GalgameCollectionService : IGalgameCollectionService
         galgame.RssType = phraser.GetPhraseType();
         galgame.Id = tmp.Id;
         galgame.Description.Value = tmp.Description.Value;
-        if (tmp.Developer != Galgame.DefaultString)
+        if (tmp.Description != Galgame.DefaultString)
             galgame.Description.Value = tmp.Description.Value;
         if (tmp.Developer != Galgame.DefaultString)
             galgame.Developer.Value = tmp.Developer.Value;
@@ -301,7 +301,7 @@ public partial class GalgameCollectionService : IGalgameCollectionService
         }
         galgame.Characters = tmp.Characters;
         galgame.ImagePath.Value = await DownloadHelper.DownloadAndSaveImageAsync(galgame.ImageUrl) ?? Galgame.DefaultImagePath;
-        galgame.ReleaseDate = tmp.ReleaseDate.Value;
+        galgame.ReleaseDate.Value = tmp.ReleaseDate.Value;
         galgame.LastFetchInfoTime = DateTime.Now;
         return galgame;
     }
