@@ -1,9 +1,11 @@
 name: build
 
 on:
+  workflow_dispatch: 
   push:
     branches:
       - dev
+      - git_action
     paths:
       - 'GalgameManager/**'
       - 'GalgameManager.Core/**'
@@ -34,6 +36,19 @@ jobs:
 
     - name: Setup MSBuild.exe
       uses: microsoft/setup-msbuild@v2
+      
+    - name: Update version
+      shell: pwsh
+      run: |
+        $manifestPath = "GalgameManager/Package.appxmanifest"
+        [xml]$manifest = Get-Content $manifestPath
+        $version = $manifest.Package.Identity.Version
+        $versionParts = $version.Split('.')
+        $versionParts[3] = [string]([int]$versionParts[3] + 1)
+        $newVersion = [string]::Join('.', $versionParts)
+        $manifest.Package.Identity.Version = $newVersion
+        $manifest.Save($manifestPath)
+        echo "Updated version to $newVersion"
 
     - name: Create the app package
       run: msbuild GalgameManager\GalgameManager.csproj /restore "/p:Platform=${{ matrix.platform }};Configuration=Release;UapAppxPackageBuildMode=SideloadOnly;AppxPackageDir=..\publish\;GenerateAppxPackageOnBuild=true;AppxPackageSigningEnabled=true;PackageCertificateKeyFile=GalgameManager_TemporaryKey.pfx"
