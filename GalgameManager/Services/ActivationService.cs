@@ -102,11 +102,8 @@ public class ActivationService : IActivationService
                 await _galgameFolderCollectionService.InitAsync();
                 await _categoryService.Init();
                 await _filterService.InitAsync();
-                await UiThreadInvokeHelper.InvokeAsync(() =>
-                {
-                    importWindow?.Close();
-                });
             });
+            importWindow?.Close();
         }
         catch (Exception e)
         {
