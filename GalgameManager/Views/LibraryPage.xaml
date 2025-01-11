@@ -45,7 +45,6 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
-            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         
         <CommandBar Grid.Row="0" Background="Transparent" IsOpen="False" DefaultLabelPosition="Right"
@@ -171,7 +170,7 @@
         </ScrollViewer>
 
         <!-- 添加统计信息悬浮窗 -->
-        <InfoBar Grid.Row="3"
+        <InfoBar Grid.Row="2"
                  IsOpen="True"
                  IsClosable="False"
                  IsIconVisible="False"
