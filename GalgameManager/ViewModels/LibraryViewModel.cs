@@ -19,10 +19,13 @@ public partial class LibraryViewModel(
     INavigationService navigationService,
     IGalgameSourceCollectionService galSourceService,
     IInfoService infoService,
-    IBgTaskService bgTaskService)
+    IBgTaskService bgTaskService,
+    IGalgameCollectionService galgameService
+    )
     : ObservableObject, INavigationAware
 {
     private readonly GalgameSourceCollectionService _galSourceCollectionService = (GalgameSourceCollectionService)galSourceService;
+    private readonly IGalgameCollectionService _galgameService = galgameService;
     private readonly IBgTaskService _bgTaskService = bgTaskService;
     [ObservableProperty, NotifyPropertyChangedFor(nameof(IsBackEnabled))]
     private GalgameSourceBase? _currentSource;
@@ -39,6 +42,9 @@ public partial class LibraryViewModel(
     public bool IsBackEnabled => CurrentSource != null;
     [ObservableProperty] private bool _sourceVisible;
     [ObservableProperty] private bool _galgamesVisible;
+    [ObservableProperty] private bool _isPhrasing;
+    [ObservableProperty]
+    private ObservableCollection<GalgameSourceBase> _pathNodes = new();
 
     #endregion
 
@@ -57,6 +63,16 @@ public partial class LibraryViewModel(
     }
 
     #endregion
+
+    [ObservableProperty]
+    private string _statisticsText = string.Empty;
+
+    private void UpdateStatistics()
+    {
+        var sourceCount = Source.Count;
+        var galgameCount = Galgames.Count;
+        StatisticsText = string.Format("LibraryPage_Statistics".GetLocalized(), sourceCount, galgameCount);
+    }
 
     public void OnNavigatedTo(object parameter)
     {
@@ -136,7 +152,26 @@ public partial class LibraryViewModel(
         UpdateGridSpacing = true;
         SourceVisible = Source.Count > 0;
         GalgamesVisible = Galgames.Count > 0;
+        UpdateStatistics();
+
+        // 更新路径节点
+        PathNodes.Clear();
+        if (clickedItem is GalgameSourceBase newSource)
+        {
+            var currentSource = newSource;
+            var nodes = new List<GalgameSourceBase>();
+            while (currentSource != null)
+            {
+                nodes.Insert(0, currentSource);
+                currentSource = currentSource.ParentSource;
+            }
+            foreach (var node in nodes)
+            {
+                PathNodes.Add(node);
+            }
+        }
     }
+    
 
     [RelayCommand]
     private void Back()
@@ -243,5 +278,61 @@ public partial class LibraryViewModel(
     {
         _galSourceCollectionService.ScanAll();
         infoService.Info(InfoBarSeverity.Success, msg: "LibraryPage_ScanAll_Success".GetLocalized(Source.Count));
+    }
+
+    [RelayCommand]
+    private void EditCurrentFolder()
+    {
+        if (CurrentSource is null) return;
+        _beforeNavigateFromSource = CurrentSource;
+        navigationService.NavigateTo(typeof(GalgameSourceViewModel).FullName!, CurrentSource.Url);
+    }
+
+    [RelayCommand]
+    private async Task GalFlyOutDelete(Galgame? galgame)
+    {
+        if(galgame == null) return;
+        ContentDialog dialog = new()
+        {
+            XamlRoot = App.MainWindow!.Content.XamlRoot,
+            Title = "HomePage_Remove_Title".GetLocalized(),
+            Content = "HomePage_Remove_Message".GetLocalized(),
+            PrimaryButtonText = "Yes".GetLocalized(),
+            SecondaryButtonText = "Cancel".GetLocalized()
+        };
+        dialog.PrimaryButtonClick += async (_, _) =>
+        {
+            await _galgameService.RemoveGalgame(galgame);
+        };
+        
+        await dialog.ShowAsync();
+
+        // 删除游戏后，刷新当前库
+        NavigateTo(CurrentSource);
+    }
+
+    [RelayCommand]
+    private void GalFlyOutEdit(Galgame? galgame)
+    {
+        if(galgame == null) return;
+        _beforeNavigateFromSource = CurrentSource;
+        navigationService.NavigateTo(typeof(GalgameSettingViewModel).FullName!, galgame);
+    }
+
+    [RelayCommand]
+    private async Task GalFlyOutGetInfoFromRss(Galgame? galgame)
+    {
+        if(galgame == null) return;
+        IsPhrasing = true;
+        await _galgameService.PhraseGalInfoAsync(galgame);
+        IsPhrasing = false;
+    }
+
+    public void OnBreadcrumbBarItemClicked(BreadcrumbBar sender, BreadcrumbBarItemClickedEventArgs args)
+    {
+        if (args.Item is GalgameSourceBase source)
+        {
+            NavigateTo(source);
+        }
     }
 }

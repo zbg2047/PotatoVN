@@ -1757,6 +1757,24 @@
   <data name="LibraryPage_DownloadAllData.Label" xml:space="preserve">
     <value>下载所有游戏数据</value>
   </data>
+  <data name="LibraryPage_EditCurrentFolder.Text" xml:space="preserve">
+    <value>管理当前库</value>
+  </data>
+  <data name="LibraryPage_EditCurrentFolder_AppBarButton.Label" xml:space="preserve">
+    <value>管理当前库</value>
+  </data>
+  <data name="LibraryPage_EditGameInfo.Text" xml:space="preserve">
+    <value>修改游戏信息</value>
+  </data>
+  <data name="LibraryPage_DownloadGameInfo.Text" xml:space="preserve">
+    <value>下载游戏信息</value>
+  </data>
+  <data name="LibraryPage_RemoveGame.Text" xml:space="preserve">
+    <value>从库中移除游戏</value>
+  </data>
+  <data name="LibraryPage_Statistics" xml:space="preserve">
+    <value>游戏库: {0} | 游戏: {1}</value>
+  </data>
   <data name="GalgameCollectionService_LoadMetaFailed" xml:space="preserve">
     <value>加载本地Meta失败</value>
   </data>

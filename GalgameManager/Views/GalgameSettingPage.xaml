@@ -11,6 +11,7 @@
     
     <Page.Resources>
         <converter:InverseBooleanConverter x:Key="InverseBooleanConverter" />
+        <converter:DateTimeToStringConverter x:Key="DateTimeToStringConverter" />
     </Page.Resources>
     
     <Grid Margin="0 0 0 40">
@@ -92,7 +93,7 @@
                         <Grid Grid.Column="1" Margin="50 0 0 0">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
                             <TextBlock x:Uid="GalgameSettingPage_GalgameRssType" VerticalAlignment="Center" 
@@ -131,8 +132,8 @@
                     
                         <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
                         
@@ -141,12 +142,12 @@
                             <TextBox Text="{x:Bind ViewModel.Gal.SavePosition}" IsEnabled="False" VerticalAlignment="Center" AcceptsReturn="False"/>
                         </StackPanel>
 
-                        <!-- <control:LockableTextBox 
+                        <control:LockableTextBox 
                             Grid.Column="1"
                             x:Uid="GalgameSettingPage_GalgameReleaseDate"
-                            Value="{x:Bind ViewModel.Gal.ReleaseDate.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                            Value="{x:Bind ViewModel.Gal.ReleaseDate.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource DateTimeToStringConverter}}"
                             IsLock="{x:Bind ViewModel.Gal.ReleaseDate.IsLock, Mode=TwoWay}" 
-                            AcceptsReturn="False"/> -->
+                            AcceptsReturn="False"/>
 
                         <control:LockableNumberBox 
                             Grid.Column="2" 
