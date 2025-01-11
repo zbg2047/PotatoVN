@@ -95,5 +95,14 @@ public interface IGalgameCollectionService
     /// <returns>修改过后的游戏</returns>
     public Task<Galgame> PhraseGalInfoOnlyAsync(Galgame galgame, RssType rssType = RssType.None);
 
+    /// <summary>
+    /// 从信息源中搜刮游戏角色信息，直接修改传入的galgameCharacter
+    /// </summary>
+    /// <param name="galgameCharacter"></param>
+    /// <param name="rssType"></param>
+    /// <returns></returns>
+    public Task<GalgameCharacter> PhraseGalCharacterAsync(GalgameCharacter galgameCharacter,
+        RssType rssType = RssType.None);
+
     public Task ExportAsync(Action<string, int, int>? progress);
 }

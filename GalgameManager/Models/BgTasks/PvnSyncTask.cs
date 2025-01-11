@@ -189,7 +189,7 @@ public class PvnSyncTask : BgTaskBase
                 }
                 catch (Exception e)
                 {
-                    infoService.Event(EventType.PvnSyncEvent, InfoBarSeverity.Warning, "PvnSyncTask_Error_Upload", e);
+                    infoService.Event(EventType.PvnSyncEvent, InfoBarSeverity.Warning, "PvnSyncTask_Error_Upload".GetLocalized(), e);
                     ignore.Add(game);
                 }
             }

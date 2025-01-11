@@ -1488,10 +1488,7 @@
     <value>下载角色数据任务</value>
   </data>
   <data name="Galgame_GetCharacterInfo_GettingInfo" xml:space="preserve">
-    <value>正在获取 {0}({1}) 的信息</value>
-  </data>
-  <data name="Galgame_GetCharacterInfo_GottenInfo" xml:space="preserve">
-    <value>成功获取 {0}({1}) 的信息</value>
+    <value>正在获取 {0} 的信息</value>
   </data>
   <data name="GalgameFolder_GetGalgameInfo_Waiting" xml:space="preserve">
     <value>等待角色信息下载完成</value>
@@ -2189,5 +2186,8 @@
   </data>
   <data name="SettingsPage_Download_Character.Description" xml:space="preserve">
     <value>是否在获取游戏信息时下载对应游戏的游戏角色信息</value>
+  </data>
+  <data name="Galgame_GetCharacterInfo_RunningTasks" xml:space="preserve">
+    <value>还有{0}个游戏等待下载角色信息</value>
   </data>
 </root>
