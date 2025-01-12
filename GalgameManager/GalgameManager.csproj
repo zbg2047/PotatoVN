@@ -27,6 +27,7 @@
     <AppxBundlePlatforms>x86|x64</AppxBundlePlatforms>
   </PropertyGroup>
   <ItemGroup>
+    <Content Remove="Assets\Pictures\icon-dev\*"/>
     <Content Remove="Assets\Potato.altform-lightunplated_targetsize-16.png" />
     <Content Remove="Assets\Potato.altform-lightunplated_targetsize-24.png" />
     <Content Remove="Assets\Potato.altform-lightunplated_targetsize-256.png" />
@@ -52,6 +53,7 @@
     <Content Update="Assets\Libs\x64\7za.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Remove="Assets\Potato-dev.png" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="Assets\Potato.scale-100.png" />
