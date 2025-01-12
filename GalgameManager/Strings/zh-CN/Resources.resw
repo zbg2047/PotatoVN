@@ -2208,4 +2208,10 @@
   <data name="Galgame_GetCharacterInfo_RunningTasks" xml:space="preserve">
     <value>还有{0}个游戏等待下载角色信息</value>
   </data>
+  <data name="LibraryPage_NavVisible.Label" xml:space="preserve">
+    <value>显示导航栏</value>
+  </data>
+  <data name="LibraryPage_StatisticsVisible.Label" xml:space="preserve">
+    <value>显示统计数据</value>
+  </data>
 </root>

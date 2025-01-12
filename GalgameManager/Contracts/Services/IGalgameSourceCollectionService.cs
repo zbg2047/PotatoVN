@@ -65,6 +65,11 @@ public interface IGalgameSourceCollectionService
     public Task DeleteGalgameFolderAsync(GalgameSourceBase source);
 
     /// <summary>
+    /// 扫描所有库
+    /// </summary>
+    public void ScanAll();
+
+    /// <summary>
     /// 将一个游戏移入某个库，不进行物理移动操作（如复制文件节、上传游戏等）
     /// </summary>
     /// <param name="target"></param>

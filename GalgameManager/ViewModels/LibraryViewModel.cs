@@ -5,11 +5,11 @@ using CommunityToolkit.WinUI.Collections;
 using GalgameManager.Contracts;
 using GalgameManager.Contracts.Services;
 using GalgameManager.Contracts.ViewModels;
+using GalgameManager.Enums;
 using GalgameManager.Helpers;
 using GalgameManager.Models;
 using GalgameManager.Models.BgTasks;
 using GalgameManager.Models.Sources;
-using GalgameManager.Services;
 using GalgameManager.Views.Dialog;
 using Microsoft.UI.Xaml.Controls;
 
@@ -20,13 +20,11 @@ public partial class LibraryViewModel(
     IGalgameSourceCollectionService galSourceService,
     IInfoService infoService,
     IBgTaskService bgTaskService,
-    IGalgameCollectionService galgameService
+    IGalgameCollectionService galgameService,
+    ILocalSettingsService settingsService
     )
     : ObservableObject, INavigationAware
 {
-    private readonly GalgameSourceCollectionService _galSourceCollectionService = (GalgameSourceCollectionService)galSourceService;
-    private readonly IGalgameCollectionService _galgameService = galgameService;
-    private readonly IBgTaskService _bgTaskService = bgTaskService;
     [ObservableProperty, NotifyPropertyChangedFor(nameof(IsBackEnabled))]
     private GalgameSourceBase? _currentSource;
     private GalgameSourceBase? _lastBackSource;
@@ -45,6 +43,20 @@ public partial class LibraryViewModel(
     [ObservableProperty] private bool _isPhrasing;
     [ObservableProperty]
     private ObservableCollection<GalgameSourceBase> _pathNodes = new();
+    [ObservableProperty] private bool _isNavBarVisible;
+    [ObservableProperty] private bool _isStatisticsVisible;
+
+    partial void OnIsNavBarVisibleChanged(bool value)
+    {
+        if (settingsService.ReadSettingAsync<bool>(KeyValues.LibraryNavBar).Result != value)
+            settingsService.SaveSettingAsync(KeyValues.LibraryNavBar, value);
+    }
+
+    partial void OnIsStatisticsVisibleChanged(bool value)
+    {
+        if (settingsService.ReadSettingAsync<bool>(KeyValues.LibraryStatistics).Result != value)
+            settingsService.SaveSettingAsync(KeyValues.LibraryStatistics, value);
+    }
 
     #endregion
 
@@ -85,15 +97,17 @@ public partial class LibraryViewModel(
                 return SearchKey.IsNullOrEmpty() || game.ApplySearchKey(SearchKey);
             return false;
         };
+        IsStatisticsVisible = settingsService.ReadSettingAsync<bool>(KeyValues.LibraryStatistics).Result;
+        IsNavBarVisible = settingsService.ReadSettingAsync<bool>(KeyValues.LibraryNavBar).Result;
         if (_beforeNavigateFromSource is not null) parameter = _beforeNavigateFromSource;
         NavigateTo(parameter as GalgameSourceBase); //显示根库 / 指定库
         _beforeNavigateFromSource = null;
-        _galSourceCollectionService.OnSourceChanged += HandleSourceCollectionChanged;
+        galSourceService.OnSourceChanged += HandleSourceCollectionChanged;
     }
 
     public void OnNavigatedFrom()
     {
-        _galSourceCollectionService.OnSourceChanged -= HandleSourceCollectionChanged;
+        galSourceService.OnSourceChanged -= HandleSourceCollectionChanged;
         _lastBackSource = CurrentSource = null;
     }
 
@@ -115,7 +129,7 @@ public partial class LibraryViewModel(
         Galgames.Clear();
         if (clickedItem == null)
         {
-            foreach (GalgameSourceBase src in _galSourceCollectionService.GetGalgameSources()
+            foreach (GalgameSourceBase src in galSourceService.GetGalgameSources()
                          .Where(s => s.ParentSource is null))
                 Source.Add(src);
         }
@@ -130,7 +144,7 @@ public partial class LibraryViewModel(
         {
             if (source.SubSources.Count > 0)
             {
-                foreach (GalgameSourceBase src in _galSourceCollectionService.GetGalgameSources()
+                foreach (GalgameSourceBase src in galSourceService.GetGalgameSources()
                              .Where(s => s.ParentSource == clickedItem))
                     Source.Add(src);
                 foreach (GalgameAndPath game in source.Galgames)
@@ -195,13 +209,13 @@ public partial class LibraryViewModel(
         if (CurrentSource is null)
         {
             // 获取所有根库
-            sources.AddRange(_galSourceCollectionService.GetGalgameSources());
+            sources.AddRange(galSourceService.GetGalgameSources());
         }
         else
         {
             // 获取当前库及其所有子库
             sources.Add(CurrentSource);
-            var allSources = _galSourceCollectionService.GetGalgameSources();
+            var allSources = galSourceService.GetGalgameSources();
             void AddSubSources(GalgameSourceBase parent)
             {
                 foreach (var source in allSources.Where(s => s.ParentSource == parent))
@@ -226,7 +240,7 @@ public partial class LibraryViewModel(
                         _ => 3000
                     });
             };
-            _ = _bgTaskService.AddBgTask(getGalgameInfoFromRss);
+            _ = bgTaskService.AddBgTask(getGalgameInfoFromRss);
         }
     }
 
@@ -244,10 +258,10 @@ public partial class LibraryViewModel(
             switch (dialog.SelectItem)
             {
                 case 0:
-                    await _galSourceCollectionService.AddGalgameSourceAsync(GalgameSourceType.LocalFolder, dialog.Path);
+                    await galSourceService.AddGalgameSourceAsync(GalgameSourceType.LocalFolder, dialog.Path);
                     break;
                 case 1:
-                    await _galSourceCollectionService.AddGalgameSourceAsync(GalgameSourceType.LocalZip, dialog.Path);
+                    await galSourceService.AddGalgameSourceAsync(GalgameSourceType.LocalZip, dialog.Path);
                     break;
             }
 
@@ -270,13 +284,13 @@ public partial class LibraryViewModel(
     private async Task DeleteFolder(GalgameSourceBase? galgameFolder)
     {
         if (galgameFolder is null) return;
-        await _galSourceCollectionService.DeleteGalgameFolderAsync(galgameFolder);
+        await galSourceService.DeleteGalgameFolderAsync(galgameFolder);
     }
 
     [RelayCommand]
     private void ScanAll()
     {
-        _galSourceCollectionService.ScanAll();
+        galSourceService.ScanAll();
         infoService.Info(InfoBarSeverity.Success, msg: "LibraryPage_ScanAll_Success".GetLocalized(Source.Count));
     }
 
@@ -302,7 +316,7 @@ public partial class LibraryViewModel(
         };
         dialog.PrimaryButtonClick += async (_, _) =>
         {
-            await _galgameService.RemoveGalgame(galgame);
+            await galgameService.RemoveGalgame(galgame);
         };
         
         await dialog.ShowAsync();
@@ -324,7 +338,7 @@ public partial class LibraryViewModel(
     {
         if(galgame == null) return;
         IsPhrasing = true;
-        await _galgameService.PhraseGalInfoAsync(galgame);
+        await galgameService.PhraseGalInfoAsync(galgame);
         IsPhrasing = false;
     }
 
