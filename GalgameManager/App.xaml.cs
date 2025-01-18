@@ -215,6 +215,7 @@ public partial class App : Application
                     GetService<IInfoService>().Event(EventType.AppError, InfoBarSeverity.Error,
                         "App_Error".GetLocalized(), msg: error);
                 }
+                Status = WindowMode.Normal;
                 break;
             case WindowMode.Minimize:
                 Status = WindowMode.Minimize;

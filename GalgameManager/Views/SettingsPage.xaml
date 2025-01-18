@@ -432,6 +432,20 @@
                                     </ComboBox>
                                 </control:Setting>
                             </control:Panel>
+                            <!-- 开机自启 -->
+                            <control:Panel>
+                                <StackPanel Spacing="{StaticResource SettingsPageStackPanelSpacing}">
+                                    <!-- 是否开机自启 -->
+                                    <local:SettingToggleSwitch 
+                                        x:Uid="SettingsPage_Start_AutoStartOnLogin"
+                                        IsOn="{x:Bind ViewModel.AutoStartWhenLogin, Mode=TwoWay}" />
+                                    <!-- 开机自启时是否最小化到托盘 -->
+                                    <local:SettingToggleSwitch 
+                                        x:Uid="SettingsPage_Start_MinToTray"
+                                        IsOn="{x:Bind ViewModel.MinToTrayWhenAutoStart, Mode=TwoWay}" 
+                                        Visibility="{x:Bind ViewModel.AutoStartWhenLogin, Mode=OneWay}"/>
+                                </StackPanel>
+                            </control:Panel>
                         </StackPanel>
                     </control:SettingExpander.SettingContent>
                 </control:SettingExpander>

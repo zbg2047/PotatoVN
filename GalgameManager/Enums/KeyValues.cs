@@ -46,6 +46,8 @@ public static class KeyValues
     public const string QuitStart = "quitStart"; //bool, 是否在jump list跳转打开游戏时启动游戏
     public const string CategoryGroup = "categoryGroup"; // string，分类页展示的分类组
     public const string StartPage = "startPage"; // PageEnum,启动时显示的页面
+    public const string AutoStartWhenLogin = "autoStartWhenLogin"; //bool, 是否开机自启
+    public const string MinToTrayWhenAutoStart = "minToTrayWhenAutoStart"; //bool, 开机自启时是否最小化到托盘
     
     //数据相关
     public const string GalgameSources = "galgameSources";

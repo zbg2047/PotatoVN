@@ -2214,4 +2214,16 @@
   <data name="LibraryPage_StatisticsVisible.Label" xml:space="preserve">
     <value>显示统计数据</value>
   </data>
+  <data name="SettingsPage_Start_AutoStartOnLogin.Title" xml:space="preserve">
+    <value>系统启动后自动启动软件</value>
+  </data>
+  <data name="SettingsPage_Start_AutoStartOnLogin.Description" xml:space="preserve">
+    <value>是否在windows启动后（登录后）自动启动PotatoVN</value>
+  </data>
+  <data name="SettingsPage_Start_MinToTray.Title" xml:space="preserve">
+    <value>最小化到系统托盘</value>
+  </data>
+  <data name="SettingsPage_Start_MinToTray.Description" xml:space="preserve">
+    <value>自动启动后是否最小化到系统托盘</value>
+  </data>
 </root>

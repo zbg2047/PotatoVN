@@ -127,10 +127,10 @@ public class ActivationService : IActivationService
             await _bgTaskService.ResolvedBgTasksAsync();
         }
         
-        App.Status = IsRestart() ? WindowMode.SystemTray : WindowMode.Normal;
+        App.Status = WindowMode.SystemTray;
 
         // Execute tasks after activation.
-        await StartupAsync();
+        await StartupAsync(activationArgs);
     }
 
     public async Task HandleActivationAsync(object activationArgs)
@@ -171,11 +171,14 @@ public class ActivationService : IActivationService
         App.SystemTray.ForceCreate(false);
     }
 
-    private async Task StartupAsync()
+    private async Task StartupAsync(object activationArgs)
     {
         await _galgameCollectionService.StartAsync();
         await _galgameFolderCollectionService.StartAsync();
-        if (IsRestart() == false) App.SetWindowMode(WindowMode.Normal);
+        var activateWindow = !IsRestart();
+        if (activationArgs is AppActivationArguments { Kind: ExtendedActivationKind.StartupTask })
+            activateWindow = false;
+        if (activateWindow) App.SetWindowMode(WindowMode.Normal);
         if (IsRestart() == false) _pvnService.Startup();
         if (IsRestart() == false) await _updateService.UpdateSettingsBadgeAsync();
         await _appCenterService.StartAsync();

@@ -1,4 +1,5 @@
-﻿using Windows.Services.Store;
+﻿using Windows.ApplicationModel;
+using Windows.Services.Store;
 using Windows.Storage;
 using Windows.Storage.Pickers;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -18,7 +19,7 @@ using GalgameManager.Helpers.Phrase;
 using GalgameManager.Models.BgTasks;
 using GalgameManager.Models.Sources;
 using GalgameManager.Views.Dialog;
-using Microsoft.Windows.AppLifecycle;
+using AppInstance = Microsoft.Windows.AppLifecycle.AppInstance;
 
 namespace GalgameManager.ViewModels;
 
@@ -137,6 +138,8 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
         _startPage = _localSettingsService.ReadSettingAsync<PageEnum>(KeyValues.StartPage).Result;
         QuitStart = _localSettingsService.ReadSettingAsync<bool>(KeyValues.QuitStart).Result;
         _authenticationType = _localSettingsService.ReadSettingAsync<AuthenticationType>(KeyValues.AuthenticationType).Result;
+        _autoStartWhenLogin = _localSettingsService.ReadSettingAsync<bool>(KeyValues.AutoStartWhenLogin).Result;
+        _minToTrayWhenAutoStart = _localSettingsService.ReadSettingAsync<bool>(KeyValues.MinToTrayWhenAutoStart).Result;
         //Notification
         NotifyWhenGetGalgameInFolder = _localSettingsService.ReadSettingAsync<bool>(KeyValues.NotifyWhenGetGalgameInFolder).Result;
         NotifyWhenUnpackGame = _localSettingsService.ReadSettingAsync<bool>(KeyValues.NotifyWhenUnpackGame).Result;
@@ -421,6 +424,8 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
     [ObservableProperty] private PageEnum _startPage;
     public readonly AuthenticationType[] AuthenticationTypes;
     [ObservableProperty] private AuthenticationType _authenticationType;
+    [ObservableProperty] private bool _autoStartWhenLogin;
+    [ObservableProperty] private bool _minToTrayWhenAutoStart;
 
     partial void OnQuitStartChanged(bool value) => _localSettingsService.SaveSettingAsync(KeyValues.QuitStart, value);
 
@@ -471,6 +476,28 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
         }
     }
 
+    partial void OnAutoStartWhenLoginChanged(bool value)
+    {
+        _localSettingsService.SaveSettingAsync(KeyValues.AutoStartWhenLogin, value);
+        Test();
+    }
+
+    partial void OnMinToTrayWhenAutoStartChanged(bool value) =>
+        _localSettingsService.SaveSettingAsync(KeyValues.MinToTrayWhenAutoStart, value);
+
+    private async void Test()
+    {
+        try
+        {
+            StartupTask startupTask = await StartupTask.GetAsync("PotatoVNStartup");
+            await startupTask.RequestEnableAsync();
+        }
+        catch (Exception e)
+        {
+            _infoService.Info(InfoBarSeverity.Error, "SettingsPage_QuitStart_AutoStartFail", e.Message);
+        }
+    }
+    
     #endregion
 
     #region Other
