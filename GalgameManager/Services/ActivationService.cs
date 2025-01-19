@@ -177,7 +177,7 @@ public class ActivationService : IActivationService
         await _galgameFolderCollectionService.StartAsync();
         var activateWindow = !IsRestart();
         if (activationArgs is AppActivationArguments { Kind: ExtendedActivationKind.StartupTask })
-            activateWindow = false;
+            activateWindow = !await _localSettingsService.ReadSettingAsync<bool>(KeyValues.MinToTrayWhenAutoStart);
         if (activateWindow) App.SetWindowMode(WindowMode.Normal);
         if (IsRestart() == false) _pvnService.Startup();
         if (IsRestart() == false) await _updateService.UpdateSettingsBadgeAsync();

@@ -454,7 +454,7 @@
   <data name="GalgameFolderPage_DownloadSelectedInfo" xml:space="preserve">
     <value>使用游戏ID下载选定游戏数据</value>
   </data>
-    <data name="GalgameFolderPage_DownloadSelectedInfoFromName.Label" xml:space="preserve">
+  <data name="GalgameFolderPage_DownloadSelectedInfoFromName.Label" xml:space="preserve">
     <value>使用游戏名下载选定游戏数据</value>
   </data>
   <data name="Search" xml:space="preserve">
@@ -1168,7 +1168,7 @@
   </data>
   <data name="HomePage_Sort_DescendOrAscend" xml:space="preserve">
     <value>降序/升序</value>
-  </data> 
+  </data>
   <data name="HomePage_Sort_Descend" xml:space="preserve">
     <value>降序</value>
   </data>
@@ -2179,23 +2179,23 @@
     <value>游戏名</value>
   </data>
   <data name="SortKeys_Developer" xml:space="preserve">
-      <value>开发商</value>
+    <value>开发商</value>
   </data>
   <data name="SortKeys_Rating" xml:space="preserve">
-      <value>评分</value>
+    <value>评分</value>
   </data>
   <data name="SortKeys_LastPlay" xml:space="preserve">
-      <value>最后游玩时间</value>
+    <value>最后游玩时间</value>
   </data>
   <data name="SortKeys_ReleaseDate" xml:space="preserve">
-      <value>发售日期</value>
+    <value>发售日期</value>
   </data>
   <data name="SortKeys_LastFetchInfoTime" xml:space="preserve">
-      <value>最后更新信息时间</value>
+    <value>最后更新信息时间</value>
   </data>
   <data name="SortKeys_AddTime" xml:space="preserve">
-      <value>添加时间</value>
-  </data>    
+    <value>添加时间</value>
+  </data>
   <data name="GalgameSettingPage_GetInfoFromRssFailed" xml:space="preserve">
     <value>从数据源获取数据失败</value>
   </data>
@@ -2225,5 +2225,14 @@
   </data>
   <data name="SettingsPage_Start_MinToTray.Description" xml:space="preserve">
     <value>自动启动后是否最小化到系统托盘</value>
+  </data>
+  <data name="SettingsPage_Start_AutoStartDisabledByUser" xml:space="preserve">
+    <value>你在任务管理器中手动禁用过PotatoVN的自动启动啦，请在任务管理器中打开本软件的自动启动后再尝试~</value>
+  </data>
+  <data name="SettingsPage_Start_AutoStartDisabledByPolicy" xml:space="preserve">
+    <value>PotatoVN的自动启动被组策略禁用啦，详情请咨询电脑管理员~</value>
+  </data>
+  <data name="SettingsPage_Start_AutoStartFail" xml:space="preserve">
+    <value>修改自动启动设置失败</value>
   </data>
 </root>

@@ -478,25 +478,34 @@ public partial class SettingsViewModel : ObservableObject, INavigationAware
 
     partial void OnAutoStartWhenLoginChanged(bool value)
     {
-        _localSettingsService.SaveSettingAsync(KeyValues.AutoStartWhenLogin, value);
-        Test();
+        Task.Run(async () =>
+        {
+            try
+            {
+                StartupTask startupTask = await StartupTask.GetAsync("PotatoVNStartup");
+                if (value && (startupTask.State is StartupTaskState.DisabledByUser or StartupTaskState.DisabledByPolicy))
+                {
+                    if (startupTask.State == StartupTaskState.DisabledByUser)
+                        _infoService.Info(InfoBarSeverity.Warning, "SettingsPage_Start_AutoStartDisabledByUser".GetLocalized());
+                    else if(startupTask.State == StartupTaskState.DisabledByPolicy)
+                        _infoService.Info(InfoBarSeverity.Warning, "SettingsPage_Start_AutoStartDisabledByPolicy".GetLocalized());
+                    await UiThreadInvokeHelper.InvokeAsync(() => { AutoStartWhenLogin = false; });
+                    return;
+                }
+
+                if (value) await startupTask.RequestEnableAsync();
+                else startupTask.Disable();
+                await _localSettingsService.SaveSettingAsync(KeyValues.AutoStartWhenLogin, value);
+            }
+            catch (Exception e)
+            {
+                _infoService.Info(InfoBarSeverity.Error, "SettingsPage_Start_AutoStartFail".GetLocalized(), e.Message);
+            }
+        });
     }
 
     partial void OnMinToTrayWhenAutoStartChanged(bool value) =>
         _localSettingsService.SaveSettingAsync(KeyValues.MinToTrayWhenAutoStart, value);
-
-    private async void Test()
-    {
-        try
-        {
-            StartupTask startupTask = await StartupTask.GetAsync("PotatoVNStartup");
-            await startupTask.RequestEnableAsync();
-        }
-        catch (Exception e)
-        {
-            _infoService.Info(InfoBarSeverity.Error, "SettingsPage_QuitStart_AutoStartFail", e.Message);
-        }
-    }
     
     #endregion
 
