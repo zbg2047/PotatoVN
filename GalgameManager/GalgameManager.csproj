@@ -20,7 +20,7 @@
     <GenerateTestArtifacts>True</GenerateTestArtifacts>
     <AppxBundle>Never</AppxBundle>
     <DefaultLanguage>zh-cn</DefaultLanguage>
-    <AppxPackageDir>D:\.Net\PotatoVN_Release\</AppxPackageDir>
+    <AppxPackageDir>.\Build\</AppxPackageDir>
     <GenerateTemporaryStoreCertificate>True</GenerateTemporaryStoreCertificate>
     <AppxPackageSigningEnabled>False</AppxPackageSigningEnabled>
     <AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>
@@ -29,7 +29,7 @@
     <NoWarn>MVVMTK0045</NoWarn>
   </PropertyGroup>
   <ItemGroup>
-    <Content Remove="Assets\Pictures\icon-dev\*"/>
+    <Content Remove="Assets\Pictures\icon-dev\*" />
     <Content Remove="Assets\Potato.altform-lightunplated_targetsize-16.png" />
     <Content Remove="Assets\Potato.altform-lightunplated_targetsize-24.png" />
     <Content Remove="Assets\Potato.altform-lightunplated_targetsize-256.png" />
