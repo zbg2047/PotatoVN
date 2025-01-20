@@ -1,5 +1,6 @@
 ﻿using Windows.Storage;
 using Newtonsoft.Json;
+using LiteDB;
 
 namespace GalgameManager.Contracts.Services;
 
@@ -13,6 +14,8 @@ public interface ILocalSettingsService
     public DirectoryInfo LocalFolder { get; }
     
     public DirectoryInfo TemporaryFolder { get; }
+
+    public LiteDatabase Database { get; }
     
     Task<T?> ReadSettingAsync<T>(string key, bool isLarge = false, List<JsonConverter>? converters = null,
         bool typeNameHandling = false);

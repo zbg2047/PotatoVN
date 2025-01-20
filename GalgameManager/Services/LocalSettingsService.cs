@@ -8,6 +8,7 @@ using GalgameManager.Helpers.Phrase;
 using GalgameManager.Models;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
+using LiteDB;
 
 namespace GalgameManager.Services;
 
@@ -16,6 +17,7 @@ public class LocalSettingsService : ILocalSettingsService
     private const string ErrorFileName ="You_Should_Not_See_This_File.Check_AppSettingsJson.json";
     private const string TmpBackupFolderName = "Export";
     private const string FailDataFolderName = "FailData";
+    private const string DatabaseFileName = "pvn_data.db";
 
     private readonly IFileService _fileService;
 
@@ -28,10 +30,19 @@ public class LocalSettingsService : ILocalSettingsService
 
     private bool _isInitialized;
     private bool _isUpgrade;
+    private LiteDatabase? _database;
     
     public event ILocalSettingsService.Delegate? OnSettingChanged;
     public DirectoryInfo LocalFolder => new(ApplicationData.Current.LocalFolder.Path);
     public DirectoryInfo TemporaryFolder => new(ApplicationData.Current.TemporaryFolder.Path);
+    public LiteDatabase Database
+    {
+        get
+        {
+            _database ??=  new(Path.Combine(LocalFolder.FullName, DatabaseFileName));
+            return _database;
+        }
+    }
 
     public LocalSettingsService(IFileService fileService, IOptions<LocalSettingsOptions> options)
     {
@@ -47,6 +58,7 @@ public class LocalSettingsService : ILocalSettingsService
 
         async void OnAppClosing()
         {
+            _database?.Dispose();
             await _fileService.WaitForWriteFinishAsync();
         }
 

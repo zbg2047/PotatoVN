@@ -25,6 +25,11 @@ public class LocalSettingStatus
     public bool CategoryAddWantToPlay = false;
 
 
+    // 数据存储数据库化，对于导出的数据永远为false（导出数据采用json格式），v1.9
+    /// gameService是否已升级为LiteDB
+    public bool GameLiteDBUprade = false;
+
+
     /// galgameCollectionService是否已处理过导入
     public bool ImportGalgame = true;
     /// galgameSourceCollectionService是否已处理过导入

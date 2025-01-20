@@ -4,6 +4,7 @@ using GalgameManager.Contracts;
 using GalgameManager.Enums;
 using GalgameManager.Helpers;
 using GalgameManager.Models.Sources;
+using LiteDB;
 using Newtonsoft.Json;
 
 namespace GalgameManager.Models;
@@ -18,7 +19,8 @@ public partial class Galgame : ObservableObject, IDisplayableGameObject
     public event Action<Galgame, string, object>? GalPropertyChanged;
     public event Action<Exception>? ErrorOccurred; //非致命异常产生时触发
     
-    [JsonIgnore] public GalgameUid Uid => new()
+    [JsonIgnore][BsonIgnore]
+    public GalgameUid Uid => new()
     {
         Name = Name.Value!,
         CnName = CnName,
@@ -27,11 +29,11 @@ public partial class Galgame : ObservableObject, IDisplayableGameObject
         PvnId = Ids[(int)RssType.PotatoVn],
     };
     /// 唯一标识， 若要判断两个游戏是否为同一个游戏，应使用<see cref="GalgameUid"/>
-    public Guid Uuid  = Guid.NewGuid();
+    [BsonId] public Guid Uuid  = Guid.NewGuid();
     
     [ObservableProperty] private LockableProperty<string> _imagePath = DefaultImagePath;
 
-    [JsonIgnore] public string? ImageUrl;
+    [JsonIgnore][BsonIgnore] public string? ImageUrl;
     // ReSharper disable once FieldCanBeMadeReadOnly.Global
     public Dictionary<string, int> PlayedTime = new(); //ShortDateString() -> PlayedTime, 分钟
     [ObservableProperty] private LockableProperty<string> _name = "";
@@ -45,7 +47,7 @@ public partial class Galgame : ObservableObject, IDisplayableGameObject
     [ObservableProperty] private DateTime _lastFetchInfoTime = DateTime.MinValue; //上次搜刮信息时间(i.e.当前信息是什么时候搜刮产生的)
     [ObservableProperty] private DateTime _addTime = DateTime.MinValue; //游戏添加时间
     [ObservableProperty] private ObservableCollection<GalgameCharacter> _characters = new();
-    [JsonIgnore][ObservableProperty] private string _savePosition = string.Empty;
+    [JsonIgnore][BsonIgnore][ObservableProperty] private string _savePosition = string.Empty;
     [ObservableProperty] private string? _exePath;
     [ObservableProperty] private LockableProperty<ObservableCollection<string>> _tags;
     [ObservableProperty] private int _totalPlayTime; //单位：分钟
@@ -57,8 +59,8 @@ public partial class Galgame : ObservableObject, IDisplayableGameObject
     // ReSharper disable once MemberCanBePrivate.Global
     // ReSharper disable once FieldCanBeMadeReadOnly.Global
     public string?[] Ids = new string?[PhraserNumber]; //magic number: 钦定了一个最大Phraser数目
-    [JsonIgnore] public readonly ObservableCollection<Category> Categories = new();
-    [JsonIgnore] public ObservableCollection<GalgameSourceBase> Sources { get; } = new(); //所属的源
+    [JsonIgnore][BsonIgnore] public readonly ObservableCollection<Category> Categories = new();
+    [JsonIgnore][BsonIgnore] public ObservableCollection<GalgameSourceBase> Sources { get; } = new(); //所属的源
     [ObservableProperty] private string _comment = string.Empty; //吐槽（评论）
     [ObservableProperty] private int _myRate; //我的评分
     [ObservableProperty] private bool _privateComment; //是否私密评论
@@ -78,11 +80,12 @@ public partial class Galgame : ObservableObject, IDisplayableGameObject
         set => LastPlayTime = Utils.TryParseDateGuessCulture(value.Value ?? string.Empty);
     }
     
-    [Obsolete($"Use {nameof(LocalPath)} instead")]
+    [Obsolete($"Use {nameof(LocalPath)} instead")][BsonIgnore]
     public string Path { get; set; } = "";
     #endregion
 
-    [JsonIgnore] public string? Id
+    [JsonIgnore][BsonIgnore]
+    public string? Id
     {
         get => Ids[(int)RssType];
 
@@ -150,7 +153,7 @@ public partial class Galgame : ObservableObject, IDisplayableGameObject
     /// <summary>
     /// 该游戏是否是本地游戏（存在于某个本地文件夹库中）
     /// </summary>
-    [JsonIgnore] public bool IsLocalGame => Sources.Any(s => s.SourceType == GalgameSourceType.LocalFolder);
+    [JsonIgnore][BsonIgnore] public bool IsLocalGame => Sources.Any(s => s.SourceType == GalgameSourceType.LocalFolder);
 
     /// <summary>
     /// 删除游戏文件夹
@@ -164,7 +167,8 @@ public partial class Galgame : ObservableObject, IDisplayableGameObject
     /// <summary>
     /// 获取该游戏的本地文件夹路径，若其不是本地游戏则返回null
     /// </summary>
-    [JsonIgnore] public string? LocalPath =>
+    [JsonIgnore][BsonIgnore]
+    public string? LocalPath =>
         Sources.FirstOrDefault(s => s.SourceType == GalgameSourceType.LocalFolder)?.GetPath(this);
 
     /// <summary>

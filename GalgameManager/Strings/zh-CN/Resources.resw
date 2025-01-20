@@ -2235,4 +2235,7 @@
   <data name="SettingsPage_Start_AutoStartFail" xml:space="preserve">
     <value>修改自动启动设置失败</value>
   </data>
+  <data name="GalgameCollectionService_UpgradeToLiteDB_Failed" xml:space="preserve">
+    <value>数据升级失败 （游戏列表）</value>
+  </data>
 </root>
