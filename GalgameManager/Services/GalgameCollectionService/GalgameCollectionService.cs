@@ -100,14 +100,14 @@ public partial class GalgameCollectionService : IGalgameCollectionService
     private async Task LoadGalgames()
     {
         List<Galgame> galgames = [];
-        //if (await IsUsingLiteDB())
-        //{
-        //    await Task.Run(() =>
-        //    {
-        //        galgames = _dbSet.FindAll().ToList();
-        //    }); //用Task.Run运行，防止阻塞UI线程
-        //}
-        //else
+        if (await IsUsingLiteDB())
+        {
+            await Task.Run(() =>
+            {
+                galgames = _dbSet.FindAll().ToList();
+            }); //用Task.Run运行，防止阻塞UI线程
+        }
+        else
             galgames = await LocalSettingsService.ReadSettingAsync<List<Galgame>>(KeyValues.Galgames, true) ?? [];
         _galgames = new ObservableCollection<Galgame>(galgames);
         await ImportAsync();
@@ -745,7 +745,7 @@ public partial class GalgameCollectionService : IGalgameCollectionService
     /// <returns></returns>
     private async Task UpradeToLiteDB()
     {
-        LocalSettingStatus status = await LocalSettingsService.ReadSettingAsync<LocalSettingStatus>(KeyValues.DataStatus) ?? new();
+        LocalSettingStatus status = await LocalSettingsService.ReadSettingAsync<LocalSettingStatus>(KeyValues.DataStatus, true) ?? new();
         if (status.GameLiteDBUprade) return;
         try
         {

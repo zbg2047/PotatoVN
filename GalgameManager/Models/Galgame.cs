@@ -29,7 +29,7 @@ public partial class Galgame : ObservableObject, IDisplayableGameObject
         PvnId = Ids[(int)RssType.PotatoVn],
     };
     /// 唯一标识， 若要判断两个游戏是否为同一个游戏，应使用<see cref="GalgameUid"/>
-    [BsonId] public Guid Uuid  = Guid.NewGuid();
+    [BsonId] public Guid Uuid { get; set; }  = Guid.NewGuid();
     
     [ObservableProperty] private LockableProperty<string> _imagePath = DefaultImagePath;
 
@@ -58,7 +58,7 @@ public partial class Galgame : ObservableObject, IDisplayableGameObject
     [ObservableProperty] private PlayType _playType;
     // ReSharper disable once MemberCanBePrivate.Global
     // ReSharper disable once FieldCanBeMadeReadOnly.Global
-    public string?[] Ids = new string?[PhraserNumber]; //magic number: 钦定了一个最大Phraser数目
+    public string?[] Ids { get; set; } = new string?[PhraserNumber]; //magic number: 钦定了一个最大Phraser数目
     [JsonIgnore][BsonIgnore] public readonly ObservableCollection<Category> Categories = new();
     [JsonIgnore][BsonIgnore] public ObservableCollection<GalgameSourceBase> Sources { get; } = new(); //所属的源
     [ObservableProperty] private string _comment = string.Empty; //吐槽（评论）
