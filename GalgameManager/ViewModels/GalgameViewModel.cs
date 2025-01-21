@@ -258,7 +258,8 @@ public partial class GalgameViewModel : ObservableObject, INavigationAware
         }
         else
         {
-            var pattern = "([A-Za-z0-9]+[  ]{1}|\".+?\")";    //这个正则表达式用于匹配""的文件的地址，或者是系统环境变量这种由数字字母组成的文件
+            var pattern = @"([A-Za-z0-9]+[ ]{1}|\"".+?\"")|([A-Za-z]:\\(?:[^\\/:*?""<>|\r\n]+\\)*[^\\/:*?""<>|\r\n]+)";
+            //这个正则表达式用于匹配""的文件的地址，或者是系统环境变量这种由数字字母组成的文件
             var regex = new Regex(pattern,RegexOptions.None, TimeSpan.FromSeconds(0.1));
             MatchCollection matches = regex.Matches(Item.Startup_parameters);
             var filename = matches[0].Value;
