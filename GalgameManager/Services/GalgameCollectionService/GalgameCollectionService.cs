@@ -28,7 +28,7 @@ public partial class GalgameCollectionService : IGalgameCollectionService
     private readonly IInfoService _infoService;
     private readonly IBgTaskService _bgTaskService;
     private readonly IGalgameSourceCollectionService _galSrcService;
-    private readonly ILiteCollection<Galgame> _dbSet;
+    private ILiteCollection<Galgame> _dbSet = null!;
     public event Action<Galgame>? GalgameAddedEvent; //当有galgame添加时触发
     public event Action<Galgame>? GalgameDeletedEvent; //当有galgame删除时触发
     public event Action<Galgame>? MetaSavedEvent; //当有galgame元数据保存时触发
@@ -55,7 +55,7 @@ public partial class GalgameCollectionService : IGalgameCollectionService
         _infoService = infoService;
         _bgTaskService = bgTaskService;
         _galSrcService = galgameSourceService;
-        _dbSet = LocalSettingsService.Database.GetCollection<Galgame>("galgame");
+        
         
         BgmPhraser bgmPhraser = new(GetBgmData().Result);
         VndbPhraser vndbPhraser = new(GetVndbData().Result);
@@ -70,12 +70,14 @@ public partial class GalgameCollectionService : IGalgameCollectionService
         
         App.OnAppClosing += async () =>
         {
-            await SaveGalgamesAsync();
+            if (! await IsUsingLiteDb())
+                await SaveGalgamesAsync();
         };
     }
     
     public async Task InitAsync()
     {
+        _dbSet = LocalSettingsService.Database.GetCollection<Galgame>("galgame");
         await LoadGalgames();
         await _jumpListService.CheckJumpListAsync(_galgames);
         await Upgrade();
@@ -100,7 +102,7 @@ public partial class GalgameCollectionService : IGalgameCollectionService
     private async Task LoadGalgames()
     {
         List<Galgame> galgames = [];
-        if (await IsUsingLiteDB())
+        if (await IsUsingLiteDb())
         {
             await Task.Run(() =>
             {
@@ -149,7 +151,7 @@ public partial class GalgameCollectionService : IGalgameCollectionService
             await MixedPhraserOrderUpdate();
 
         // 游戏列表数据库化
-        await UpradeToLiteDB();
+        await UpgradeToLiteDb();
     }
     
     public async Task RemoveGalgame(Galgame galgame, bool removeFromDisk = false)
@@ -161,20 +163,10 @@ public partial class GalgameCollectionService : IGalgameCollectionService
         if (removeFromDisk)
             galgame.Delete();
         GalgameDeletedEvent?.Invoke(galgame);
-        await SaveGalgamesAsync();
+        if (await IsUsingLiteDb()) _dbSet.Delete(galgame.Uuid);
+        else await SaveGalgamesAsync();
     }
     
-    public Galgame? GetVirtualGame(Galgame galgame)=>_galgames.FirstOrDefault(g =>
-        string.IsNullOrEmpty(g.Ids[(int)RssType.Bangumi]) == false
-        && g.Ids[(int)RssType.Bangumi] == galgame.Ids[(int)RssType.Bangumi]
-        && g.CheckExistLocal() == false);
-
-    public void AddVirtualGalgame(Galgame game)
-    {
-        _galgames.Add(game);
-        GalgameAddedEvent?.Invoke(game);
-    }
-
     public async Task<Galgame> PhraseGalInfoAsync(Galgame galgame, RssType rssType = RssType.None,
         bool requireConfirm = false)
     {
@@ -357,6 +349,7 @@ public partial class GalgameCollectionService : IGalgameCollectionService
         IGalInfoPhraser phraser = PhraserList[(int)source];
         if (phraser is IGalStatusSync sync)
             (result, msg) = await sync.DownloadAllAsync(_galgames);
+        await SaveGalgamesAsync();
         return (result, msg);
     }
 
@@ -458,17 +451,21 @@ public partial class GalgameCollectionService : IGalgameCollectionService
         return _galgames.FirstOrDefault(g => g.Name.Value == name);
     }
     
-    /// <summary>
-    /// 保存galgame列表（以及其内部的galgame）
-    /// </summary>
-    /// <param name="galgame">
-    /// 要指定保存的galgame，若为null则不做文件夹保存，只做缓存保存 <br/>
-    /// 如果设置中没有打开保存备份则不会保存到游戏文件夹
-    /// </param>
-    public async Task SaveGalgamesAsync(Galgame? galgame = null)
+    public async Task SaveGalgamesAsync()
     {
-        await LocalSettingsService.SaveSettingAsync(KeyValues.Galgames, _galgames, true);
-        if (galgame is not null && await LocalSettingsService.ReadSettingAsync<bool>(KeyValues.SaveBackupMetadata))
+        if (await IsUsingLiteDb())
+            _dbSet.Upsert(_galgames);
+        else
+            await LocalSettingsService.SaveSettingAsync(KeyValues.Galgames, _galgames, true);
+    }
+    
+    public async Task SaveGalgameAsync(Galgame galgame)
+    {
+        if (await IsUsingLiteDb()) 
+            _dbSet.Upsert(galgame);
+        else 
+            await LocalSettingsService.SaveSettingAsync(KeyValues.Galgames, _galgames, true);
+        if (await LocalSettingsService.ReadSettingAsync<bool>(KeyValues.SaveBackupMetadata))
             await SaveMetaAsync(galgame);
     }
     
@@ -654,7 +651,7 @@ public partial class GalgameCollectionService : IGalgameCollectionService
             }
         }
         
-        await SaveGalgamesAsync(galgame);
+        await SaveGalgameAsync(galgame);
     }
 
     /// <summary>
@@ -705,9 +702,10 @@ public partial class GalgameCollectionService : IGalgameCollectionService
         }
     }
 
-    private static async Task<bool> IsUsingLiteDB()
+    private static async Task<bool> IsUsingLiteDb()
     {
-        return (await LocalSettingsService.ReadSettingAsync<LocalSettingStatus>(KeyValues.DataStatus, true))?.GameLiteDBUprade ?? false;
+        return (await LocalSettingsService.ReadSettingAsync<LocalSettingStatus>(KeyValues.DataStatus, true))
+            ?.GameLiteDBUprade ?? false;
     }
 
     #region UPGRADE
@@ -743,7 +741,7 @@ public partial class GalgameCollectionService : IGalgameCollectionService
     /// 升级存储格式到LiteDB
     /// </summary>
     /// <returns></returns>
-    private async Task UpradeToLiteDB()
+    private async Task UpgradeToLiteDb()
     {
         LocalSettingStatus status = await LocalSettingsService.ReadSettingAsync<LocalSettingStatus>(KeyValues.DataStatus, true) ?? new();
         if (status.GameLiteDBUprade) return;

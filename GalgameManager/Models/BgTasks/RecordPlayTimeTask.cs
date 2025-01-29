@@ -61,7 +61,7 @@ public class RecordPlayTimeTask : BgTaskBase
                     "RecordPlayTimeTask_Done".GetLocalized(Galgame.Name.Value ?? string.Empty,
                         TimeToDisplayTimeConverter.Convert(CurrentPlayTime)));
             });
-            await (App.GetService<IGalgameCollectionService>() as GalgameCollectionService)!.SaveGalgamesAsync(Galgame);
+            await App.GetService<IGalgameCollectionService>().SaveGalgameAsync(Galgame);
             if(await App.GetService<ILocalSettingsService>().ReadSettingAsync<bool>(KeyValues.SyncGames))
                 App.GetService<IPvnService>().Upload(Galgame, PvnUploadProperties.PlayTime);
         });

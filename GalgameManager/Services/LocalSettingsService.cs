@@ -9,6 +9,7 @@ using GalgameManager.Models;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using LiteDB;
+using Microsoft.UI.Xaml;
 
 namespace GalgameManager.Services;
 
@@ -30,19 +31,11 @@ public class LocalSettingsService : ILocalSettingsService
 
     private bool _isInitialized;
     private bool _isUpgrade;
-    private LiteDatabase? _database;
-    
+
     public event ILocalSettingsService.Delegate? OnSettingChanged;
     public DirectoryInfo LocalFolder => new(ApplicationData.Current.LocalFolder.Path);
     public DirectoryInfo TemporaryFolder => new(ApplicationData.Current.TemporaryFolder.Path);
-    public LiteDatabase Database
-    {
-        get
-        {
-            _database ??=  new(Path.Combine(LocalFolder.FullName, DatabaseFileName));
-            return _database;
-        }
-    }
+    public LiteDatabase Database { get; private set; } = null!;
 
     public LocalSettingsService(IFileService fileService, IOptions<LocalSettingsOptions> options)
     {
@@ -58,7 +51,7 @@ public class LocalSettingsService : ILocalSettingsService
 
         async void OnAppClosing()
         {
-            _database?.Dispose();
+            Database?.Dispose();
             await _fileService.WaitForWriteFinishAsync();
         }
 
@@ -144,6 +137,11 @@ public class LocalSettingsService : ILocalSettingsService
         }
 
         _isUpgrade = true;
+    }
+
+    public void InitDatabase()
+    {
+        Database = new(Path.Combine(LocalFolder.FullName, DatabaseFileName));
     }
 
     /// <summary>

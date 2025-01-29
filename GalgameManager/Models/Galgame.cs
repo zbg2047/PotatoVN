@@ -35,7 +35,7 @@ public partial class Galgame : ObservableObject, IDisplayableGameObject
 
     [JsonIgnore][BsonIgnore] public string? ImageUrl;
     // ReSharper disable once FieldCanBeMadeReadOnly.Global
-    public Dictionary<string, int> PlayedTime = new(); //ShortDateString() -> PlayedTime, 分钟
+    public Dictionary<string, int> PlayedTime { get; set; }= new(); //ShortDateString() -> PlayedTime, 分钟
     [ObservableProperty] private LockableProperty<string> _name = "";
     [ObservableProperty] private string _cnName = "";
     [ObservableProperty] private LockableProperty<string> _description = "";
@@ -65,10 +65,10 @@ public partial class Galgame : ObservableObject, IDisplayableGameObject
     [ObservableProperty] private int _myRate; //我的评分
     [ObservableProperty] private bool _privateComment; //是否私密评论
     private string? _savePath; //云端存档本地路径
-    public string? ProcessName; //手动指定的进程名，用于正确获取游戏进程
-    public string? TextPath; //记录的要打开的文本的路径
-    public bool PvnUpdate; //是否需要更新
-    public PvnUploadProperties PvnUploadProperties; // 要更新到Pvn的属性
+    public string? ProcessName { get; set; } //手动指定的进程名，用于正确获取游戏进程
+    public string? TextPath { get; set; } //记录的要打开的文本的路径
+    public bool PvnUpdate { get; set; } //是否需要更新
+    public PvnUploadProperties PvnUploadProperties { get; set; } // 要更新到Pvn的属性
     [ObservableProperty] private string _startup_parameters = string.Empty;//启动参数
 
     #region OBSOLETE_PROPERTIES //已被废弃的属性，为了兼容旧版本保留（用于反序列化迁移数据）

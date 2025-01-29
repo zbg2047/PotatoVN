@@ -16,6 +16,12 @@ public interface ILocalSettingsService
     public DirectoryInfo TemporaryFolder { get; }
 
     public LiteDatabase Database { get; }
+
+    /// <summary>
+    /// 初始化数据库链接，注意捕获异常 <br/>
+    /// 事实上这个方法只会被ActivationService调用。若数据库链接失败（被占用等）会直接退出程序
+    /// </summary>
+    public void InitDatabase();
     
     Task<T?> ReadSettingAsync<T>(string key, bool isLarge = false, List<JsonConverter>? converters = null,
         bool typeNameHandling = false);

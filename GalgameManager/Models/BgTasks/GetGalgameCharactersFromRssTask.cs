@@ -123,6 +123,7 @@ public class GetGalgameCharactersFromRssTask : BgTaskBase
             Current = total, Total = total,
             Message = "Galgame_GetCharacterInfo_Saving".GetLocalized(),
         });
+        await galgameService.SaveGalgameAsync(game);
         FileHelper.SaveWithoutJson(game.GetLogName(), log, "Logs");
         await Task.Delay(1000); //等待文件保存
         onProgress.Invoke(new Progress

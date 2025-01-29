@@ -34,7 +34,16 @@ public partial class GalgameCollectionService
         if (GetGalgameFromUid(meta.Uid) is { } existGame)
         {
             Galgame tmp = await DealWithExistGameAsync(sourceType, path, existGame, meta);
-            GalgameChangedEvent?.Invoke(tmp);
+            try
+            {
+                GalgameChangedEvent?.Invoke(tmp);
+            }
+            catch (Exception e)
+            {
+                _infoService.Event(EventType.GalgameEvent, InfoBarSeverity.Warning,
+                    "Failed On Calling GalgameChangedEvent", e);
+            }
+            await SaveGalgameAsync(tmp);
             return tmp;
         }
         
@@ -46,22 +55,54 @@ public partial class GalgameCollectionService
         meta.AddTime = DateTime.Now; // 游戏添加时间
         _galgames.Add(meta);
         _galgameMap[meta.Uuid] = meta;
-        GalgameAddedEvent?.Invoke(meta);
-        GalgameChangedEvent?.Invoke(meta);
+        try
+        {
+            GalgameAddedEvent?.Invoke(meta);
+            GalgameChangedEvent?.Invoke(meta);
+        }
+        catch (Exception e)
+        {
+            _infoService.Event(EventType.GalgameEvent, InfoBarSeverity.Warning, "Failed On Calling GalgameAddEvent", e);
+        }
+        
         meta.ErrorOccurred += e =>
             _infoService.Event(EventType.GalgameEvent, InfoBarSeverity.Warning, "GalgameEvent", e);
         GalgameSourceBase source = await GetOrAddSourceAsync(sourceType, path);
         _galSrcService.MoveInNoOperate(source, meta, path);
         
-        await SaveGalgamesAsync(meta);
+        await SaveGalgameAsync(meta);
         return meta;
+    }
+    
+    public void AddVirtualGalgame(Galgame game)
+    {
+        _galgames.Add(game);
+        _galgameMap[game.Uuid] = game;
+        try
+        {
+            GalgameAddedEvent?.Invoke(game);
+        }
+        catch (Exception e)
+        {
+            _infoService.Event(EventType.GalgameEvent, InfoBarSeverity.Warning, "Failed On Calling GalgameAddEvent", e);
+        }
+        
+        _ = SaveGalgameAsync(game);
     }
 
     public async Task<Galgame> SetLocalPathAsync(Galgame galgame, string path)
     {
         Galgame result = await DealWithExistGameAsync(GalgameSourceType.LocalFolder, path, galgame, null);
-        GalgameChangedEvent?.Invoke(result);
-        await SaveGalgamesAsync(result);
+        try
+        {
+            GalgameChangedEvent?.Invoke(result);
+        }
+        catch (Exception e)
+        {
+            _infoService.Event(EventType.GalgameEvent, InfoBarSeverity.Warning, "Failed On Calling GalgameChangedEvent", e);
+        }
+        
+        await SaveGalgameAsync(result);
         return result;
     }
 

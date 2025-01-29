@@ -28,6 +28,12 @@ public interface IGalgameCollectionService
         bool requireConfirm = true);
     
     /// <summary>
+    /// 添加一个非本地的虚拟galgame
+    /// </summary>
+    /// <param name="game"></param>
+    public void AddVirtualGalgame(Galgame game);
+    
+    /// <summary>
     /// 指定某个游戏的本地路径，注意捕获异常
     /// </summary>
     /// <param name="galgame">游戏</param>
@@ -74,6 +80,20 @@ public interface IGalgameCollectionService
     /// <param name="name">名字</param>
     /// <returns>galgame，找不到返回null</returns>
     public Galgame? GetGalgameFromName(string? name);
+    
+    /// <summary>
+    /// 保存galgame列表（以及其内部的galgame）
+    /// </summary>
+    public Task SaveGalgamesAsync();
+    
+    /// <summary>
+    /// 保存galgame
+    /// </summary>
+    /// <param name="galgame">
+    /// 要指定保存的galgame<br/>
+    /// 如果设置中没有打开保存备份则不会保存到游戏文件夹
+    /// </param>
+    public Task SaveGalgameAsync(Galgame galgame);
 
     /// <summary>
     /// 从信息源中搜刮游戏信息，会直接修改传入的galgame <br/>

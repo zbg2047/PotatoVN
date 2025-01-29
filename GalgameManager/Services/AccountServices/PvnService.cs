@@ -2,7 +2,6 @@
 using System.Net.Http.Headers;
 using System.Security.Authentication;
 using GalgameManager.Contracts.Services;
-using GalgameManager.Core.Contracts.Services;
 using GalgameManager.Core.Helpers;
 using GalgameManager.Enums;
 using GalgameManager.Helpers;
@@ -384,8 +383,10 @@ public class PvnService : IPvnService
         await _settingsService.SaveSettingAsync(KeyValues.SyncGames, false);
         await _settingsService.SaveSettingAsync(KeyValues.PvnSyncTimestamp, 0);
         foreach (Galgame gal in _gameService.Galgames)
+        {
             gal.Ids[(int)RssType.PotatoVn] = null;
-        await _gameService.SaveGalgamesAsync();
+            await _gameService.SaveGalgameAsync(gal);
+        }
     }
 
     private Uri GetBaseUri()

@@ -98,12 +98,18 @@ public class ActivationService : IActivationService
         {
             await Task.Run(async () =>
             {
+                _localSettingsService.InitDatabase();
                 await _galgameCollectionService.InitAsync();
                 await _galgameFolderCollectionService.InitAsync();
                 await _categoryService.Init();
                 await _filterService.InitAsync();
             });
             importWindow?.Close();
+        }
+        catch (IOException) //数据库正在被占用
+        {
+            Application.Current.Exit();
+            return;
         }
         catch (Exception e)
         {

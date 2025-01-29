@@ -19,7 +19,6 @@ using GalgameManager.Views.Dialog;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System.Text.RegularExpressions;
-using Microsoft.Win32;
 using System.ComponentModel;
 
 namespace GalgameManager.ViewModels;
@@ -414,7 +413,8 @@ public partial class GalgameViewModel : ObservableObject, INavigationAware
     [RelayCommand]
     private async Task SaveAsync()
     {
-        await _galgameService.SaveGalgamesAsync(Item);
+        if (Item is null) return;
+        await _galgameService.SaveGalgameAsync(Item);
     }
 
     [RelayCommand]
@@ -517,6 +517,7 @@ public partial class GalgameViewModel : ObservableObject, INavigationAware
             (GalStatusSyncResult, string) result = await _galgameService.UploadPlayStatusAsync(Item, RssType.Vndb);
             await DisplayMsg(result.Item1.ToInfoBarSeverity(), result.Item2);
         }
+        await _galgameService.SaveGalgameAsync(Item);
         _pvnService.Upload(Item, PvnUploadProperties.Review);
     }
 

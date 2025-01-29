@@ -2,7 +2,6 @@
 using GalgameManager.Core.Helpers;
 using GalgameManager.Enums;
 using GalgameManager.Helpers;
-using GalgameManager.Helpers.Phrase;
 using GalgameManager.Services;
 using Microsoft.UI.Xaml.Controls;
 
@@ -129,6 +128,8 @@ public class PvnSyncTask : BgTaskBase
                 game.MyRate = dto.myRate;
                 game.PrivateComment = dto.privateComment;
                 game.PvnUpdate = false;
+
+                await gameService.SaveGalgameAsync(game);
             });
         }
 
@@ -140,7 +141,6 @@ public class PvnSyncTask : BgTaskBase
             await gameService.RemoveGalgame(game);
         }
 
-        await gameService.SaveGalgamesAsync();
         await settingsService.SaveSettingAsync(KeyValues.PvnSyncTimestamp, latest);
     }
 
@@ -184,6 +184,7 @@ public class PvnSyncTask : BgTaskBase
                         "PvnSyncTask_Uploading".GetLocalized(game.Name.Value!));
                     var id = await pvnService.UploadInternal(game);
                     game.Ids[(int)RssType.PotatoVn] = id.ToString();
+                    await gameService.SaveGalgameAsync(game);
                     await settingsService.SaveSettingAsync(KeyValues.PvnSyncTimestamp, DateTime.Now.ToUnixTime());
                     Result += "PvnSyncTask_Commit".GetLocalized(game.Name.Value!, id, uploadProperties.ToString()) + "\n";
                 }
