@@ -16,6 +16,8 @@ public interface ILocalSettingsService
     public DirectoryInfo TemporaryFolder { get; }
 
     public LiteDatabase Database { get; }
+    
+    public bool IsDatabaseUsable { get; }
 
     /// <summary>
     /// 初始化数据库链接，注意捕获异常 <br/>

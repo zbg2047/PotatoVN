@@ -27,7 +27,8 @@ public class LocalSettingStatus
 
     // 数据存储数据库化，对于导出的数据永远为false（导出数据采用json格式），v1.9
     /// gameService是否已升级为LiteDB
-    public bool GameLiteDBUprade = false;
+    public bool GameLiteDbUpgrade = false;
+    public bool CategoryLiteDbUpgrade = false;
 
 
     /// galgameCollectionService是否已处理过导入

@@ -705,7 +705,7 @@ public partial class GalgameCollectionService : IGalgameCollectionService
     private static async Task<bool> IsUsingLiteDb()
     {
         return (await LocalSettingsService.ReadSettingAsync<LocalSettingStatus>(KeyValues.DataStatus, true))
-            ?.GameLiteDBUprade ?? false;
+            ?.GameLiteDbUpgrade ?? false;
     }
 
     #region UPGRADE
@@ -744,10 +744,10 @@ public partial class GalgameCollectionService : IGalgameCollectionService
     private async Task UpgradeToLiteDb()
     {
         LocalSettingStatus status = await LocalSettingsService.ReadSettingAsync<LocalSettingStatus>(KeyValues.DataStatus, true) ?? new();
-        if (status.GameLiteDBUprade) return;
+        if (status.GameLiteDbUpgrade) return;
         try
         {
-            status.GameLiteDBUprade = true;
+            status.GameLiteDbUpgrade = true;
             foreach (Galgame game in _galgames)
                 _dbSet.Upsert(game);
             await LocalSettingsService.SaveSettingAsync(KeyValues.DataStatus, status, true);

@@ -117,6 +117,7 @@ public class GetGalgameCharactersFromRssTask : BgTaskBase
                 }
             });
             log += $"{game.Name.Value}->{character.Name} Done\n";
+            await galgameService.SaveGalgameAsync(game);
         }
         onProgress.Invoke(new Progress
         {
