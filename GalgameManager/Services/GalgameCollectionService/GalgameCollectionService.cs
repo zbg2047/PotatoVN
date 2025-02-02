@@ -159,7 +159,7 @@ public partial class GalgameCollectionService : IGalgameCollectionService
         _galgames.Remove(galgame);
         List<GalgameSourceBase> tmpList = new(galgame.Sources);
         foreach (GalgameSourceBase s in tmpList)
-            _galSrcService.MoveOutOperate(s, galgame);
+            _galSrcService.MoveOutNoOperate(s, galgame);
         if (removeFromDisk)
             galgame.Delete();
         GalgameDeletedEvent?.Invoke(galgame);

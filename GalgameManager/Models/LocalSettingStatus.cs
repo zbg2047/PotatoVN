@@ -29,6 +29,7 @@ public class LocalSettingStatus
     /// gameService是否已升级为LiteDB
     public bool GameLiteDbUpgrade = false;
     public bool CategoryLiteDbUpgrade = false;
+    public bool SourceLiteDbUpgrade = false;
 
 
     /// galgameCollectionService是否已处理过导入
