@@ -132,12 +132,14 @@ namespace GalgameManager.ViewModels
         {
             NavigationHelper.NavigateToHomePage(_navigationService, _filterService,
                 new[] { new CategoryFilter(category) });
+            _categoryService.Save(category);
         }
 
         [RelayCommand]
         private void ClickSource(GalgameSourceBase source)
         {
             NavigationHelper.NavigateToHomePage(_navigationService, _filterService, new[] { new SourceFilter(source) });
+            _sourceService.Save(source);
         }
 
         [RelayCommand]

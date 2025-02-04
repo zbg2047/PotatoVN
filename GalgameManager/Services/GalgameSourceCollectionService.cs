@@ -315,7 +315,7 @@ public class GalgameSourceCollectionService(
     /// </summary>
     private async Task SaveAllAsync() => await Task.Run(() => { _dbSet.Upsert(_galgameSources); });
 
-    private void Save(GalgameSourceBase source) => _dbSet.Upsert(source);
+    public void Save(GalgameSourceBase source) => _dbSet.Upsert(source);
 
     /// <summary>
     /// 重新计算所有库的归属关系

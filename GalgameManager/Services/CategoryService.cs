@@ -314,7 +314,7 @@ public class CategoryService : ICategoryService
     /// </summary>
     /// <param name="category">要保存的分类</param>
     /// <param name="categoryGroup">要保存的分类组</param>
-    private void Save(Category? category = null, CategoryGroup? categoryGroup = null)
+    public void Save(Category? category = null, CategoryGroup? categoryGroup = null)
     {
         if (!_localSettings.IsDatabaseUsable) return;
         if (category is not null)

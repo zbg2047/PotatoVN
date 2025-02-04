@@ -70,6 +70,12 @@ public interface IGalgameSourceCollectionService
     public void ScanAll();
 
     /// <summary>
+    /// 保存某个库
+    /// </summary>
+    /// <param name="source"></param>
+    public void Save(GalgameSourceBase source);
+
+    /// <summary>
     /// 将一个游戏移入某个库，不进行物理移动操作（如复制文件节、上传游戏等）
     /// </summary>
     /// <param name="target"></param>

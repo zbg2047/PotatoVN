@@ -25,7 +25,7 @@ public partial class GalgameSourceBase : ObservableObject, IDisplayableGameObjec
     [BsonIgnore] [JsonIgnore] public string Url => CalcUrl(SourceType, Path);
     public string Path { get; set; } = "";
     public virtual GalgameSourceType SourceType => throw new NotImplementedException();
-    public bool ScanOnStart { get; set; }
+    [ObservableProperty] private bool _scanOnStart;
     public virtual string? ExtraData { get; set; }
     [ObservableProperty] private string _name = string.Empty;
     [ObservableProperty] private string? _imagePath;
