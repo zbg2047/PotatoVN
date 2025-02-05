@@ -156,7 +156,9 @@ public class UserController(
         User? user = await userRepository.GetUserAsync(userId);
         if (user == null) return NotFound();
         var token = userService.GetToken(user);
-        return Ok(new UserWithTokenDto(new UserDto(user), token, userService.GetExpiryDateFromToken(token)));
+        UserDto dto = new(user);
+        await dto.WithAvatarAsync(ossService);
+        return Ok(new UserWithTokenDto(dto, token, userService.GetExpiryDateFromToken(token)));
     }
     
     /// <summary>修改用户信息</summary>
