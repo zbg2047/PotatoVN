@@ -146,6 +146,19 @@ public class UserController(
         return Ok(new UserWithTokenDto(new UserDto(user), token, userService.GetExpiryDateFromToken(token)));
     }
 
+    /// <summary>获取一个新jwt token</summary>
+    /// <remarks>获取一个当前用户的新token</remarks>
+    [HttpGet("session/refresh")]
+    [Authorize]
+    public async Task<ActionResult<UserWithTokenDto>> RefreshTokenAsync()
+    {
+        var userId = this.GetUserId();
+        User? user = await userRepository.GetUserAsync(userId);
+        if (user == null) return NotFound();
+        var token = userService.GetToken(user);
+        return Ok(new UserWithTokenDto(new UserDto(user), token, userService.GetExpiryDateFromToken(token)));
+    }
+    
     /// <summary>修改用户信息</summary>
     /// <remarks>所有字段均可选</remarks>
     /// <response code="200">成功，返回新的用户信息</response>
