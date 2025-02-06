@@ -62,7 +62,25 @@ public class PvnService : IPvnService
     
     public void Startup()
     {
-        SyncGames();
+        Task.Run(async () =>
+        {
+            PvnAccount? account = await _settingsService.ReadSettingAsync<PvnAccount>(KeyValues.PvnAccount);
+            if (account is not null && DateTime.Now.ToUnixTime() >= account.RefreshTimestamp)
+            {
+                try
+                {
+                    await RefreshTokenAsync();
+                    _infoService.Event(EventType.PvnAccountEvent, InfoBarSeverity.Success,
+                        "PvnService_TokenRefreshed".GetLocalized());
+                }
+                catch (Exception e)
+                {
+                    _infoService.Event(EventType.PvnAccountEvent, InfoBarSeverity.Warning,
+                        "PvnService_TokenRefreshFailed".GetLocalized(), e);
+                }
+            }
+            SyncGames();
+        });
     }
 
     public async Task<PvnServerInfo?> GetServerInfoAsync()
@@ -152,6 +170,18 @@ public class PvnService : IPvnService
             throw new InvalidOperationException("PvnService_ServerUnavailable".GetLocalized());
         response.EnsureSuccessStatusCode();
         return await ResolveAccount(response, PvnAccount.LoginMethodEnum.Bangumi);
+    }
+
+    public async Task<PvnAccount?> RefreshTokenAsync()
+    {
+        PvnAccount? account = await _settingsService.ReadSettingAsync<PvnAccount>(KeyValues.PvnAccount);
+        if (account is null) throw new InvalidOperationException("PotatoVN account is not login."); //不应该发生
+        HttpClient client = Utils.GetDefaultHttpClient().AddToken(account.Token);
+        HttpResponseMessage response = await client.GetAsync(new Uri(BaseUri, "user/session/refresh"));
+        if (response.StatusCode == HttpStatusCode.Unauthorized)
+            throw new AuthenticationException("该账户已过期，请重新登录。");
+        response.EnsureSuccessStatusCode();
+        return await ResolveAccount(response, account.LoginMethod);
     }
 
     public async Task<PvnAccount?> ModifyAccountAsync(string? userDisplayName, string? avatarPath, string? newPassword,
