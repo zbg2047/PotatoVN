@@ -2244,4 +2244,10 @@
   <data name="GalgameSourceCollectionService_NotSuchGameUUID_Msg" xml:space="preserve">
     <value>无法根据游戏UUID找到相应的游戏，游戏 {0} 已被移除出库 {1}</value>
   </data>
+  <data name="MultiStreamPage_LoadFailed" xml:space="preserve">
+    <value>读取列表时出现错误</value>
+  </data>
+  <data name="MultiStreamPage_LoadFailed_CanNotFindById" xml:space="preserve">
+    <value>没有找到列表 {0} 所对应的分类组，是不是已经删除了该分类组？</value>
+  </data>
 </root>

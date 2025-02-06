@@ -30,6 +30,7 @@ public class LocalSettingStatus
     public bool GameLiteDbUpgrade = false;
     public bool CategoryLiteDbUpgrade = false;
     public bool SourceLiteDbUpgrade = false;
+    public bool MultiStreamPageLiteDbUpgrade = false;
 
 
     /// galgameCollectionService是否已处理过导入
