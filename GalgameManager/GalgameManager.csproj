@@ -30,6 +30,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Content Remove="Assets\Pictures\icon-dev\*" />
+    <Content Remove="Assets\Pictures\icon-sideload\*" />
     <Content Remove="Assets\Potato.altform-lightunplated_targetsize-16.png" />
     <Content Remove="Assets\Potato.altform-lightunplated_targetsize-24.png" />
     <Content Remove="Assets\Potato.altform-lightunplated_targetsize-256.png" />
