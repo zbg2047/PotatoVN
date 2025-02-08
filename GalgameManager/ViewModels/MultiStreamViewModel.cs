@@ -185,7 +185,7 @@ namespace GalgameManager.ViewModels
             ContentDialogResult status = await dialog.ShowAsync();
             IsSetting = false;
             if (status != ContentDialogResult.Primary) return;
-            Lists.SyncCollection(dialog.Result);
+            Lists.SyncCollection(dialog.Result, true);
             foreach (IList list in Lists)
                 list.Refresh();
             SaveList(Lists.ToList());
