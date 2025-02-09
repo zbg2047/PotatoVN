@@ -1217,8 +1217,8 @@
   <data name="AccountPage_Pvn_ServerType.Title" xml:space="preserve">
     <value>服务器</value>
   </data>
-  <data name="AccountPage_Pvn_ServerType.Description" xml:space="preserve">
-    <value>选择要连接至哪一个服务器</value>
+  <data name="AccountPage_Pvn_ServerType_Description" xml:space="preserve">
+    <value>选择要连接至哪一个服务器，当前连接至：{0}</value>
   </data>
   <data name="AccountPage_AccountStatus.Title" xml:space="preserve">
     <value>账号状态</value>
@@ -1249,9 +1249,6 @@
   </data>
   <data name="PvnService_ServerUnavailable" xml:space="preserve">
     <value>服务器不允许此方式登录或注册</value>
-  </data>
-  <data name="AccountPage_Pvn_ConnectTo" xml:space="preserve">
-    <value>连接至服务器：{0}</value>
   </data>
   <data name="AccountPage_Pvn_LoginSuccess" xml:space="preserve">
     <value>登录成功 </value>
@@ -2234,5 +2231,41 @@
   </data>
   <data name="SettingsPage_Start_AutoStartFail" xml:space="preserve">
     <value>修改自动启动设置失败</value>
+  </data>
+  <data name="AccountPage_Pvn_LoginedDescription" xml:space="preserve">
+    <value>用户ID:{0}, 登录有效至:{1}, 下次刷新登录:{2}</value>
+  </data>
+  <data name="AccountPage_Pvn_RefreshToken.Title" xml:space="preserve">
+    <value>刷新登录</value>
+  </data>
+  <data name="AccountPage_Pvn_RefreshToken.Description" xml:space="preserve">
+    <value>立刻刷新登录，并更新账户信息。</value>
+  </data>
+  <data name="AccountPage_Pvn_TokenExpired" xml:space="preserve">
+    <value>该账户登录已过期，无法直接刷新登录，请重新登录此账号（先登出再登录）</value>
+  </data>
+  <data name="PvnService_TokenRefreshed" xml:space="preserve">
+    <value>已成功刷新PotatoVN账户登录~</value>
+  </data>
+  <data name="PvnService_TokenRefreshFailed" xml:space="preserve">
+    <value>刷新PotatoVN账户登录失败</value>
+  </data>
+  <data name="AccountPage_Pvn_RefreshSuccess" xml:space="preserve">
+    <value>已成功刷新PotatoVN账户登录~</value>
+  </data>
+  <data name="GalgameCollectionService_UpgradeToLiteDB_Failed" xml:space="preserve">
+    <value>数据升级失败 （游戏列表）</value>
+  </data>
+  <data name="GalgameSourceCollectionService_NotSuchGameUUID_Title" xml:space="preserve">
+    <value>读取游戏库时发生意料外错误</value>
+  </data>
+  <data name="GalgameSourceCollectionService_NotSuchGameUUID_Msg" xml:space="preserve">
+    <value>无法根据游戏UUID找到相应的游戏，游戏 {0} 已被移除出库 {1}</value>
+  </data>
+  <data name="MultiStreamPage_LoadFailed" xml:space="preserve">
+    <value>读取列表时出现错误</value>
+  </data>
+  <data name="MultiStreamPage_LoadFailed_CanNotFindById" xml:space="preserve">
+    <value>没有找到列表 {0} 所对应的分类组，是不是已经删除了该分类组？</value>
   </data>
 </root>

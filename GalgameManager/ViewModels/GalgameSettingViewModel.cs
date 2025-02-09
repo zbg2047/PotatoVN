@@ -50,7 +50,7 @@ public partial class GalgameSettingViewModel : ObservableObject, INavigationAwar
     {
         if (Gal.ImagePath.Value != Galgame.DefaultImagePath && !File.Exists(Gal.ImagePath.Value))
             Gal.ImagePath.Value = Galgame.DefaultImagePath;
-        await _galService.SaveGalgamesAsync(Gal);
+        await _galService.SaveGalgameAsync(Gal);
         _pvnService.Upload(Gal, PvnUploadProperties.Infos | PvnUploadProperties.ImageLoc);
         _galService.PhrasedEvent -= Update;
     }
