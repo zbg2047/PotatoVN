@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using GalgameManager.Contracts.Phrase;
 using GalgameManager.Enums;
 using GalgameManager.Models;
 using GalgameManager.Models.Sources;
@@ -10,11 +11,23 @@ public interface IGalgameCollectionService
     public Task InitAsync();
 
     public Task StartAsync();
+    
+    /// <summary>
+    /// 当有galgame删除时触发
+    /// </summary>
+    public event Action<Galgame>? GalgameDeletedEvent;
 
     /// <summary>
     /// 当某款游戏被修改（被添加/设置本地路径）时触发
     /// </summary>
     public event Action<Galgame>? GalgameChangedEvent;
+
+    /// <summary>
+    /// 当有galgame信息下载完成时触发 
+    /// </summary>
+    public event Action<Galgame>? PhrasedEvent2;
+
+    public IGalInfoPhraser[] PhraserList { get; }
 
     /// <summary>
     /// 添加一个游戏，注意捕获异常
