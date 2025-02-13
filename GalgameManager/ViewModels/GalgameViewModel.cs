@@ -20,6 +20,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System.Text.RegularExpressions;
 using System.ComponentModel;
+using GalgameManager.Views.GalgamePagePanel;
 
 namespace GalgameManager.ViewModels;
 
@@ -37,6 +38,7 @@ public partial class GalgameViewModel : ObservableObject, INavigationAware
     private readonly IInfoService _infoService;
     [ObservableProperty] private Galgame? _item;
     public ObservableCollection<GalgameViewModelTag> Tags { get; } = new();
+    public ObservableCollection<GamePanelBase> Panels { get; } = new();
     [NotifyCanExecuteChangedFor(nameof(PlayCommand))]
     [NotifyCanExecuteChangedFor(nameof(ChangeSavePositionCommand))]
     [NotifyCanExecuteChangedFor(nameof(ResetExePathCommand))]
@@ -104,6 +106,19 @@ public partial class GalgameViewModel : ObservableObject, INavigationAware
         Item = param.Galgame;
         IsLocalGame = Item.IsLocalGame;
         Item.SavePath = Item.SavePath; //更新存档位置显示
+        // 初始化面板
+        List<GalgamePagePanel> panels = [GalgamePagePanel.HeaderOld, GalgamePagePanel.DescriptionPanel]; //todo: 临时代码，应从设置中获取
+        foreach (GalgamePagePanel panel in panels)
+        {
+            try
+            {
+                Panels.Add(GetPanel(panel, Item));
+            }
+            catch (Exception e)
+            {
+                _infoService.DeveloperEvent(e: e);
+            }
+        }
         Update(Item);
         
         if (param.StartGame && await _localSettingsService.ReadSettingAsync<bool>(KeyValues.QuitStart))
@@ -160,6 +175,18 @@ public partial class GalgameViewModel : ObservableObject, INavigationAware
         IsRemoveSelectedThreadVisible = Item?.ProcessName is not null ? Visibility.Visible : Visibility.Collapsed;
         IsSelectProcessVisible = Item?.ProcessName is null ? Visibility.Visible : Visibility.Collapsed;
         IsResetPathVisible = Item?.ExePath is not null || Item?.TextPath is not null ? Visibility.Visible : Visibility.Collapsed;
+
+        foreach(GamePanelBase panel in Panels)
+        {
+            try
+            {
+                panel.Update();
+            }
+            catch (Exception e)
+            {
+                _infoService.DeveloperEvent(e: e);
+            }
+        }
 
         var tagChanged = game.Tags.Value?.Count != Tags.Count;
         try
@@ -390,21 +417,6 @@ public partial class GalgameViewModel : ObservableObject, INavigationAware
     private void JumpToPlayedTimePage()
     {
         _navigationService.NavigateTo(typeof(PlayedTimeViewModel).FullName!, Item);
-    }
-
-    [RelayCommand]
-    private void JumpToHomePageWithDeveloperFilter()
-    {
-        if (Item is null) return;
-        Category? category = _categoryService.GetDeveloperCategory(Item);
-        if (category is null)
-        {
-            _infoService.Info(InfoBarSeverity.Error, msg:"HomePage_NoDeveloperCategory".GetLocalized());
-            return;
-        }
-        _filterService.ClearFilters();
-        _filterService.AddFilter(new CategoryFilter(category));
-        _navigationService.NavigateTo(typeof(HomeViewModel).FullName!);
     }
 
     [RelayCommand]
@@ -666,6 +678,16 @@ public partial class GalgameViewModel : ObservableObject, INavigationAware
         Item!.ExePath = null;
         await ClearText();
         
+    }
+
+    private GamePanelBase GetPanel(GalgamePagePanel panel, Galgame? game)
+    {
+        return panel switch
+        {
+            GalgamePagePanel.HeaderOld => new GameHeaderOldPanel { Game = game},
+            GalgamePagePanel.DescriptionPanel => new GameDescriptionPanel { Game = game },
+            _ => throw new NotImplementedException(),
+        };
     }
 }
 
