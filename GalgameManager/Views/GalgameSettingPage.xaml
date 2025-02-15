@@ -67,8 +67,8 @@
                                      Text="{x:Bind ViewModel.Gal.LocalPath, Mode=OneTime}" 
                                      VerticalAlignment="Center" 
                                      HorizontalAlignment="Stretch"
-                                     AcceptsReturn="False"/>
-                        
+                                     AcceptsReturn="False"
+                                     IsReadOnly="True"/>
                     </Grid>
 
                     <Grid>
