@@ -15,6 +15,10 @@ public class VndbPhraser : IGalInfoPhraser, IGalStatusSync, IGalCharacterPhraser
     private readonly Dictionary<int, JToken> _tagDb = new();
     private bool _init;
     private const string TagDbFile = @"Assets\Data\vndb-tags-latest.json";
+    // 标签翻译文件来源: https://greasyfork.org/zh-CN/scripts/445990-vndbtranslatorlib
+    // 作者: rui li 2
+    // 协议: MIT
+    private const string TagTranslationFile = @"Assets\Data\vndb-tags-translation.json";
     /// <summary>
     /// id eg:g530[1..]=530=(int)530
     /// </summary>
@@ -70,6 +74,23 @@ public class VndbPhraser : IGalInfoPhraser, IGalStatusSync, IGalCharacterPhraser
         JToken json = JToken.Parse(await File.ReadAllTextAsync(file));
         List<JToken>? tags = json.ToObject<List<JToken>>();
         tags!.ForEach(tag => _tagDb.Add(int.Parse(tag["id"]!.ToString()), tag));
+
+        // 加载并应用翻译
+        var translationFile = Path.Combine(Path.GetDirectoryName(assembly.Location)!, TagTranslationFile);
+        if (!File.Exists(translationFile)) return;
+
+        JToken translationJson = JObject.Parse(await File.ReadAllTextAsync(translationFile));
+
+        // 遍历所有标签，应用翻译
+        foreach (var tag in _tagDb.Values)
+        {
+            string? originalName = tag["name"]?.ToString();
+            if (originalName != null && translationJson[originalName] != null)
+            {
+                tag["name"] = translationJson[originalName]!.ToString();
+            }
+        }
+
     }
 
     private static async Task TryGetId(Galgame galgame)
