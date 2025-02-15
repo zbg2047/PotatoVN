@@ -162,7 +162,7 @@ public class VndbPhraser : IGalInfoPhraser, IGalStatusSync, IGalCharacterPhraser
             
             if (vndbResponse.Results is null || vndbResponse.Results.Count == 0) return null;
             VndbVn rssItem = vndbResponse.Results[0];
-            result.Name = rssItem.Title ?? "";
+            result.Name = GetJapaneseName(rssItem.Titles) ?? rssItem.Title ?? Galgame.DefaultString;
             result.CnName = GetChineseName(rssItem.Titles);
             result.Description = rssItem.Description ?? Galgame.DefaultString;
             result.RssType = GetPhraseType();
@@ -291,7 +291,6 @@ public class VndbPhraser : IGalInfoPhraser, IGalStatusSync, IGalCharacterPhraser
         };
         return character;
     }
-
     private static string GetChineseName(IReadOnlyCollection<VndbTitle>? titles)
     {
         if (titles == null) return "";
@@ -299,6 +298,13 @@ public class VndbPhraser : IGalInfoPhraser, IGalStatusSync, IGalCharacterPhraser
                            titles.FirstOrDefault(t => t.Lang == "zh-Hant");
         return title?.Title!;
     }
+    private static string GetJapaneseName(IReadOnlyCollection<VndbTitle>? titles)
+    {
+        if (titles == null) return "";
+        VndbTitle? title = titles.FirstOrDefault(t => t.Lang == "ja");
+        return title?.Title ?? "";
+    }
+    
     private static string GetLength(VndbVn.VnLenth? length, int? lengthMinutes)
     {
         if (lengthMinutes != null)
