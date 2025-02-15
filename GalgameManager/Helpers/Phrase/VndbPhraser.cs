@@ -195,7 +195,11 @@ public class VndbPhraser : IGalInfoPhraser, IGalStatusSync, IGalCharacterPhraser
                 {
                     if (!int.TryParse(tag.Id![1..], out var i)) continue;
                     if (_tagDb.TryGetValue(i, out JToken? tagInfo))
+                    {
+                        // 仅保留一般性的tag，跳过sexual content 和 technical tags.
+                        if (tagInfo["cat"]!.ToString() != "cont") continue;
                         result.Tags.Value.Add(tagInfo["name"]!.ToString() ?? "");
+                    }
                 }
             }
             // Characters
