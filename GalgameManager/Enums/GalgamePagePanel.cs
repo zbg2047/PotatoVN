@@ -3,5 +3,6 @@
 public enum GalgamePagePanel
 {
     HeaderOld,
-    DescriptionPanel,
+    Description,
+    Tag,
 }

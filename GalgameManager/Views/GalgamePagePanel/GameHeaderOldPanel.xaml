@@ -65,7 +65,9 @@
                         <HyperlinkButton
                             Content="{x:Bind Game.TotalPlayTime, Mode=OneWay, 
                             FallbackValue={}, Converter={StaticResource TimeToDisplayTimeConverter}}"
-                            Padding="0 0 0 0">
+                            Padding="0 0 0 0"
+                            RightTapped="ChangeTimeFormat"
+                            Click="ClickTotalPlayTime">
                             <!-- Command="{x:Bind ViewModel.JumpToPlayedTimePageCommand}"> -->
                             <!-- <interactivity:Interaction.Behaviors> -->
                             <!--     <core:EventTriggerBehavior EventName="RightTapped"> -->

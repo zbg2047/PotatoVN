@@ -250,30 +250,6 @@
                         <TextBlock
                             Margin="{StaticResource SmallTopBottomMargin}"
                             Style="{ThemeResource SubtitleTextBlockStyle}"
-                            Text="Tags"
-                            Visibility="{x:Bind ViewModel.IsTagVisible, Mode=OneWay}" />
-                        <ItemsRepeater
-                            ItemsSource="{x:Bind ViewModel.Tags}"
-                            Visibility="{x:Bind ViewModel.IsTagVisible, Mode=OneWay}">
-                            <ItemsRepeater.ItemTemplate>
-                                <DataTemplate x:DataType="viewModels:GalgameViewModelTag">
-                                    <Button 
-                                            CornerRadius="10" Padding="0" BorderBrush="{x:Null}"
-                                            Margin="5 7 5 7"
-                                            BorderThickness="0"
-                                            Command="{x:Bind ClickCommand}">
-                                        <TextBlock Padding="5" Text="{x:Bind Tag}" />
-                                    </Button>
-                                </DataTemplate>
-                            </ItemsRepeater.ItemTemplate>
-                            <ItemsRepeater.Layout>
-                                <cmtkControls:WrapLayout Orientation="Horizontal" />
-                            </ItemsRepeater.Layout>
-                        </ItemsRepeater>
-                        
-                        <TextBlock
-                            Margin="{StaticResource SmallTopBottomMargin}"
-                            Style="{ThemeResource SubtitleTextBlockStyle}"
                             Visibility="{x:Bind ViewModel.IsCharacterVisible, Mode=OneWay}"
                             x:Uid="GalgamePage_Characters" />
 

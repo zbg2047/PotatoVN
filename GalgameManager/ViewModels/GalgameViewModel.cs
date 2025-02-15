@@ -107,7 +107,7 @@ public partial class GalgameViewModel : ObservableObject, INavigationAware
         IsLocalGame = Item.IsLocalGame;
         Item.SavePath = Item.SavePath; //更新存档位置显示
         // 初始化面板
-        List<GalgamePagePanel> panels = [GalgamePagePanel.HeaderOld, GalgamePagePanel.DescriptionPanel]; //todo: 临时代码，应从设置中获取
+        List<GalgamePagePanel> panels = [GalgamePagePanel.HeaderOld, GalgamePagePanel.Description, GalgamePagePanel.Tag]; //todo: 临时代码，应从设置中获取
         foreach (GalgamePagePanel panel in panels)
         {
             try
@@ -356,21 +356,6 @@ public partial class GalgameViewModel : ObservableObject, INavigationAware
         if (Item?.IsLocalGame != true) return;
         await _galgameService.ChangeGalgameSavePosition(Item);
     }
-
-    [RelayCommand]
-    private async Task ChangeTimeFormat()
-    {
-        try
-        {
-            var current = await _localSettingsService.ReadSettingAsync<bool>(KeyValues.TimeAsHour);
-            await _localSettingsService.SaveSettingAsync(KeyValues.TimeAsHour, !current);
-            Item!.RaisePropertyChanged(nameof(Galgame.TotalPlayTime));
-        }
-        catch (Exception e)
-        {
-            _infoService.Event(EventType.PageError, InfoBarSeverity.Error, "Oops, something went wrong", e);
-        }
-    }
     
     [RelayCommand(CanExecute = nameof(IsLocalGame))]
     private void ResetExePath(object obj)
@@ -411,12 +396,6 @@ public partial class GalgameViewModel : ObservableObject, INavigationAware
             return;
         }
         await Launcher.LaunchUriAsync(new Uri(path));
-    }
-
-    [RelayCommand]
-    private void JumpToPlayedTimePage()
-    {
-        _navigationService.NavigateTo(typeof(PlayedTimeViewModel).FullName!, Item);
     }
 
     [RelayCommand]
@@ -685,10 +664,11 @@ public partial class GalgameViewModel : ObservableObject, INavigationAware
         return panel switch
         {
             GalgamePagePanel.HeaderOld => new GameHeaderOldPanel { Game = game},
-            GalgamePagePanel.DescriptionPanel => new GameDescriptionPanel { Game = game },
+            GalgamePagePanel.Description => new GameDescriptionPanel { Game = game },
+            GalgamePagePanel.Tag => new GameTagPanel {Game = game},
             _ => throw new NotImplementedException(),
         };
-    }
+    } 
 }
 
 public class GalgamePageParameter
