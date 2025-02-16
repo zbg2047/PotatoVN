@@ -2277,4 +2277,28 @@
   <data name="GetStaffFromRssTask_Progress_Waiting" xml:space="preserve">
     <value>还有{0}位staff信息获取任务排队中</value>
   </data>
+  <data name="GalgamePage_Staffs.Text" xml:space="preserve">
+    <value>制作人员</value>
+  </data>
+  <data name="Career_Relation_Unknown" xml:space="preserve">
+    <value>制作</value>
+  </data>
+  <data name="Career_Relation_Writer" xml:space="preserve">
+    <value>剧本</value>
+  </data>
+  <data name="Career_Relation_Painter" xml:space="preserve">
+    <value>原画</value>
+  </data>
+  <data name="Career_Relation_Musician" xml:space="preserve">
+    <value>音乐</value>
+  </data>
+  <data name="Career_Relation_Seiyu" xml:space="preserve">
+    <value>声优</value>
+  </data>
+  <data name="Career_Relation_Producer" xml:space="preserve">
+    <value>开发</value>
+  </data>
+  <data name="Career_Relation_Programmer" xml:space="preserve">
+    <value>程序</value>
+  </data>
 </root>

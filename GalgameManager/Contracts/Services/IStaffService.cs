@@ -5,6 +5,11 @@ namespace GalgameManager.Contracts.Services;
 
 public interface IStaffService
 {
+    /// <summary>
+    /// 当某个游戏的staff列表发生变化时触发
+    /// </summary>
+    public event Action<Galgame> OnGameStaffChanged;
+    
     public Task InitAsync();
     
     public Staff? GetStaff(Guid? id);
@@ -16,6 +21,13 @@ public interface IStaffService
     /// <param name="identifier"></param>
     /// <returns></returns>
     public Staff? GetStaff(StaffIdentifier identifier);
+    
+    /// <summary>
+    /// 获取某个galgame的staff列表
+    /// </summary>
+    /// <param name="game"></param>
+    /// <returns></returns>
+    public List<Staff> GetStaffs(Galgame game);
 
     /// <summary>
     /// 搜刮staff信息，直接修改传入的staff对象

@@ -11,6 +11,7 @@ namespace GalgameManager.Services;
 
 public class StaffService : IStaffService
 {
+    public event Action<Galgame>? OnGameStaffChanged;
     private ILiteCollection<Staff> _dbSet = null!;
     private readonly ILocalSettingsService _settingsService;
     private readonly IGalgameCollectionService _galgameService;
@@ -29,7 +30,7 @@ public class StaffService : IStaffService
         galgameService.PhrasedEvent2 += OnGalgamePhrasedEvent;
         galgameService.GalgameDeletedEvent += OnGalgameDeletedEvent;
     }
-
+    
     public async Task InitAsync()
     {
         _dbSet = _settingsService.Database.GetCollection<Staff>("staff");
@@ -65,13 +66,34 @@ public class StaffService : IStaffService
         return result;
     }
 
+    public List<Staff> GetStaffs(Galgame game)
+    {
+        List<Staff> result = [];
+        result.AddRange(_staffs.Values.Where(staff => staff.Games.Any(x => x.Game.Uuid == game.Uuid)));
+        return result;
+    }
+
     public async Task<Staff> ParseStaffAsync(Staff staff, RssType rss)
     {
-        if (_galgameService.PhraserList[(int)rss] is not IGalStaffPhraser phraser) return staff;
+        if (_galgameService.PhraserList[(int)rss] is not IGalStaffParser phraser) return staff;
         try
         {
-            await phraser.GetStaffAsync(staff);
-            staff.ImagePath = await DownloadHelper.DownloadAndSaveImageAsync(staff.ImageUrl);
+            Staff? result = await phraser.GetStaffAsync(staff);
+            if (result is null) return staff;
+            var imagePath = await DownloadHelper.DownloadAndSaveImageAsync(staff.ImageUrl);
+            await UiThreadInvokeHelper.InvokeAsync(() =>
+            {
+                staff.Ids = result.Ids;
+                staff.JapaneseName = result.JapaneseName;
+                staff.EnglishName = result.EnglishName;
+                staff.ChineseName = result.ChineseName;
+                staff.Gender = result.Gender;
+                staff.Career.SyncCollection(result.Career);
+                staff.ImagePath = imagePath;
+                staff.ImageUrl = result.ImageUrl;
+                staff.Description = result.Description;
+                staff.BirthDate = result.BirthDate;
+            });
             Save(staff);
         }
         catch (Exception e)
@@ -97,7 +119,7 @@ public class StaffService : IStaffService
     {
         try
         {
-            IGalStaffPhraser? phraser = _galgameService.PhraserList[(int)galgame.RssType] as IGalStaffPhraser;
+            IGalStaffParser? phraser = _galgameService.PhraserList[(int)galgame.RssType] as IGalStaffParser;
             if (phraser is null) return;
             List<StaffRelation> tmpStaffs = await phraser.GetStaffsAsync(galgame);
             List<Staff> toFetch = [];
@@ -113,6 +135,18 @@ public class StaffService : IStaffService
                 tmp.AddGame(galgame, staff.Relation);
                 Save(tmp);
             }
+            // 去掉不在搜刮到的人员列表里的但曾经记录是该游戏staff的人员
+            List<Staff> toRemove = _staffs.Values
+                .Where(x => x.Games.Any(g => g.Game.Uuid == galgame.Uuid))
+                .Where(x => tmpStaffs.All(y => y.GetIdentifier().Match(x) == 0))
+                .ToList();
+            foreach (Staff staff in toRemove)
+            {
+                staff.RemoveGame(galgame);
+                Save(staff);
+            }
+
+            OnGameStaffChanged?.Invoke(galgame);
             GetStaffFromRssTask? task = _bgTaskService.GetBgTask<GetStaffFromRssTask>(string.Empty);
             if (task is null)
             {
@@ -140,7 +174,12 @@ public class StaffService : IStaffService
             {
                 foreach (Staff staff in _staffs.Values.Where(x => x.Games.Any(g => g.Game.Uuid == galgame.Uuid)))
                 {
-                    staff.Games.RemoveAll(x => x.Game.Uuid == galgame.Uuid);
+                    UiThreadInvokeHelper.Invoke(() =>
+                    {
+                        List<StaffGame> toRemove = staff.Games.Where(x => x.Game.Uuid == galgame.Uuid).ToList();
+                        foreach (StaffGame game in toRemove)
+                            staff.Games.Remove(game);
+                    });
                     if (staff.Games.Count > 0) Save(staff);
                     else Delete(staff);
                 }

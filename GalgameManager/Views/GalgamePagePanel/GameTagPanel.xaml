@@ -7,15 +7,10 @@
     xmlns:local="using:GalgameManager.Views.GalgamePagePanel"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:converters="using:CommunityToolkit.WinUI.Converters"
     xmlns:cmtk="using:CommunityToolkit.WinUI.Controls"
     mc:Ignorable="d">
-
-    <UserControl.Resources>
-        <converters:StringVisibilityConverter x:Key="StringVisibilityConverter" />
-    </UserControl.Resources>
-
-    <StackPanel x:Name="panel">
+    
+    <StackPanel x:Name="Panel">
         <TextBlock
             Margin="{StaticResource SmallTopBottomMargin}"
             Style="{ThemeResource SubtitleTextBlockStyle}"

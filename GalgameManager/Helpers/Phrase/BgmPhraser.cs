@@ -13,7 +13,7 @@ using Exception = System.Exception;
 
 namespace GalgameManager.Helpers.Phrase;
 
-public class BgmPhraser : IGalInfoPhraser, IGalStatusSync, IGalCharacterPhraser, IGalStaffPhraser
+public class BgmPhraser : IGalInfoPhraser, IGalStatusSync, IGalCharacterPhraser, IGalStaffParser
 {
     private HttpClient _httpClient;
     private IBgmApi _bgmApi = null!;
@@ -458,18 +458,19 @@ public class BgmPhraser : IGalInfoPhraser, IGalStatusSync, IGalCharacterPhraser,
         return (GalStatusSyncResult.Ok, "BgmPhraser_DownloadAsync_Success".GetLocalized());
     }
 
-    public async Task<Staff> GetStaffAsync(Staff staff)
+    public async Task<Staff?> GetStaffAsync(Staff staff)
     {
         var id = await GetStaffIdAsync(staff);
-        if (id is null) return staff;
+        if (id is null) return null;
+        Staff result = new();
         PersonDetailDto tmp = await _bgmApi.GetPersonAsync(id.Value);
-        staff.Ids[(int)GetPhraseType()] = id.ToString();
-        staff.ChineseName = staff.Name;
+        result.Ids[(int)GetPhraseType()] = id.ToString();
+        result.ChineseName = tmp.name;
         // Names
         foreach (InfoBoxItemDto token in tmp.infobox)
         {
             if (token is { key: "简体中文名", value.Type: JTokenType.String })
-                staff.ChineseName = token.value.ToObject<string>();
+                result.ChineseName = token.value.ToObject<string>();
             if (token is not { key: "别名", value.Type: JTokenType.Array }) continue;
             foreach (JToken alias in token.value.Where(t => t.Type == JTokenType.String))
             {
@@ -477,9 +478,9 @@ public class BgmPhraser : IGalInfoPhraser, IGalStatusSync, IGalCharacterPhraser,
                 {
                     InfoBoxItemKVDto? tmp2 = alias.ToObject<InfoBoxItemKVDto>();
                     if (tmp2 is null) continue;
-                    if (tmp2.k == "日文名") staff.JapaneseName = tmp2.v;
-                    if (tmp2.k == "罗马字") staff.EnglishName = tmp2.v;
-                    if (tmp2.k == "纯假名") staff.JapaneseName ??= tmp2.v;
+                    if (tmp2.k == "日文名") result.JapaneseName = tmp2.v;
+                    if (tmp2.k == "罗马字") result.EnglishName = tmp2.v;
+                    if (tmp2.k == "纯假名") result.JapaneseName ??= tmp2.v;
                 }
                 catch (Exception)
                 {
@@ -487,19 +488,19 @@ public class BgmPhraser : IGalInfoPhraser, IGalStatusSync, IGalCharacterPhraser,
                 }
             }
         }
-        staff.Gender = tmp.gender switch
+        result.Gender = tmp.gender switch
         {
             "female" => Gender.Female,
             "male" => Gender.Male,
-            _ => staff.Gender,
+            _ => result.Gender,
         };
-        staff.Career = tmp.career.Select(c => c.ToCareer()).ToList();
-        staff.ImageUrl = tmp.images?.large;
-        staff.Description = tmp.summary;
-        staff.BirthDate = new DateTime(tmp.birth_year ?? 1, tmp.birth_mon ?? 1, tmp.birth_day ?? 1);
-        if (staff.BirthDate == new DateTime(1, 1, 1))
-            staff.BirthDate = null;
-        return staff;
+        result.Career = new (tmp.career.Select(c => c.ToCareer()));
+        result.ImageUrl = tmp.images?.large;
+        result.Description = tmp.summary;
+        result.BirthDate = new DateTime(tmp.birth_year ?? 1, tmp.birth_mon ?? 1, tmp.birth_day ?? 1);
+        if (result.BirthDate == new DateTime(1, 1, 1))
+            result.BirthDate = null;
+        return result;
     }
 
     public async Task<List<StaffRelation>> GetStaffsAsync(Galgame game)
@@ -524,12 +525,12 @@ public class BgmPhraser : IGalInfoPhraser, IGalStatusSync, IGalCharacterPhraser,
             Ids = { [(int)GetPhraseType()] = person.id.ToString() },
             Relation = person.relation switch
             {
-                "音乐" => Career.Musician,
-                "剧本" => Career.Writer,
-                "原画" => Career.Painter,
-                _ => Career.Unknown,
+                "音乐" => [Career.Musician],
+                "剧本" => [Career.Writer],
+                "原画" => [Career.Painter],
+                _ => [Career.Unknown],
             },
-            Career = person.career.Distinct().Select(dto => dto.ToCareer()).ToList(),
+            Career = new(person.career.Distinct().Select(dto => dto.ToCareer())),
         }));
         // bgm上声优是单独在character里的，需要额外获取
         List<RelatedCharacterDto> characters = await _bgmApi.GetGameCharactersAsync(gameId.Value);
@@ -539,9 +540,26 @@ public class BgmPhraser : IGalInfoPhraser, IGalStatusSync, IGalCharacterPhraser,
                 ChineseName = seiyu.name,
                 ImageUrl = seiyu.images?.large,
                 Ids = { [(int)GetPhraseType()] = seiyu.id.ToString() },
-                Relation = Career.Seiyu,
-                Career = seiyu.career.Distinct().Select(dto => dto.ToCareer()).ToList(),
+                Relation = [Career.Seiyu],
+                Career = new(seiyu.career.Distinct().Select(dto => dto.ToCareer())),
             }));
+        // 一个人可能身兼多职，需要合并
+        List<StaffRelation> toRemove = [];
+        foreach (StaffRelation staff in result)
+        {
+            if(toRemove.Contains(staff)) continue;
+            foreach (StaffRelation staff2 in result)
+            {
+                if (staff == staff2 || staff.Ids[(int)GetPhraseType()] != staff2.Ids[(int)GetPhraseType()]) continue;
+                foreach(Career c in staff2.Career.Where(c => !staff.Career.Contains(c)))
+                    staff.Career.Add(c);
+                foreach (Career c in staff2.Relation.Where(c => !staff.Relation.Contains(c)))
+                    staff.Relation.Add(c);
+                toRemove.Add(staff2);
+            }
+        }
+        foreach (StaffRelation staff in toRemove)
+            result.Remove(staff);
         return result;
     }
 

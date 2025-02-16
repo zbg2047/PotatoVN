@@ -18,8 +18,8 @@ public partial class GameTagPanel
 
     public override void Update()
     {
-        if (panel is not null)
-            panel.Visibility = Game?.Tags.Value?.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
+        if (Panel is not null)
+            Panel.Visibility = Game?.Tags.Value?.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
     }
 
     private void ButtonBase_OnClick(object sender, RoutedEventArgs e)

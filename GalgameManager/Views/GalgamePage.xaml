@@ -6,23 +6,12 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:converters="using:GalgameManager.Helpers.Converter"
     xmlns:local="using:GalgameManager.Helpers"
-    xmlns:cmtkControls="using:CommunityToolkit.WinUI.Controls"
-    xmlns:cmtkAnimations="using:CommunityToolkit.WinUI.Animations"
     xmlns:ui="using:CommunityToolkit.WinUI"
-    xmlns:models="using:GalgameManager.Models"
-    xmlns:viewModels="using:GalgameManager.ViewModels"
-    xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
-    xmlns:core="using:Microsoft.Xaml.Interactions.Core"
-    xmlns:control="using:GalgameManager.Views.Control" 
-    xmlns:panel="using:GalgameManager.Views.GalgamePagePanel"
-    mc:Ignorable="d"
-    x:Name="Page">
+    xmlns:control="using:GalgameManager.Views.Control"
+    mc:Ignorable="d">
 
     <Page.Resources>
         <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
-        <converters:TimeToDisplayTimeConverter x:Key="TimeToDisplayTimeConverter" />
-        <converters:DateTimeToStringConverter x:Key="DateTimeToStringConverter"/>
-        <converters:ImagePathConverter x:Key="ImagePathConverter"/>
     </Page.Resources>
 
     <Grid>
@@ -239,60 +228,6 @@
                             </ItemsPanelTemplate>
                         </ItemsControl.ItemsPanel>
                     </ItemsControl>
-                    
-                    <StackPanel>
-                        <StackPanel.ChildrenTransitions>
-                            <TransitionCollection>
-                                <EntranceThemeTransition FromVerticalOffset="200"/>
-                            </TransitionCollection>
-                        </StackPanel.ChildrenTransitions>
-
-                        <TextBlock
-                            Margin="{StaticResource SmallTopBottomMargin}"
-                            Style="{ThemeResource SubtitleTextBlockStyle}"
-                            Visibility="{x:Bind ViewModel.IsCharacterVisible, Mode=OneWay}"
-                            x:Uid="GalgamePage_Characters" />
-
-                        <ItemsRepeater Visibility="{x:Bind ViewModel.IsCharacterVisible, Mode=OneWay}"
-                                       ItemsSource="{x:Bind ViewModel.Item.Characters,Mode=OneWay,FallbackValue={}}"
-                                       cmtkAnimations:Connected.ListItemKey="galgameCharacter"
-                                       cmtkAnimations:Connected.ListItemElementName="ConnectedElement">
-                            <ItemsRepeater.ItemTemplate>
-                                <DataTemplate x:DataType="models:GalgameCharacter">
-                                    <Button Style="{ThemeResource TransparentButtonWithHover}"
-                                            DataContext="{x:Bind}"
-                                            Command="{Binding ElementName=Page, Path=ViewModel.CharacterClickCommand}"
-                                            CommandParameter="{x:Bind}" Height="130">
-                                        <Grid
-                                            Padding="{StaticResource XSmallLeftTopRightBottomMargin}">
-                                            <StackPanel HorizontalAlignment="Center">
-                                                <Rectangle Height="75" Width="75"
-                                                           HorizontalAlignment="Center"
-                                                           VerticalAlignment="Center"
-                                                           x:Name="ConnectedElement">
-                                                    <Rectangle.Fill>
-                                                        <ImageBrush
-                                                            ImageSource="{x:Bind PreviewImagePath, Mode=OneWay,
-                                                Converter={StaticResource ImagePathConverter}}"
-                                                            Stretch="UniformToFill" />
-                                                    </Rectangle.Fill>
-                                                </Rectangle>
-                                                <TextBlock
-                                                    MaxHeight="40"
-                                                    Margin="{StaticResource XXSmallTopMargin}"
-                                                    HorizontalAlignment="Center"
-                                                    Style="{ThemeResource BodyTextStyle}"
-                                                    Text="{x:Bind Name, Mode=OneWay}" />
-                                            </StackPanel>
-                                        </Grid>
-                                    </Button>
-                                </DataTemplate>
-                            </ItemsRepeater.ItemTemplate>
-                            <ItemsRepeater.Layout>
-                                <UniformGridLayout ItemsStretch="Fill" MinItemWidth="100" MinRowSpacing="10"/>
-                            </ItemsRepeater.Layout>
-                        </ItemsRepeater>
-                    </StackPanel>
                 </StackPanel>
             </ScrollViewer>
 
