@@ -135,6 +135,7 @@ public partial class Galgame : ObservableObject, IDisplayableGameObject
     {
         _tags = new ObservableCollection<string>();
         _developer.OnValueChanged += _ => GalPropertyChanged?.Invoke(this, nameof(Developer), Developer);
+        Sources.CollectionChanged += (_, _) => OnPropertyChanged(nameof(LocalPath));
     }
 
     public Galgame(string name) : this()

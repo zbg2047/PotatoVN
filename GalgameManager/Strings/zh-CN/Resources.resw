@@ -1799,8 +1799,35 @@
   <data name="GalgameSettingPage_GalgamePath.Text" xml:space="preserve">
     <value>游戏路径</value>
   </data>
+  <data name="GalgameSettingPage_GalgameExePath.Text" xml:space="preserve">
+    <value>游戏启动文件</value>
+  </data>
+  <data name="GalgameSettingPage_EditPath.Text" xml:space="preserve">
+    <value>修改游戏路径</value>
+  </data>
+  <data name="GalgameSettingPage_EditExePath.Text" xml:space="preserve">
+    <value>修改游戏启动文件</value>
+  </data>
+  <data name="GalgameSettingPage_Search.Text" xml:space="preserve">
+    <value>在线搜索游戏</value>
+  </data>
   <data name="GalgameSettingPage_GalgameReleaseDate.Title" xml:space="preserve">
     <value>发行日期</value>
+  </data>
+  <data name="GalgameSettingPage_NotLocalGame" xml:space="preserve">
+    <value>游戏不是本地游戏，无法修改启动文件，请先设置游戏路径</value>
+  </data>
+  <data name="GalgameSettingPage_ExePathSetSuccess" xml:space="preserve">
+    <value>成功设置游戏启动文件</value>
+  </data>
+  <data name="GalgameSettingPage_ExePathSetFailed" xml:space="preserve">
+    <value>设置游戏启动文件失败</value>
+  </data>
+  <data name="GalgameSettingPage_PathSetSuccess" xml:space="preserve">
+    <value>修改游戏路径成功</value>
+  </data>
+  <data name="GalgameSettingPage_PathSetFailed" xml:space="preserve">
+    <value>修改游戏路径失败</value>
   </data>
   <data name="GalgameSourcePage_NotInSource" xml:space="preserve">
     <value>该游戏不属于这个库（游戏必须在库文件夹里面）</value>
