@@ -5,10 +5,11 @@ using GalgameManager.Enums;
 using GalgameManager.Helpers.API;
 using GalgameManager.Models;
 using Newtonsoft.Json.Linq;
+using Staff = GalgameManager.Models.Staff;
 
 namespace GalgameManager.Helpers.Phrase;
 
-public class VndbPhraser : IGalInfoPhraser, IGalStatusSync, IGalCharacterPhraser
+public class VndbPhraser : IGalInfoPhraser, IGalStatusSync, IGalCharacterPhraser, IGalStaffParser
 {
     private VndbApi _vndbApi;
 
@@ -20,6 +21,7 @@ public class VndbPhraser : IGalInfoPhraser, IGalStatusSync, IGalCharacterPhraser
     /// </summary>
     private const string VndbFields = "title, titles.title, titles.lang, description, image.url, id, rating, length, " +
                                       "length_minutes, tags.id, tags.rating, developers.original, developers.name, released";
+    private const string StaffFields = "id, aid, name, original, lang, gender, description";
 
     private bool _authed;
     private Task? _checkAuthTask;
@@ -433,6 +435,85 @@ public class VndbPhraser : IGalInfoPhraser, IGalStatusSync, IGalCharacterPhraser
             return (GalStatusSyncResult.Other, e.Message);
         }
         return (GalStatusSyncResult.Ok, "VndbPhraser_DownloadAsync_Success".GetLocalized());
+    }
+
+    public Task<Staff?> GetStaffAsync(Staff staff) => throw new NotImplementedException();
+
+    public async Task<List<StaffRelation>> GetStaffsAsync(Galgame game)
+    {
+        if (!_init) await Init();
+        if (string.IsNullOrEmpty(game.Ids[(int)RssType.Vndb])) await TryGetId(game);
+        if (string.IsNullOrEmpty(game.Ids[(int)RssType.Vndb])) return new List<StaffRelation>();
+
+        var id = game.Ids[(int)RssType.Vndb]!.StartsWith('v')
+            ? game.Ids[(int)RssType.Vndb]!
+            : "v" + game.Ids[(int)RssType.Vndb]!;
+        List<StaffRelation> result = [];
+
+        List<string> filter = StaffFields.Split(',', StringSplitOptions.RemoveEmptyEntries)
+            .Select(s => $"staff.{s.Trim()}").ToList();
+        filter.AddRange(["staff.eid","staff.role", "staff.note"]);
+        filter.AddRange(StaffFields.Split(',', StringSplitOptions.RemoveEmptyEntries)
+            .Select(s => $"va.staff.{s.Trim()}").Append("va.note"));
+        var fieldStr = string.Join(", ", filter);
+        VndbResponse<VndbVn>? vndbResponse = await CallVndbApiAsync(() => _vndbApi.GetVisualNovelAsync(new VndbQuery
+        {
+            Fields = fieldStr,
+            Filters = VndbFilters.Equal("id", id),
+        }));
+        if (!(vndbResponse is null || vndbResponse.Results is null || vndbResponse.Results.Count == 0))
+        {
+            VndbVn rssItem = vndbResponse.Results[0];
+            result.AddRange((rssItem.Staff ?? []).Select(staff => GetStaffRelation(staff,
+                staff.Role switch
+                {
+                    VnStaff.StaffRole.Scenario => Career.Writer, 
+                    VnStaff.StaffRole.Artist => Career.Painter,
+                    VnStaff.StaffRole.Vocals or VnStaff.StaffRole.Composer => Career.Musician, 
+                    _ => Career.Unknown,
+                })));
+            result.AddRange((rssItem.Va ?? []).Where(v => v.Staff is not null)
+                .Select(va => GetStaffRelation(va.Staff, Career.Seiyu)));
+        }
+        return result;
+
+        StaffRelation GetStaffRelation(VndbStaff? staff, Career relation)
+        {
+            return new StaffRelation
+            {
+                Ids = { [(int)GetPhraseType()] = staff?.Id },
+                EnglishName = staff?.Name,
+                JapaneseName = staff?.Original,
+                Gender = staff?.Gender switch
+                {
+                    "f" => Gender.Female,
+                    "m" => Gender.Male,
+                    _ => Gender.Unknown
+                },
+                Description = staff?.Description,
+                Relation = [relation],
+            };
+        }
+    }
+    
+    /// 一个简单的wrapper，自动处理throttle，返回值为null时表示失败
+    private static async Task<VndbResponse<T>?> CallVndbApiAsync<T>(Func<Task<VndbResponse<T>>> func)
+    {
+        do
+        {
+            try
+            {
+                return await func();
+            }
+            catch (ThrottledException)
+            {
+                Task.Delay(60 * 1000).Wait(); // 1 minute
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        } while (true);
     }
 }
 

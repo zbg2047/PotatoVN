@@ -122,6 +122,25 @@ public class StaffService : IStaffService
             IGalStaffParser? phraser = _galgameService.PhraserList[(int)galgame.RssType] as IGalStaffParser;
             if (phraser is null) return;
             List<StaffRelation> tmpStaffs = await phraser.GetStaffsAsync(galgame);
+            {
+                // 一个人可能身兼多职，需要合并
+                List<StaffRelation> tmpToRemove = [];
+                foreach (StaffRelation staff in tmpStaffs)
+                {
+                    if(tmpToRemove.Contains(staff)) continue;
+                    foreach (StaffRelation staff2 in tmpStaffs)
+                    {
+                        if (staff == staff2 || staff.GetIdentifier().Match(staff2) == 0) continue;
+                        foreach(Career c in staff2.Career.Where(c => !staff.Career.Contains(c)))
+                            staff.Career.Add(c);
+                        foreach (Career c in staff2.Relation.Where(c => !staff.Relation.Contains(c)))
+                            staff.Relation.Add(c);
+                        tmpToRemove.Add(staff2);
+                    }
+                }
+                foreach (StaffRelation staff in tmpToRemove)
+                    tmpStaffs.Remove(staff);
+            }
             List<Staff> toFetch = [];
             foreach (StaffRelation staff in tmpStaffs)
             {

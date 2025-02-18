@@ -543,23 +543,6 @@ public class BgmPhraser : IGalInfoPhraser, IGalStatusSync, IGalCharacterPhraser,
                 Relation = [Career.Seiyu],
                 Career = new(seiyu.career.Distinct().Select(dto => dto.ToCareer())),
             }));
-        // 一个人可能身兼多职，需要合并
-        List<StaffRelation> toRemove = [];
-        foreach (StaffRelation staff in result)
-        {
-            if(toRemove.Contains(staff)) continue;
-            foreach (StaffRelation staff2 in result)
-            {
-                if (staff == staff2 || staff.Ids[(int)GetPhraseType()] != staff2.Ids[(int)GetPhraseType()]) continue;
-                foreach(Career c in staff2.Career.Where(c => !staff.Career.Contains(c)))
-                    staff.Career.Add(c);
-                foreach (Career c in staff2.Relation.Where(c => !staff.Relation.Contains(c)))
-                    staff.Relation.Add(c);
-                toRemove.Add(staff2);
-            }
-        }
-        foreach (StaffRelation staff in toRemove)
-            result.Remove(staff);
         return result;
     }
 
