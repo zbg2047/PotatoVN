@@ -472,7 +472,7 @@ public class BgmPhraser : IGalInfoPhraser, IGalStatusSync, IGalCharacterPhraser,
             if (token is { key: "简体中文名", value.Type: JTokenType.String })
                 result.ChineseName = token.value.ToObject<string>();
             if (token is not { key: "别名", value.Type: JTokenType.Array }) continue;
-            foreach (JToken alias in token.value.Where(t => t.Type == JTokenType.String))
+            foreach (JToken alias in token.value)
             {
                 try
                 {

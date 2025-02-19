@@ -437,7 +437,34 @@ public class VndbPhraser : IGalInfoPhraser, IGalStatusSync, IGalCharacterPhraser
         return (GalStatusSyncResult.Ok, "VndbPhraser_DownloadAsync_Success".GetLocalized());
     }
 
-    public Task<Staff?> GetStaffAsync(Staff staff) => throw new NotImplementedException();
+    public async Task<Staff?> GetStaffAsync(Staff staff)
+    {
+        var id = staff.Ids[(int)GetPhraseType()];
+        if (id is null && staff.Name is null) return null;
+        VndbResponse<VndbStaff>? vndbResponse = await CallVndbApiAsync(() => _vndbApi.GetStaffAsync(new VndbQuery
+        {
+            Fields = StaffFields,
+            Filters = id is null ? VndbFilters.Equal("search", staff.Name!) : VndbFilters.Equal("id", id),
+        }));
+        if (vndbResponse is null) return null;
+        VndbStaff? rssItem = (vndbResponse.Results ?? []).FirstOrDefault(s => s.Id == id || s.Name == staff.Name
+            || s.Original == staff.Name);
+        if (rssItem is null) return null;
+        Staff result = new()
+        {
+            Ids = { [(int)GetPhraseType()] = rssItem.Id },
+            EnglishName = rssItem.Name,
+            JapaneseName = rssItem.Original,
+            Gender = rssItem.Gender switch
+            {
+                "f" => Gender.Female,
+                "m" => Gender.Male,
+                _ => Gender.Unknown
+            },
+            Description = rssItem.Description,
+        };
+        return result;
+    }
 
     public async Task<List<StaffRelation>> GetStaffsAsync(Galgame game)
     {

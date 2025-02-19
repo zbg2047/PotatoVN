@@ -15,35 +15,7 @@
     </Page.Resources>
 
     <Grid>
-        <VisualStateManager.VisualStateGroups>
-            <VisualStateGroup>
-                <VisualState>
-                    <VisualState.StateTriggers>
-                        <!--641 is the default CompactModeThresholdWidth in NavigationView -->
-                        <AdaptiveTrigger MinWindowWidth="641" />
-                    </VisualState.StateTriggers>
-                    <VisualState.Setters>
-                        <Setter Target="GameInfoBlock.(RelativePanel.RightOf)" Value="ImageBlock" />
-                        <Setter Target="GameInfoBlock.(RelativePanel.Below)" Value="TitleBlock" />
-                        <Setter Target="GameInfoBlock.Width" Value="180" />
-                        <Setter Target="PlayInfoBlock.(RelativePanel.RightOf)" Value="GameInfoBlock" />
-                        <Setter Target="PlayInfoBlock.(RelativePanel.Below)" Value="TitleBlock" />
-                        <Setter Target="PlayInfoBlock.Width" Value="180" />
-                        <Setter Target="RatingBlock.(RelativePanel.RightOf)" Value="PlayInfoBlock" />
-                        <Setter Target="RatingBlock.(RelativePanel.Below)" Value="TitleBlock" />
-                        <Setter Target="RatingBlock.Width" Value="180" />
-                    </VisualState.Setters>
-                </VisualState>
-            </VisualStateGroup>
-        </VisualStateManager.VisualStateGroups>
-
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="*" />
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
-
+        <Grid RowDefinitions="Auto,*,Auto">
             <CommandBar Grid.Row="0" Background="Transparent" IsOpen="False" DefaultLabelPosition="Right">
                 <!-- 开始游戏 -->
                 <AppBarButton x:Uid="GalgamePage_Play" Command="{x:Bind ViewModel.PlayCommand}"
