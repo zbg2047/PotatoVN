@@ -2301,4 +2301,43 @@
   <data name="Career_Relation_Programmer" xml:space="preserve">
     <value>程序</value>
   </data>
+  <data name="Shell_Staff.Content" xml:space="preserve">
+    <value>制作人员</value>
+  </data>
+  <data name="StaffPage_Gender.Text" xml:space="preserve">
+    <value>性别</value>
+  </data>
+  <data name="Career_Writer" xml:space="preserve">
+    <value>作家</value>
+  </data>
+  <data name="Career_Unknow" xml:space="preserve">
+    <value>未知</value>
+  </data>
+  <data name="Career_Painter" xml:space="preserve">
+    <value>绘师</value>
+  </data>
+  <data name="Career_Musician" xml:space="preserve">
+    <value>音乐家</value>
+  </data>
+  <data name="Career_Seiyu" xml:space="preserve">
+    <value>声优</value>
+  </data>
+  <data name="Career_Producer" xml:space="preserve">
+    <value>制作人</value>
+  </data>
+  <data name="Career_Programmer" xml:space="preserve">
+    <value>程序</value>
+  </data>
+  <data name="StaffPage_Career.Text" xml:space="preserve">
+    <value>职业</value>
+  </data>
+  <data name="StaffPage_Birthday.Text" xml:space="preserve">
+    <value>生日</value>
+  </data>
+  <data name="StaffPage_Description.Text" xml:space="preserve">
+    <value>人物简介</value>
+  </data>
+  <data name="StaffPage_Games.Content" xml:space="preserve">
+    <value>参与作品</value>
+  </data>
 </root>

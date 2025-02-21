@@ -36,9 +36,9 @@ public partial class GameStaffPanel
 
     private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
     {
-        if (sender is not Button button || button.DataContext is not GalgameCharacter character) return;
-        _navigationService.NavigateTo(typeof(GalgameCharacterViewModel).FullName!,
-            new GalgameCharacterParameter { GalgameCharacter = character });
+        if (sender is not Button button || button.DataContext is not StaffRelation staff) return;
+        _navigationService.NavigateTo(typeof(StaffViewModel).FullName!,
+            new StaffViewModel.StaffPageNavigationParameter { Staff = staff.Staff });
     }
 }
 
