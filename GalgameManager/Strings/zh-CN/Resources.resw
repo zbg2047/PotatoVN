@@ -2340,4 +2340,13 @@
   <data name="StaffPage_Games.Content" xml:space="preserve">
     <value>参与作品</value>
   </data>
+  <data name="GalgamePage_HeaderPanel_ExpectedPlayTime.Text" xml:space="preserve">
+    <value>预计时长</value>
+  </data>
+  <data name="GalgamePage_GamePlayStatusPanel_MyRating.Text" xml:space="preserve">
+    <value>我的评分</value>
+  </data>
+  <data name="GalgamePage_GamePlayStatusPanel_MyComment.Text" xml:space="preserve">
+    <value>我的评价</value>
+  </data>
 </root>

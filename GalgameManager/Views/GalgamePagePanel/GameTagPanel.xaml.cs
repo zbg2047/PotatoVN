@@ -16,7 +16,7 @@ public partial class GameTagPanel
         InitializeComponent();
     }
 
-    public override void Update()
+    protected override void Update()
     {
         if (Panel is not null)
             Panel.Visibility = Game?.Tags.Value?.Count > 0 ? Visibility.Visible : Visibility.Collapsed;

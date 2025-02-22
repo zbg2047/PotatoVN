@@ -91,19 +91,6 @@ public partial class GalgameViewModel : ObservableObject, INavigationAware
         _galgameService.PhrasedEvent2 += Update;
         _staffService.OnGameStaffChanged += Update;
         // 初始化面板
-        List<GalgamePagePanel> panels = [GalgamePagePanel.HeaderOld, GalgamePagePanel.Description, GalgamePagePanel.Tag, 
-            GalgamePagePanel.Character, GalgamePagePanel.Staff]; //todo: 临时代码，应从设置中获取
-        foreach (GalgamePagePanel panel in panels)
-        {
-            try
-            {
-                Panels.Add(GetPanel(panel, Item));
-            }
-            catch (Exception e)
-            {
-                _infoService.DeveloperEvent(e: e);
-            }
-        }
         Update(Item);
         
         if (param.StartGame && await _localSettingsService.ReadSettingAsync<bool>(KeyValues.QuitStart))
@@ -158,18 +145,7 @@ public partial class GalgameViewModel : ObservableObject, INavigationAware
         IsRemoveSelectedThreadVisible = Item?.ProcessName is not null ? Visibility.Visible : Visibility.Collapsed;
         IsSelectProcessVisible = Item?.ProcessName is null ? Visibility.Visible : Visibility.Collapsed;
         IsResetPathVisible = Item?.ExePath is not null || Item?.TextPath is not null ? Visibility.Visible : Visibility.Collapsed;
-
-        foreach(GamePanelBase panel in Panels)
-        {
-            try
-            {
-                panel.Update();
-            }
-            catch (Exception e)
-            {
-                _infoService.DeveloperEvent(e: e);
-            }
-        }
+        OnPropertyChanged(nameof(Item));
     }
 
     #region INFOBAR_CTRL

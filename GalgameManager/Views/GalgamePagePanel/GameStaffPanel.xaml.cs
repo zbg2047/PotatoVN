@@ -20,7 +20,7 @@ public partial class GameStaffPanel
         InitializeComponent();
     }
 
-    public override void Update()
+    protected override void Update()
     {
         if (Panel is null || Game is null) return;
         Staffs.SyncCollection(_staffService.GetStaffs(Game!).Select(staff => new StaffRelation()

@@ -8,6 +8,7 @@
     xmlns:local="using:GalgameManager.Helpers"
     xmlns:ui="using:CommunityToolkit.WinUI"
     xmlns:control="using:GalgameManager.Views.Control"
+    xmlns:galgamePagePanel="using:GalgameManager.Views.GalgamePagePanel"
     mc:Ignorable="d">
 
     <Page.Resources>
@@ -39,8 +40,6 @@
                         </Flyout>
                     </AppBarButton.ContextFlyout>
                 </AppBarButton>
-
-
                 <!-- 设置本地路径 -->
                 <AppBarButton x:Uid="GalgamePage_SetLocalPath" Command="{x:Bind ViewModel.SetLocalPathCommand}"
                               Visibility="{x:Bind ViewModel.IsLocalGame, 
@@ -193,13 +192,28 @@
 
             <ScrollViewer Grid.Row="1" IsTabStop="True">
                 <StackPanel>
-                    <ItemsControl ItemsSource="{x:Bind ViewModel.Panels}">
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <StackPanel Orientation="Vertical"/>
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
-                    </ItemsControl>
+                    <!--Layout TypeA -->
+                    <StackPanel Visibility="Collapsed">
+                        <galgamePagePanel:GameHeaderOldPanel Game="{x:Bind ViewModel.Item, Mode=OneWay}"/>
+                        <galgamePagePanel:GameDescriptionPanel Game="{x:Bind ViewModel.Item, Mode=OneWay}"/>
+                        <galgamePagePanel:GameTagPanel Game="{x:Bind ViewModel.Item, Mode=OneWay}"/>
+                        <galgamePagePanel:GameCharacterPanel Game="{x:Bind ViewModel.Item, Mode=OneWay}"/>
+                        <galgamePagePanel:GameStaffPanel Game="{x:Bind ViewModel.Item, Mode=OneWay}"/>
+                    </StackPanel>
+                    <!--Layout TypeB -->
+                    <StackPanel>
+                        <Grid ColumnDefinitions="5*,2*">
+                            <StackPanel Grid.Column="0">
+                                <galgamePagePanel:GameHeaderPanel Game="{x:Bind ViewModel.Item, Mode=OneWay}"/>
+                                <galgamePagePanel:GameDescriptionPanel Game="{x:Bind ViewModel.Item, Mode=OneWay}"/>
+                            </StackPanel>
+                            <!-- 右侧游戏状态部分 -->
+                            <galgamePagePanel:GamePlayStatusPanel 
+                                Grid.Column="1" Game="{x:Bind ViewModel.Item, Mode=OneWay}"/>
+                        </Grid>
+                        <galgamePagePanel:GameTagPanel Game="{x:Bind ViewModel.Item, Mode=OneWay}"/>
+                        <galgamePagePanel:GameCharacterPanel Game="{x:Bind ViewModel.Item, Mode=OneWay}"/>
+                    </StackPanel>
                 </StackPanel>
             </ScrollViewer>
 

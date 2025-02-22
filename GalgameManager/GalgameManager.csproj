@@ -183,6 +183,12 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Remove="Views\Control\AdactiveGridView.xaml" />
+    <Page Update="Views\GalgamePagePanel\GameHeaderPanel.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Views\GalgamePagePanel\GamePlayStatusPanel.xaml">
+      <SubType>Designer</SubType>
+    </Page>
   </ItemGroup>
 
   <ItemGroup Condition="'$(DisableMsixProjectCapabilityAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">

@@ -15,7 +15,7 @@ public partial class GameCharacterPanel
         InitializeComponent();
     }
 
-    public override void Update()
+    protected override void Update()
     {
         if (Panel is null) return;
         Panel.Visibility = Game?.Characters.Count > 0 ? Visibility.Visible : Visibility.Collapsed;

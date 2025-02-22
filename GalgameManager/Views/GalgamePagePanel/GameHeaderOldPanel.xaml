@@ -29,7 +29,7 @@
                 VerticalAlignment="Center"
                 MaxWidth="250"
                 MaxHeight="250"
-                Source="{x:Bind Game.ImagePath.Value, Mode=OneWay, FallbackValue={}}"/>
+                Source="{x:Bind Game.ImagePath.Value, Mode=OneWay, FallbackValue={x:Null}}"/>
         </Grid>
 
         <Grid Grid.Column="1" RowDefinitions="Auto, *">

@@ -17,9 +17,6 @@
         <converter:DateTimeToStringConverter x:Key="DateTimeToStringConverter" />
         <cmtkConverters:StringVisibilityConverter x:Key="StringVisibilityConverter" />
         <cmtkConverters:CollectionVisibilityConverter x:Key="CollectionVisibilityConverter" />
-        <Style x:Key="InfoStackPanel" TargetType="StackPanel">
-            <Setter Property="Spacing" Value="20"/>
-        </Style>
     </Page.Resources>
 
     <Grid>
@@ -56,24 +53,18 @@
                     <!-- 信息面板 -->
                     <StackPanel Orientation="Horizontal" Spacing="20">
                         <Grid CornerRadius="20">
-                            <Rectangle Height="200"
-                                       HorizontalAlignment="Center"
-                                       VerticalAlignment="Center">
-                                <Rectangle.Fill>
-                                    <ImageBrush
-                                        ImageSource="{x:Bind ViewModel.Staff.ImagePath, Mode=OneWay, FallbackValue={},
+                            <Image Height="200" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                   Source="{x:Bind ViewModel.Staff.ImagePath, Mode=OneWay, FallbackValue={},
                                                 Converter={StaticResource ImagePathConverter},
                                                 ConverterParameter=ms-appx:///Assets/Pictures/Akkarin.webp }"
-                                        Stretch="UniformToFill" />
-                                </Rectangle.Fill>
-                            </Rectangle>
+                                   Stretch="UniformToFill"/>
                         </Grid>
                         <StackPanel Spacing="10">
                             <!-- 姓名 -->
                             <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Margin="0 0 0 5"
                                        Text="{x:Bind ViewModel.Staff.Name, Mode=OneWay, FallbackValue={}}"/>
                             <!-- 性别 -->
-                            <StackPanel Orientation="Horizontal" Style="{StaticResource InfoStackPanel}">
+                            <StackPanel Style="{StaticResource KeyValue}">
                                 <TextBlock x:Uid="StaffPage_Gender" 
                                            Style="{ThemeResource BodyStrongTextBlockStyle}"/>
                                 <TextBlock
@@ -81,13 +72,13 @@
                                     Converter={StaticResource EnumToStringConverter}}" />
                             </StackPanel>
                             <!-- 职业 -->
-                            <StackPanel Orientation="Horizontal" Style="{StaticResource InfoStackPanel}">
+                            <StackPanel Style="{StaticResource KeyValue}">
                                 <TextBlock x:Uid="StaffPage_Career" 
                                            Style="{ThemeResource BodyStrongTextBlockStyle}"/>
                                 <TextBlock Text="{x:Bind ViewModel.CareerString, Mode=OneWay}"/>
                             </StackPanel>
                             <!-- 生日 -->
-                            <StackPanel Orientation="Horizontal" Style="{StaticResource InfoStackPanel}">
+                            <StackPanel Style="{StaticResource KeyValue}">
                                 <TextBlock x:Uid="StaffPage_Birthday" 
                                            Style="{ThemeResource BodyStrongTextBlockStyle}"/>
                                 <TextBlock Style="{ThemeResource BodyTextBlockStyle}"
