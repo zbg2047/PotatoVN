@@ -242,7 +242,7 @@ public partial class GalgameViewModel : ObservableObject, INavigationAware
         await CalcStartupPara();
         if (Item.ExePath == null && Item.Startup_parameters == string.Empty) return;
         Process process;
-        if (Item.Startup_parameters == string.Empty)
+        if (Item.Startup_parameters == string.Empty || Item.Startup_parameters == null) // 有时会莫名其妙变成null
         {
             process = new()
             {

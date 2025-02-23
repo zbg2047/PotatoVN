@@ -15,6 +15,10 @@ public class VndbPhraser : IGalInfoPhraser, IGalStatusSync, IGalCharacterPhraser
     private readonly Dictionary<int, JToken> _tagDb = new();
     private bool _init;
     private const string TagDbFile = @"Assets\Data\vndb-tags-latest.json";
+    // 标签翻译文件来源: https://greasyfork.org/zh-CN/scripts/445990-vndbtranslatorlib
+    // 作者: rui li 2
+    // 协议: MIT
+    private const string TagTranslationFile = @"Assets\Data\vndb-tags-translation.json";
     /// <summary>
     /// id eg:g530[1..]=530=(int)530
     /// </summary>
@@ -70,6 +74,23 @@ public class VndbPhraser : IGalInfoPhraser, IGalStatusSync, IGalCharacterPhraser
         JToken json = JToken.Parse(await File.ReadAllTextAsync(file));
         List<JToken>? tags = json.ToObject<List<JToken>>();
         tags!.ForEach(tag => _tagDb.Add(int.Parse(tag["id"]!.ToString()), tag));
+
+        // 加载并应用翻译
+        var translationFile = Path.Combine(Path.GetDirectoryName(assembly.Location)!, TagTranslationFile);
+        if (!File.Exists(translationFile)) return;
+
+        JToken translationJson = JObject.Parse(await File.ReadAllTextAsync(translationFile));
+
+        // 遍历所有标签，应用翻译
+        foreach (var tag in _tagDb.Values)
+        {
+            string? originalName = tag["name"]?.ToString();
+            if (originalName != null && translationJson[originalName] != null)
+            {
+                tag["name"] = translationJson[originalName]!.ToString();
+            }
+        }
+
     }
 
     private static async Task TryGetId(Galgame galgame)
@@ -141,7 +162,7 @@ public class VndbPhraser : IGalInfoPhraser, IGalStatusSync, IGalCharacterPhraser
             
             if (vndbResponse.Results is null || vndbResponse.Results.Count == 0) return null;
             VndbVn rssItem = vndbResponse.Results[0];
-            result.Name = rssItem.Title ?? "";
+            result.Name = GetJapaneseName(rssItem.Titles) ?? rssItem.Title ?? Galgame.DefaultString;
             result.CnName = GetChineseName(rssItem.Titles);
             result.Description = rssItem.Description ?? Galgame.DefaultString;
             result.RssType = GetPhraseType();
@@ -174,7 +195,11 @@ public class VndbPhraser : IGalInfoPhraser, IGalStatusSync, IGalCharacterPhraser
                 {
                     if (!int.TryParse(tag.Id![1..], out var i)) continue;
                     if (_tagDb.TryGetValue(i, out JToken? tagInfo))
+                    {
+                        // 仅保留一般性的tag，跳过sexual content 和 technical tags.
+                        if (tagInfo["cat"]!.ToString() != "cont") continue;
                         result.Tags.Value.Add(tagInfo["name"]!.ToString() ?? "");
+                    }
                 }
             }
             // Characters
@@ -270,7 +295,6 @@ public class VndbPhraser : IGalInfoPhraser, IGalStatusSync, IGalCharacterPhraser
         };
         return character;
     }
-
     private static string GetChineseName(IReadOnlyCollection<VndbTitle>? titles)
     {
         if (titles == null) return "";
@@ -278,6 +302,13 @@ public class VndbPhraser : IGalInfoPhraser, IGalStatusSync, IGalCharacterPhraser
                            titles.FirstOrDefault(t => t.Lang == "zh-Hant");
         return title?.Title!;
     }
+    private static string GetJapaneseName(IReadOnlyCollection<VndbTitle>? titles)
+    {
+        if (titles == null) return "";
+        VndbTitle? title = titles.FirstOrDefault(t => t.Lang == "ja");
+        return title?.Title ?? "";
+    }
+    
     private static string GetLength(VndbVn.VnLenth? length, int? lengthMinutes)
     {
         if (lengthMinutes != null)
