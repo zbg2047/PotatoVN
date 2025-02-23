@@ -288,39 +288,43 @@ public partial class GalgameCollectionService : IGalgameCollectionService
         Galgame? tmp = await phraser.GetGalgameInfo(galgame);
         if (tmp == null) return galgame;
 
-        galgame.RssType = phraser.GetPhraseType();
-        galgame.Id = tmp.Id;
-        galgame.Description.Value = tmp.Description.Value;
-        if (tmp.Description != Galgame.DefaultString)
+        await UiThreadInvokeHelper.InvokeAsync(async () =>
+        {
+            galgame.RssType = phraser.GetPhraseType();
+            galgame.Id = tmp.Id;
             galgame.Description.Value = tmp.Description.Value;
-        if (tmp.Developer != Galgame.DefaultString)
-            galgame.Developer.Value = tmp.Developer.Value;
-        if (tmp.ExpectedPlayTime != Galgame.DefaultString)
-            galgame.ExpectedPlayTime.Value = tmp.ExpectedPlayTime.Value;
-        if (await LocalSettingsService.ReadSettingAsync<bool>(KeyValues.OverrideLocalName))
-        {
-            if (await LocalSettingsService.ReadSettingAsync<bool>(KeyValues.OverrideLocalNameWithChinese))
+            if (tmp.Description != Galgame.DefaultString)
+                galgame.Description.Value = tmp.Description.Value;
+            if (tmp.Developer != Galgame.DefaultString)
+                galgame.Developer.Value = tmp.Developer.Value;
+            if (tmp.ExpectedPlayTime != Galgame.DefaultString)
+                galgame.ExpectedPlayTime.Value = tmp.ExpectedPlayTime.Value;
+            if (await LocalSettingsService.ReadSettingAsync<bool>(KeyValues.OverrideLocalName))
             {
-                galgame.Name.Value = !string.IsNullOrEmpty(tmp.CnName) ? tmp.CnName : tmp.Name.Value;
+                if (await LocalSettingsService.ReadSettingAsync<bool>(KeyValues.OverrideLocalNameWithChinese))
+                {
+                    galgame.Name.Value = !string.IsNullOrEmpty(tmp.CnName) ? tmp.CnName : tmp.Name.Value;
+                }
+                else
+                {
+                    galgame.Name.Value = tmp.Name.Value;
+                }
             }
-            else
+            galgame.ImageUrl = tmp.ImageUrl;
+            galgame.Rating.Value = tmp.Rating.Value;
+            if (!galgame.Tags.IsLock && tmp.Tags.Value?.Count > 0) // Tags不能直接赋值，直接替换容器会抛出奇怪的绑定异常
             {
-                galgame.Name.Value = tmp.Name.Value;
+                galgame.Tags.Value ??= new ObservableCollection<string>(); //不应该发生
+                galgame.Tags.Value.Clear();
+                foreach (var tag in tmp.Tags.Value)
+                    galgame.Tags.Value.Add(tag);
             }
-        }
-        galgame.ImageUrl = tmp.ImageUrl;
-        galgame.Rating.Value = tmp.Rating.Value;
-        if (!galgame.Tags.IsLock && tmp.Tags.Value?.Count > 0) // Tags不能直接赋值，直接替换容器会抛出奇怪的绑定异常
-        {
-            galgame.Tags.Value ??= new ObservableCollection<string>(); //不应该发生
-            galgame.Tags.Value.Clear();
-            foreach (var tag in tmp.Tags.Value)
-                galgame.Tags.Value.Add(tag);
-        }
-        galgame.Characters = tmp.Characters;
-        galgame.ImagePath.Value = await DownloadHelper.DownloadAndSaveImageAsync(galgame.ImageUrl) ?? Galgame.DefaultImagePath;
-        galgame.ReleaseDate.Value = tmp.ReleaseDate.Value;
-        galgame.LastFetchInfoTime = DateTime.Now;
+            galgame.Characters = tmp.Characters;
+            galgame.ImagePath.Value = await DownloadHelper.DownloadAndSaveImageAsync(galgame.ImageUrl) ?? Galgame.DefaultImagePath;
+            galgame.ReleaseDate.Value = tmp.ReleaseDate.Value;
+            galgame.LastFetchInfoTime = DateTime.Now;
+        });
+        
         return galgame;
     }
     
