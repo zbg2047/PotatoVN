@@ -1,22 +1,25 @@
-﻿using GalgameManager.Enums;
+﻿using System.Collections.ObjectModel;
+using CommunityToolkit.Mvvm.ComponentModel;
+using GalgameManager.Enums;
 using LiteDB;
 
 namespace GalgameManager.Models;
 
-public class Staff
+public partial class Staff : ObservableObject
 {
     public Guid Id { get; set; } = Guid.NewGuid();
     public string?[] Ids { get; set; } = new string[Galgame.PhraserNumber];
-    public string? JapaneseName { get; set; }
-    public string? EnglishName { get; set; }
-    public string? ChineseName { get; set; }
-    public Gender Gender { get; set; }
-    public List<Career> Career { get; set; } = [];
-    public string? ImagePath { get; set; }
+
+    [ObservableProperty] [NotifyPropertyChangedFor(nameof(Name))] private string? _japaneseName;
+    [ObservableProperty] [NotifyPropertyChangedFor(nameof(Name))] private string? _englishName;
+    [ObservableProperty] [NotifyPropertyChangedFor(nameof(Name))] private string? _chineseName;
+    [ObservableProperty] private Gender _gender;
+    public ObservableCollection<Career> Career { get; set; } = [];
+    [ObservableProperty] private string? _imagePath;
     public string? ImageUrl { get; set; }
-    public string? Description { get; set; }
-    public DateTime? BirthDate { get; set; }
-    public List<StaffGame> Games { get; set; } = [];
+    [ObservableProperty] private string? _description;
+    [ObservableProperty] private DateTime? _birthDate;
+    public ObservableCollection<StaffGame> Games { get; set; } = [];
 
     public string? Name => JapaneseName ?? ChineseName ?? EnglishName;
 
@@ -31,7 +34,9 @@ public class Staff
     };
 
     /// 如果已经存在则更新relation
-    public void AddGame(Galgame game, Career relation)
+    /// <param name="game">游戏</param>
+    /// <param name="relation">在该游戏中担当的职位</param>
+    public void AddGame(Galgame game, List<Career> relation)
     {
         StaffGame? tmp = Games.FirstOrDefault(g => g.GameId == game.Uuid);
         if (tmp is not null)
@@ -41,12 +46,28 @@ public class Staff
         }
         Games.Add(new StaffGame {Game = game, Relation = relation});
     }
+
+    /// <summary>
+    /// 移除staff的某个作品，如果不存在则不做任何操作
+    /// </summary>
+    /// <param name="game"></param>
+    public void RemoveGame(Galgame game)
+    {
+        List<StaffGame> tmp = Games.Where(g => g.GameId == game.Uuid).ToList();
+        foreach (StaffGame staffGame in tmp) Games.Remove(staffGame);
+    }
+
+    /// <summary>
+    /// 若game不属于staff的任何一个作品，则返回null
+    /// </summary>
+    public List<Career>? GetRelation(Galgame game) =>
+        Games.FirstOrDefault(g => g.GameId == game.Uuid)?.Relation;
 }
 
 public class StaffGame
 {
     [BsonIgnore] public Galgame Game { get; set; } = null!;
-    public Career Relation { get; set; }
+    public List<Career> Relation { get; set; } = [];
 
     #region LiteDB
 
@@ -56,14 +77,14 @@ public class StaffGame
         set => LoadedGameId = value;
     }
 
-    public Guid LoadedGameId { get; private set; } = Guid.Empty;
+    [BsonIgnore] public Guid LoadedGameId { get; private set; } = Guid.Empty;
 
     #endregion
 }
 
 public class StaffRelation : Staff
 {
-    public Career Relation { get; set; }
+    public List<Career> Relation { get; set; } = [];
 }
 
 public class StaffIdentifier

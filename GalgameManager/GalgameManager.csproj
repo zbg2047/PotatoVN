@@ -86,6 +86,7 @@
     <None Remove="Views\Dialog\PvnSetAccountDialog.xaml" />
     <None Remove="Views\Dialog\SelectProcessDialog.xaml" />
     <None Remove="Views\Dialog\SelectPvnServerDialog.xaml" />
+    <None Remove="Views\GalgamePagePanel\GameDescriptionPanel.xaml" />
     <None Remove="Views\ImportWindow.xaml" />
     <None Remove="Views\PasswordDialog.xaml" />
     <None Remove="Views\SettingExpander.xaml" />
@@ -136,6 +137,12 @@
     <None Update="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <Page Update="Views\GalgamePagePanel\GameHeaderOldPanel.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Views\GalgamePagePanel\GameDescriptionPanel.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Update="ViewModels\ReportSubPage3ViewModel.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -179,6 +186,12 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Remove="Views\Control\AdactiveGridView.xaml" />
+    <Page Update="Views\GalgamePagePanel\GameHeaderPanel.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Views\GalgamePagePanel\GamePlayStatusPanel.xaml">
+      <SubType>Designer</SubType>
+    </Page>
   </ItemGroup>
 
   <ItemGroup Condition="'$(DisableMsixProjectCapabilityAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">

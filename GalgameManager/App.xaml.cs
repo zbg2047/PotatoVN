@@ -147,6 +147,8 @@ public partial class App : Application
             services.AddTransient<ShellViewModel>();
             services.AddTransient<GalgameCharacterPage>();
             services.AddTransient<GalgameCharacterViewModel>();
+            services.AddTransient<StaffViewModel>();
+            services.AddTransient<StaffPage>();
 
             // Configuration
             services.Configure<LocalSettingsOptions>(context.Configuration.GetSection(nameof(LocalSettingsOptions)));

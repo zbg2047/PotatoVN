@@ -12,14 +12,13 @@ using GalgameManager.Enums;
 using GalgameManager.Helpers;
 using GalgameManager.Models;
 using GalgameManager.Models.BgTasks;
-using GalgameManager.Models.Filters;
 using GalgameManager.Models.Sources;
 using GalgameManager.Services;
 using GalgameManager.Views.Dialog;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using System.Text.RegularExpressions;
 using System.ComponentModel;
+using GalgameManager.Views.GalgamePagePanel;
 
 namespace GalgameManager.ViewModels;
 
@@ -27,16 +26,15 @@ public partial class GalgameViewModel : ObservableObject, INavigationAware
 {
     private const int ProcessMaxWaitSec = 60; //(手动指定游戏进程)等待游戏进程启动的最大时间
     private readonly GalgameCollectionService _galgameService;
+    private readonly IStaffService _staffService;
     private readonly INavigationService _navigationService;
     private readonly ILocalSettingsService _localSettingsService;
     private readonly JumpListService _jumpListService;
     private readonly IBgTaskService _bgTaskService;
     private readonly IPvnService _pvnService;
-    private readonly IFilterService _filterService;
-    private readonly ICategoryService _categoryService;
     private readonly IInfoService _infoService;
     [ObservableProperty] private Galgame? _item;
-    public ObservableCollection<GalgameViewModelTag> Tags { get; } = new();
+    public ObservableCollection<GamePanelBase> Panels { get; } = new();
     [NotifyCanExecuteChangedFor(nameof(PlayCommand))]
     [NotifyCanExecuteChangedFor(nameof(ChangeSavePositionCommand))]
     [NotifyCanExecuteChangedFor(nameof(ResetExePathCommand))]
@@ -50,9 +48,6 @@ public partial class GalgameViewModel : ObservableObject, INavigationAware
     [ObservableProperty] private bool _isLocalGame; //是否是本地游戏（而非云端同步过来/本地已删除的虚拟游戏）
     [ObservableProperty] private bool _isPhrasing;
 
-    [ObservableProperty] private Visibility _isTagVisible = Visibility.Collapsed;
-    [ObservableProperty] private Visibility _isDescriptionVisible = Visibility.Collapsed;
-    [ObservableProperty] private Visibility _isCharacterVisible = Visibility.Collapsed;
     [ObservableProperty] private Visibility _isRemoveSelectedThreadVisible = Visibility.Collapsed;
     [ObservableProperty] private Visibility _isSelectProcessVisible = Visibility.Collapsed;
     [ObservableProperty] private Visibility _isResetPathVisible = Visibility.Collapsed;
@@ -66,30 +61,19 @@ public partial class GalgameViewModel : ObservableObject, INavigationAware
     [ObservableProperty] private InfoBarSeverity _infoBarSeverity = InfoBarSeverity.Informational;
     private int _msgIndex;
     private bool IsNotLocalGame => !IsLocalGame;
-    
-    [RelayCommand]
-    private void OnCharacterClick(GalgameCharacter? clickedItem)
-    {
-        if (clickedItem != null)
-        {
-            _navigationService.SetListDataItemForNextConnectedAnimation(clickedItem);
-            _navigationService.NavigateTo(typeof(GalgameCharacterViewModel).FullName!, new GalgameCharacterParameter() {GalgameCharacter = clickedItem});
-        }
-    }
-    
-    public GalgameViewModel(IGalgameCollectionService dataCollectionService, INavigationService navigationService, 
-        IJumpListService jumpListService, ILocalSettingsService localSettingsService, IBgTaskService bgTaskService,
-        IPvnService pvnService, IFilterService filterService, ICategoryService categoryService, IInfoService infoService)
+
+    public GalgameViewModel(IGalgameCollectionService dataCollectionService, IStaffService staffService,
+        INavigationService navigationService, IJumpListService jumpListService,
+        ILocalSettingsService localSettingsService, IBgTaskService bgTaskService,
+        IPvnService pvnService, IInfoService infoService)
     {
         _galgameService = (GalgameCollectionService)dataCollectionService;
+        _staffService = staffService;
         _navigationService = navigationService;
-        _galgameService.PhrasedEvent2 += Update;
         _jumpListService = (JumpListService)jumpListService;
         _localSettingsService = localSettingsService;
         _bgTaskService = bgTaskService;
         _pvnService = pvnService;
-        _filterService = filterService;
-        _categoryService = categoryService;
         _infoService = infoService;
     }
     
@@ -104,6 +88,9 @@ public partial class GalgameViewModel : ObservableObject, INavigationAware
         Item = param.Galgame;
         IsLocalGame = Item.IsLocalGame;
         Item.SavePath = Item.SavePath; //更新存档位置显示
+        _galgameService.PhrasedEvent2 += Update;
+        _staffService.OnGameStaffChanged += Update;
+        // 初始化面板
         Update(Item);
         
         if (param.StartGame && await _localSettingsService.ReadSettingAsync<bool>(KeyValues.QuitStart))
@@ -118,6 +105,7 @@ public partial class GalgameViewModel : ObservableObject, INavigationAware
     public void OnNavigatedFrom()
     {
         _galgameService.PhrasedEvent2 -= Update;
+        _staffService.OnGameStaffChanged -= Update;
     }
     
     /// <summary>
@@ -142,9 +130,6 @@ public partial class GalgameViewModel : ObservableObject, INavigationAware
     {
         if (game is null || game != Item) return;
         IsPhrasing = false;
-        IsTagVisible = Item?.Tags.Value?.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
-        IsDescriptionVisible = Item?.Description! != string.Empty ? Visibility.Visible : Visibility.Collapsed;
-        IsCharacterVisible = Item?.Characters.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
         try
         {
             CanOpenInBgm = !string.IsNullOrEmpty(Item?.Ids[(int)RssType.Bangumi]);
@@ -160,33 +145,7 @@ public partial class GalgameViewModel : ObservableObject, INavigationAware
         IsRemoveSelectedThreadVisible = Item?.ProcessName is not null ? Visibility.Visible : Visibility.Collapsed;
         IsSelectProcessVisible = Item?.ProcessName is null ? Visibility.Visible : Visibility.Collapsed;
         IsResetPathVisible = Item?.ExePath is not null || Item?.TextPath is not null ? Visibility.Visible : Visibility.Collapsed;
-
-        var tagChanged = game.Tags.Value?.Count != Tags.Count;
-        try
-        {
-            for (var i = 0; i < Tags.Count && !tagChanged; i++)
-                tagChanged = Tags[i].Tag != game.Tags.Value?[i];
-        }
-        catch (Exception ex)
-        {
-            // 原理上来说是不会越界的，但莫名奇妙有用户反馈过越界问题
-            _infoService.Info(InfoBarSeverity.Warning, $"Error checking tags: {ex.Message}");
-        }
-        if (tagChanged)
-        {
-            Tags.Clear();
-            foreach (var tag in game.Tags.Value ?? new())
-                Tags.Add(new GalgameViewModelTag
-                {
-                    Tag = tag,
-                    ClickCommand = new RelayCommand(() =>
-                    {
-                        _filterService.ClearFilters();
-                        _filterService.AddFilter(new TagFilter(tag));
-                        _navigationService.NavigateTo(typeof(HomeViewModel).FullName!);
-                    }),
-                });
-        }
+        OnPropertyChanged(nameof(Item));
     }
 
     #region INFOBAR_CTRL
@@ -329,21 +288,6 @@ public partial class GalgameViewModel : ObservableObject, INavigationAware
         if (Item?.IsLocalGame != true) return;
         await _galgameService.ChangeGalgameSavePosition(Item);
     }
-
-    [RelayCommand]
-    private async Task ChangeTimeFormat()
-    {
-        try
-        {
-            var current = await _localSettingsService.ReadSettingAsync<bool>(KeyValues.TimeAsHour);
-            await _localSettingsService.SaveSettingAsync(KeyValues.TimeAsHour, !current);
-            Item!.RaisePropertyChanged(nameof(Galgame.TotalPlayTime));
-        }
-        catch (Exception e)
-        {
-            _infoService.Event(EventType.PageError, InfoBarSeverity.Error, "Oops, something went wrong", e);
-        }
-    }
     
     [RelayCommand(CanExecute = nameof(IsLocalGame))]
     private void ResetExePath(object obj)
@@ -384,27 +328,6 @@ public partial class GalgameViewModel : ObservableObject, INavigationAware
             return;
         }
         await Launcher.LaunchUriAsync(new Uri(path));
-    }
-
-    [RelayCommand]
-    private void JumpToPlayedTimePage()
-    {
-        _navigationService.NavigateTo(typeof(PlayedTimeViewModel).FullName!, Item);
-    }
-
-    [RelayCommand]
-    private void JumpToHomePageWithDeveloperFilter()
-    {
-        if (Item is null) return;
-        Category? category = _categoryService.GetDeveloperCategory(Item);
-        if (category is null)
-        {
-            _infoService.Info(InfoBarSeverity.Error, msg:"HomePage_NoDeveloperCategory".GetLocalized());
-            return;
-        }
-        _filterService.ClearFilters();
-        _filterService.AddFilter(new CategoryFilter(category));
-        _navigationService.NavigateTo(typeof(HomeViewModel).FullName!);
     }
 
     [RelayCommand]
@@ -667,6 +590,19 @@ public partial class GalgameViewModel : ObservableObject, INavigationAware
         await ClearText();
         
     }
+
+    private static GamePanelBase GetPanel(GalgamePagePanel panel, Galgame? game)
+    {
+        return panel switch
+        {
+            GalgamePagePanel.HeaderOld => new GameHeaderOldPanel { Game = game},
+            GalgamePagePanel.Description => new GameDescriptionPanel { Game = game },
+            GalgamePagePanel.Tag => new GameTagPanel {Game = game},
+            GalgamePagePanel.Character => new GameCharacterPanel{Game = game},
+            GalgamePagePanel.Staff => new GameStaffPanel {Game = game},
+            _ => throw new NotImplementedException(),
+        };
+    } 
 }
 
 public class GalgamePageParameter
@@ -677,15 +613,4 @@ public class GalgamePageParameter
     public bool StartGame;
     /// 显示手动选择线程弹窗
     public bool SelectProgress;
-}
-
-public class GalgameCharacterParameter
-{
-    [Required] public GalgameCharacter GalgameCharacter = null!;
-}
-
-public class GalgameViewModelTag
-{
-    public required string Tag { get; init; }
-    public required IRelayCommand ClickCommand { get; init; }
 }
