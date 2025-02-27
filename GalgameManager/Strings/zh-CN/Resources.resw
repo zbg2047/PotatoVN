@@ -299,6 +299,9 @@
   <data name="GalgamePage_Edit.Label" xml:space="preserve">
     <value>编辑</value>
   </data>
+  <data name="GalgamePage_Save.Label" xml:space="preserve">
+    <value>保存</value>
+  </data>
   <data name="GalgamePage_ChangeSavePosition.Label" xml:space="preserve">
     <value>转换存档位置</value>
   </data>
@@ -2337,7 +2340,7 @@
   <data name="Career_Writer" xml:space="preserve">
     <value>作家</value>
   </data>
-  <data name="Career_Unknow" xml:space="preserve">
+  <data name="Career_Unknown" xml:space="preserve">
     <value>未知</value>
   </data>
   <data name="Career_Painter" xml:space="preserve">
@@ -2367,6 +2370,12 @@
   <data name="StaffPage_Games.Content" xml:space="preserve">
     <value>参与作品</value>
   </data>
+  <data name="StaffPage_DeleteGame.Text" xml:space="preserve">
+    <value>移除作品</value>
+  </data>
+  <data name="StaffPage_AddGame.Label" xml:space="preserve">
+    <value>增加作品</value>
+  </data>
   <data name="GalgamePage_HeaderPanel_ExpectedPlayTime.Text" xml:space="preserve">
     <value>预计时长</value>
   </data>
@@ -2375,5 +2384,17 @@
   </data>
   <data name="GalgamePage_GamePlayStatusPanel_MyComment.Text" xml:space="preserve">
     <value>我的评价</value>
+  </data>
+  <data name="SelectGameDialog_Title" xml:space="preserve">
+    <value>选择游戏</value>
+  </data>
+    <data name="SelectGameDialog_SearchPlaceholder" xml:space="preserve">
+      <value>搜索游戏...</value>
+  </data>
+    <data name="SelectGameDialog_Confirm" xml:space="preserve">
+      <value>确定</value>
+  </data>
+    <data name="SelectGameDialog_Cancel" xml:space="preserve">
+      <value>取消</value>
   </data>
 </root>
