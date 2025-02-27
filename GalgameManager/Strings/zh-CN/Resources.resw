@@ -2338,7 +2338,7 @@
     <value>制作人员</value>
   </data>
   <data name="Shell_GalgameCharacter.Content" xml:space="preserve">
-    <value>游戏角色</value>
+    <value>角色介绍</value>
   </data>
   <data name="StaffPage_Gender.Text" xml:space="preserve">
     <value>性别</value>

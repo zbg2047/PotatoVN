@@ -99,6 +99,7 @@
                                 Margin="{StaticResource XXSmallTopMargin}"
                                 Style="{ThemeResource TitleTextBlockStyle}"
                                 Text="{x:Bind ViewModel.Character.Name, Mode=OneWay, FallbackValue={}}"
+                                IsTextSelectionEnabled="True"
                                 Visibility="{x:Bind ViewModel.IsEditing, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=true}" />
                             <TextBox
                                 x:Name="TitleEdit"
