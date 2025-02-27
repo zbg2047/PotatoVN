@@ -11,6 +11,8 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Collections.Generic;
 using GalgameManager.Views.Dialog;
+using Windows.Storage.Pickers;
+using Windows.Storage;
 
 namespace GalgameManager.ViewModels;
 
@@ -150,6 +152,29 @@ public partial class StaffViewModel(
             Staff.AddGame(selectedGame, selectedCareers);
             staffService.Save(Staff);
         }
+    }
+
+    [RelayCommand]
+    private async Task PickImageAsync()
+    {
+        if (Staff is null) return;
+        FileOpenPicker openPicker = new()
+        {
+            ViewMode = PickerViewMode.Thumbnail,
+            SuggestedStartLocation = PickerLocationId.PicturesLibrary
+        };
+        WinRT.Interop.InitializeWithWindow.Initialize(openPicker, App.MainWindow!.GetWindowHandle());
+        openPicker.FileTypeFilter.Add(".jpg");
+        openPicker.FileTypeFilter.Add(".jpeg");
+        openPicker.FileTypeFilter.Add(".png");
+        openPicker.FileTypeFilter.Add(".bmp");
+        StorageFile? file = await openPicker.PickSingleFileAsync();
+        if (file == null) return;
+        StorageFile newFile = await file.CopyAsync(await FileHelper.GetFolderAsync(FileHelper.FolderType.Images),
+            $"{Staff.Name}{file.FileType}", NameCollisionOption.ReplaceExisting);
+        Staff.ImagePath = string.Empty;
+        Staff.ImagePath = newFile.Path;
+
     }
 
 }

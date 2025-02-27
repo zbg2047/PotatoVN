@@ -79,11 +79,20 @@
                         </Grid.ColumnDefinitions>
                         
                         <Grid Grid.Column="0" CornerRadius="20" Margin="0,0,20,0">
-                            <Image Height="200" HorizontalAlignment="Center" VerticalAlignment="Center"
-                                   Source="{x:Bind ViewModel.Staff.ImagePath, Mode=OneWay, FallbackValue={},
-                                                Converter={StaticResource ImagePathConverter},
-                                                ConverterParameter=ms-appx:///Assets/Pictures/Akkarin.webp }"
-                                   Stretch="UniformToFill"/>
+                            <Button Command="{x:Bind ViewModel.PickImageCommand}"
+                                    IsEnabled="{x:Bind ViewModel.IsEditing, Mode=OneWay}"
+                                    Style="{ThemeResource ButtonRevealStyle}"
+                                    Padding="0"
+                                    HorizontalAlignment="Stretch"
+                                    VerticalAlignment="Stretch">
+                                <Image MaxWidth="250" MaxHeight="250" 
+                                       HorizontalAlignment="Center" 
+                                       VerticalAlignment="Center"
+                                       Source="{x:Bind ViewModel.Staff.ImagePath, Mode=OneWay, FallbackValue={},
+                                                    Converter={StaticResource ImagePathConverter},
+                                                    ConverterParameter=ms-appx:///Assets/Pictures/Akkarin.webp }"
+                                       Stretch="Uniform"/>
+                            </Button>
                         </Grid>
                         
                         <StackPanel Grid.Column="1" Spacing="10">
