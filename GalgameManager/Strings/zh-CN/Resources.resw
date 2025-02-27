@@ -1125,10 +1125,13 @@
     <value>新增库</value>
   </data>
   <data name="LibraryPage_ScanAll.Label" xml:space="preserve">
-    <value>扫描所有库</value>
+    <value>扫描当前库</value>
   </data>
   <data name="LibraryPage_ScanAll_Success" xml:space="preserve">
     <value>已启动{0}个库的扫描任务</value>
+  </data>
+  <data name="LibraryPage_Scan_Success" xml:space="preserve">
+    <value>开始扫描{0}库</value>
   </data>
   <data name="GalgameFolderPage_Log.Label" xml:space="preserve">
     <value>打开扫描记录</value>
@@ -1755,7 +1758,7 @@
     <value>回到上个库</value>
   </data>
   <data name="LibraryPage_DownloadAllData.Label" xml:space="preserve">
-    <value>下载所有游戏数据</value>
+    <value>下载当前库的游戏数据</value>
   </data>
   <data name="LibraryPage_EditCurrentFolder.Text" xml:space="preserve">
     <value>管理当前库</value>
