@@ -70,18 +70,18 @@ public class RenameFolderTask : BgTaskBase
 
                     Directory.Move(oldPath, newPath);
                     
-                    // 更新游戏在源中的路径
-                    foreach (var source in game.Sources)
-                    {
-                        if (source is GalgameFolderSource folderSource)
-                        {
-                            // 先从库中移除该游戏，再设置路径
-                            if (source != null)
-                                _sourceService.MoveOutNoOperate(source, game);
-                                await _galService.SetLocalPathAsync(game, newPath);
-                                _sourceService.Save(source);
-                        }
-                    }
+                    // // 更新游戏在源中的路径
+                    // foreach (var source in game.Sources)
+                    // {
+                    //     if (source is GalgameFolderSource folderSource)
+                    //     {
+                    //         // 先从库中移除该游戏，再设置路径
+                    //         if (source != null)
+                    //             _sourceService.MoveOutNoOperate(source, game);
+                    //             await _galService.SetLocalPathAsync(game, newPath);
+                    //             _sourceService.Save(source);
+                    //     }
+                    // }
 
                     log += $"{game.Name}: 重命名成功 {oldPath} -> {newPath}\n";
                 }
