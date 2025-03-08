@@ -83,7 +83,16 @@ public class RenameFolderTask : BgTaskBase
                     //     }
                     // }
 
+                    var source = _sourceService.GetGalgameSources().FirstOrDefault(s => s.Galgames.Any(g => g.Galgame == game));
+                    if (source != null)
+                    {
+                        UiThreadInvokeHelper.Invoke(() => _sourceService.MoveOutNoOperate(source, game));
+                    }
+                    UiThreadInvokeHelper.Invoke(() => _galService.SetLocalPathAsync(game, newPath));
+
                     log += $"{game.Name}: 重命名成功 {oldPath} -> {newPath}\n";
+                    
+                    
                 }
                 catch (Exception e)
                 {
