@@ -80,6 +80,13 @@
                                 <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE8AD;" />
                             </AppBarButton.Icon>
                         </AppBarButton>
+                        <!-- 使用游戏名重命名文件夹 -->
+                        <AppBarButton x:Uid="GalgameSourcePage_RenameFolder"
+                                      Command="{x:Bind ViewModel.RenameFolderCommand}">
+                            <AppBarButton.Icon>
+                                <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE8AD;" />
+                            </AppBarButton.Icon>
+                        </AppBarButton>
                     </CommandBar.SecondaryCommands>
                     <interactivity:Interaction.Behaviors>
                         <core:EventTriggerBehavior EventName="SizeChanged">

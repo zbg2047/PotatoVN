@@ -403,6 +403,14 @@ public partial class GalgameSourceViewModel : ObservableObject, INavigationAware
         if(FileHelper.Exists(path) == false) return; 
         await Launcher.LaunchFileAsync(await StorageFile.GetFileFromPathAsync(FileHelper.GetFullPath(path)));
     }
+
+    [RelayCommand]
+    private void RenameFolder()
+    {
+        if (Item is null) return;
+        var task = new RenameFolderTask(_selectedGalgames);
+        _bgTaskService.AddBgTask(task);
+    }
 }
 
 public partial class GalgameSourcePageCustomGalgameViewModel : ObservableObject
