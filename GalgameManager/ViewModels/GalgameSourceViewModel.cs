@@ -377,6 +377,14 @@ public partial class GalgameSourceViewModel : ObservableObject, INavigationAware
     }
 
     [RelayCommand]
+    private void RenameFolder()
+    {
+        if (Item is null) return;
+        var task = new RenameFolderTask(_selectedGalgames);
+        _bgTaskService.AddBgTask(task);
+    }
+
+    [RelayCommand]
     private void EditGame(GalgameAndPath gameAndPath)
     {
         if (gameAndPath?.Galgame == null) return;

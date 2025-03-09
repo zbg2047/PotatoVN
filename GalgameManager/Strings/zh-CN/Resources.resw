@@ -1136,6 +1136,9 @@
   <data name="GalgameFolderPage_Log.Label" xml:space="preserve">
     <value>打开扫描记录</value>
   </data>
+  <data name="GalgameSourcePage_RenameFolder.Label" xml:space="preserve">
+    <value>使用游戏名重命名文件夹</value>
+  </data>
   <data name="GalgameFolder_GetGalInFolder_Saving" xml:space="preserve">
     <value>扫描完成，保存记录中</value>
   </data>
@@ -2471,5 +2474,17 @@
   </data>
   <data name="GalgameSettingPage_GameInfo_Tag_Description.Text" xml:space="preserve">
     <value>为了防止较低配电脑打开本界面卡顿，Tag设置默认折起来了</value>
+  </data>
+  <data name="RenameFolderTask_Progress" xml:space="preserve">
+    <value>正在重命名文件夹：{0}</value>
+  </data>
+  <data name="RenameFolderTask_Done" xml:space="preserve">
+    <value>重命名文件夹任务完成</value>
+  </data>
+  <data name="RenameFolderTask_Saving" xml:space="preserve">
+    <value>正在保存重命名文件夹任务</value>
+  </data>
+  <data name="RenameFolderTask_Title" xml:space="preserve">
+    <value>重命名文件夹任务</value>
   </data>
 </root>
